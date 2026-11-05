@@ -190,7 +190,7 @@ export interface Order {
   total: number;
   itemsCount: number;
   items: OrderLine[];
-  paymentMethod: 'Credit Card' | 'UPI' | 'Net Banking' | 'Cash on Delivery';
+  paymentMethod: 'Credit Card' | 'UPI' | 'Net Banking' | 'Razorpay' | 'Cash on Delivery';
   paymentId?: string;
   /** What the shopper paid with, e.g. "UPI · meera@okaxis" or "Visa •••• 1111". */
   paymentDetail?: string;
@@ -427,7 +427,7 @@ function adjustStock(products: Product[], lines: { productId: string; size: stri
 export interface WebsiteOrderInput {
   lines: { product: Product; size: string; color: string; qty: number }[];
   promo: string;
-  payment: 'UPI' | 'Card' | 'Net Banking' | 'Cash on Delivery';
+  payment: 'Razorpay' | 'Cash on Delivery';
   address: { name: string; phone: string; email: string; line: string; city: string; state: string; pin: string };
   /** The successful Razorpay (test mode) payment, for prepaid orders. */
   receipt?: PaymentReceipt;
@@ -444,6 +444,7 @@ export interface PaymentReceipt {
  * from stock, counts the coupon as used, adds or updates the customer, and files the order for the admin.
  */
 export function placeWebsiteOrder({ lines, promo, payment, address, receipt }: WebsiteOrderInput): Order {
+  if (payment !== 'Cash on Delivery' && !receipt) throw new Error('Payment has not been verified by Razorpay.');
   const products = productsStore.get();
   for (const line of lines) {
     const current = products.find((p) => p.id === line.product.id);
@@ -484,8 +485,8 @@ export function placeWebsiteOrder({ lines, promo, payment, address, receipt }: W
       price: product.price,
       image: productPhotos(product, color)[0],
     })),
-    paymentMethod: payment === 'Card' ? 'Credit Card' : payment,
-    paymentId: payment === 'Cash on Delivery' ? undefined : receipt?.paymentId ?? fakePaymentId(),
+    paymentMethod: payment,
+    paymentId: payment === 'Cash on Delivery' ? undefined : receipt?.paymentId,
     paymentDetail: receipt?.detail,
     gatewayOrderId: receipt?.gatewayOrderId,
     paymentStatus: payment === 'Cash on Delivery' ? 'Pending' : 'Paid',
@@ -983,25 +984,21 @@ export const adminAccountStore = createStore<AdminAccount>(
 // Razorpay in test mode: the keys and payment methods set in Admin Security, used by the store's checkout.
 export interface PaymentGateway {
   keyId: string;
-  keySecret: string;
   merchantName: string;
-  methods: { upi: boolean; card: boolean; netbanking: boolean; cod: boolean };
+  methods: { razorpay: boolean; cod: boolean };
   verifiedAt: string;
 }
 export const DEFAULT_PAYMENT_GATEWAY: PaymentGateway = {
-  keyId: 'rzp_test_Rk7vH2pQm9XwLd',
-  keySecret: 'Qm4tYv8LxR2bNw6KpZc9sH1e',
+  keyId: '',
   merchantName: 'Demo Website',
-  methods: { upi: true, card: true, netbanking: true, cod: true },
+  methods: { razorpay: true, cod: true },
   verifiedAt: '',
 };
 export const paymentGatewayStore = createStore<PaymentGateway>(
-  KEY('paymentGateway'),
+  KEY('paymentGateway.v3'),
   DEFAULT_PAYMENT_GATEWAY,
   (v) => typeof v === 'object' && v !== null && typeof (v as PaymentGateway).keyId === 'string' && typeof (v as PaymentGateway).methods === 'object'
 );
-/** Razorpay-style ids such as `order_Nq4…`, made in the browser for the test-mode checkout. */
-export const fakeGatewayOrderId = () => `order_${randomId(14)}`;
 
 const SHARED_STORES = [
   productsStore, categoriesStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, colorOptionsStore,

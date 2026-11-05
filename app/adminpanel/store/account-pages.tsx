@@ -11,7 +11,7 @@ import {
   useStore, useBag, useCatalog, useAccount, bagStore, promoStore, myOrdersStore, setBagQty, navigate, formatDate, variantLabel, inr, STORE_INFO,
 } from './store-kit';
 import { Field, openAuth } from './auth-pages';
-import { RazorpayCheckout, MethodGlyph, BrandMark, type GatewayMethod } from './razorpay-checkout';
+import { RazorpayCheckout, MethodGlyph } from './razorpay-standard-checkout';
 
 // =============================================================================
 // Bag Page
@@ -21,10 +21,7 @@ import { RazorpayCheckout, MethodGlyph, BrandMark, type GatewayMethod } from './
 function PaymentMarks() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-1.5">
-      <span className="inline-flex h-7 px-2.5 rounded-md bg-[#F1F4F9] text-[#0E1A2B] text-[11px] font-black items-center gap-1"><MethodGlyph method="UPI" size={13} /> UPI</span>
-      <BrandMark brand="Visa" />
-      <BrandMark brand="Mastercard" />
-      <BrandMark brand="RuPay" />
+      <span className="inline-flex h-7 px-2.5 rounded-md bg-[#F1F4F9] text-[#0E1A2B] text-[11px] font-black items-center gap-1"><MethodGlyph method="Razorpay" size={13} /> Razorpay</span>
       <span className="inline-flex h-7 px-2.5 rounded-md bg-[#F1F4F9] text-[#0E1A2B] text-[11px] font-black items-center">COD</span>
     </div>
   );
@@ -116,11 +113,9 @@ const INDIAN_STATES = [
   'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
 ];
 
-const PAYMENT_OPTIONS: { id: Payment; title: string; note: string; key: 'upi' | 'card' | 'netbanking' | 'cod'; badge?: string }[] = [
-  { id: 'UPI', title: 'UPI', note: 'Google Pay, PhonePe, Paytm, BHIM & more', key: 'upi', badge: 'Instant' },
-  { id: 'Card', title: 'Credit / debit card', note: 'Visa, Mastercard, RuPay & Amex', key: 'card' },
-  { id: 'Net Banking', title: 'Net banking', note: 'All major Indian banks', key: 'netbanking' },
-  { id: 'Cash on Delivery', title: 'Cash on delivery', note: 'Pay by cash or UPI when it arrives', key: 'cod' },
+const PAYMENT_OPTIONS: { id: Payment; title: string; note: string; key: 'razorpay' | 'cod'; badge?: string }[] = [
+  { id: 'Razorpay', title: 'Razorpay', note: 'UPI, cards and net banking in one secure checkout', key: 'razorpay', badge: 'Secure' },
+  { id: 'Cash on Delivery', title: 'Cash on delivery', note: 'Pay when your order arrives', key: 'cod' },
 ];
 
 function addressProblems(address: Address) {
@@ -139,7 +134,7 @@ function addressProblems(address: Address) {
 type Located =
   | { status: 'idle' }
   | { status: 'locating' }
-  | { status: 'found'; lat: number; lon: number; label: string; partial: boolean }
+  | { status: 'found'; lat: number; lon: number; accuracy: number; label: string }
   | { status: 'error'; message: string };
 
 const STEPS_BAR = ['Bag', 'Details', 'Payment', 'Done'];
@@ -249,7 +244,7 @@ export function CheckoutPage() {
   const available = options.length ? options : PAYMENT_OPTIONS.filter((o) => o.id === 'Cash on Delivery');
   // Members start with their name, email and phone already filled in.
   const [address, setAddress] = useState<Address>(() => (account ? { ...BLANK_ADDRESS, name: account.name, email: account.email, phone: account.phone.replace(/^\+91\s?/, '') } : BLANK_ADDRESS));
-  const [paymentChoice, setPayment] = useState<Payment>('UPI');
+  const [paymentChoice, setPayment] = useState<Payment>('Razorpay');
   const payment = available.some((o) => o.id === paymentChoice) ? paymentChoice : available[0].id;
   const [showProblems, setShowProblems] = useState(false);
   const [placeError, setPlaceError] = useState('');
@@ -258,13 +253,17 @@ export function CheckoutPage() {
   const [located, setLocated] = useState<Located>({ status: 'idle' });
   const [pinLookup, setPinLookup] = useState('');
   const form = useRef<HTMLFormElement>(null);
+  const touchedAddressFields = useRef(new Set<keyof Address>());
   const problems = addressProblems(address);
 
   if (!lines.length) {
     return <EmptyState icon="bag" title="Nothing to check out" text="Your bag is empty, so add a piece first." action={{ label: 'Go to the shop', href: '#/shop' }} />;
   }
 
-  const update = (name: keyof Address, value: string) => setAddress((prev) => ({ ...prev, [name]: value }));
+  const update = (name: keyof Address, value: string) => {
+    touchedAddressFields.current.add(name);
+    setAddress((prev) => ({ ...prev, [name]: value }));
+  };
 
   // Fills city and state from an Indian PIN code (India Post data), leaving anything already typed alone.
   const lookUpPin = async (pin: string) => {
@@ -275,7 +274,11 @@ export function CheckoutPage() {
       const data = await res.json();
       const office = data?.[0]?.PostOffice?.[0];
       if (!office) { setPinLookup(''); return; }
-      setAddress((prev) => ({ ...prev, city: prev.city || office.District, state: prev.state || office.State }));
+      setAddress((prev) => ({
+        ...prev,
+        city: touchedAddressFields.current.has('city') ? prev.city : office.District || prev.city,
+        state: touchedAddressFields.current.has('state') ? prev.state : office.State || prev.state,
+      }));
       setPinLookup(`${office.District}, ${office.State}`);
     } catch {
       setPinLookup('');
@@ -292,24 +295,39 @@ export function CheckoutPage() {
       async ({ coords }) => {
         const lat = coords.latitude;
         const lon = coords.longitude;
+        const accuracy = coords.accuracy;
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&lat=${lat}&lon=${lon}`, { headers: { 'Accept-Language': 'en' } });
-          const data = await res.json();
-          const a = data?.address ?? {};
-          const area = [a.road, a.neighbourhood || a.suburb || a.quarter || a.residential].filter(Boolean).join(', ');
-          const city = a.city || a.town || a.village || a.city_district || a.county || a.state_district || '';
-          const pin = String(a.postcode ?? '').replace(/\s/g, '').slice(0, 6);
+          // Nominatim supplies street/building detail. BigDataCloud fills city,
+          // state and postcode when OSM has sparse locality components.
+          const [osmResult, cityResult] = await Promise.allSettled([
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&layer=address&lat=${lat}&lon=${lon}`, { headers: { 'Accept-Language': 'en' } })
+              .then((response) => response.ok ? response.json() : Promise.reject(new Error('Address lookup failed'))),
+            fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`)
+              .then((response) => response.ok ? response.json() : Promise.reject(new Error('City lookup failed'))),
+          ]);
+          const osm = osmResult.status === 'fulfilled' ? osmResult.value : null;
+          const cityData = cityResult.status === 'fulfilled' ? cityResult.value : null;
+          if (!osm && !cityData) throw new Error('Address lookup unavailable');
+          const a = osm?.address ?? {};
+          const street = a.road || a.pedestrian || a.residential || a.street || a.path || a.footway || '';
+          const locality = a.neighbourhood || a.suburb || a.quarter || a.hamlet || a.locality || a.village || cityData?.locality || '';
+          const area = [street, locality].filter(Boolean).filter((value, index, values) => values.indexOf(value) === index).join(', ');
+          const city = a.city || a.town || a.municipality || cityData?.city || a.village || cityData?.locality || '';
+          const state = a.state || a.region || cityData?.principalSubdivision || '';
+          const pin = String(a.postcode || cityData?.postcode || '').replace(/\D/g, '').slice(0, 6);
+          const house = [a.house_number, a.building || a.apartment || a.unit].filter(Boolean).join(', ');
+          const displayName = osm?.display_name || [locality, city, state].filter(Boolean).join(', ');
           setAddress((prev) => ({
             ...prev,
-            house: prev.house || [a.house_number, a.building].filter(Boolean).join(', '),
-            area: area || prev.area,
-            city: city || prev.city,
-            state: a.state || prev.state,
-            pin: /^[1-9]\d{5}$/.test(pin) ? pin : prev.pin,
+            house: touchedAddressFields.current.has('house') ? prev.house : house,
+            area: touchedAddressFields.current.has('area') ? prev.area : area,
+            city: touchedAddressFields.current.has('city') ? prev.city : city,
+            state: touchedAddressFields.current.has('state') ? prev.state : state,
+            pin: touchedAddressFields.current.has('pin') ? prev.pin : /^[1-9]\d{5}$/.test(pin) ? pin : '',
           }));
-          setLocated({ status: 'found', lat, lon, label: [a.suburb || a.neighbourhood || a.road, city].filter(Boolean).join(', ') || data?.display_name || 'Your location', partial: !area });
+          setLocated({ status: 'found', lat, lon, accuracy, label: [locality || street || city, city, state].filter(Boolean).filter((value, index, values) => values.indexOf(value) === index).join(', ') || displayName || 'Your location' });
         } catch {
-          setLocated({ status: 'found', lat, lon, label: `${lat.toFixed(4)}, ${lon.toFixed(4)}`, partial: true });
+          setLocated({ status: 'found', lat, lon, accuracy, label: `${lat.toFixed(4)}, ${lon.toFixed(4)}` });
         }
       },
       (err) => setLocated({
@@ -318,7 +336,7 @@ export function CheckoutPage() {
           ? 'Location access is blocked. Allow it for this site in your browser settings, or type your address below.'
           : err.code === err.TIMEOUT ? 'Finding your location took too long. Try again, or type your address below.' : 'We couldn’t find your location. Please type your address below.',
       }),
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
     );
   };
 
@@ -438,7 +456,7 @@ export function CheckoutPage() {
                   </p>
                   <p className="text-[13px] text-[#5B6B80] leading-snug">
                     {located.status === 'locating' ? 'Allow location access if your browser asks.'
-                      : located.status === 'found' ? <>{located.label}{located.partial ? ' — please type the street below.' : ' — check the details below.'}</>
+                      : located.status === 'found' ? <>{located.label} · GPS accuracy about {Math.round(located.accuracy)} m. Check the address fields below; map data may not include your flat or house number.</>
                       : located.status === 'error' ? located.message
                       : 'We’ll fill in your street, city, state and PIN code.'}
                   </p>
@@ -457,7 +475,7 @@ export function CheckoutPage() {
                     src={`https://www.openstreetmap.org/export/embed.html?bbox=${located.lon - 0.004},${located.lat - 0.0025},${located.lon + 0.004},${located.lat + 0.0025}&layer=mapnik&marker=${located.lat},${located.lon}`}
                     className="absolute inset-0 w-full h-full border-0 pointer-events-none"
                   />
-                  <span className="absolute left-3 bottom-3 px-2.5 py-1 rounded-full bg-white/95 text-[11px] font-bold text-[#0E1A2B] shadow">📍 {located.lat.toFixed(5)}, {located.lon.toFixed(5)}</span>
+                  <span className="absolute left-3 bottom-3 px-2.5 py-1 rounded-full bg-white/95 text-[11px] font-bold text-[#0E1A2B] shadow">📍 ±{Math.round(located.accuracy)} m · {located.lat.toFixed(5)}, {located.lon.toFixed(5)}</span>
                 </div>
               )}
             </div>
@@ -479,18 +497,17 @@ export function CheckoutPage() {
                 return (
                   <label key={option.id} className={`flex items-center gap-4 p-4 sm:p-5 rounded-[20px] border cursor-pointer transition-all ${selected ? 'border-[#2F6BFF] bg-[#F5F8FF] ring-4 ring-[#2F6BFF]/10' : 'border-[#E3E8EF] hover:border-[#A9B4C2]'}`}>
                     <input type="radio" name="payment" value={option.id} checked={selected} onChange={() => setPayment(option.id)} className="sr-only" />
-                    <span className={`w-11 h-11 shrink-0 rounded-2xl flex items-center justify-center ${selected ? 'bg-[#2F6BFF] text-white' : 'bg-[#F1F4F9] text-[#3A4A5F]'}`}><MethodGlyph method={option.id === 'Card' ? 'Card' : option.id === 'UPI' ? 'UPI' : option.id === 'Net Banking' ? 'Net Banking' : 'Cash on Delivery'} size={20} /></span>
+                    <span className={`w-11 h-11 shrink-0 rounded-2xl flex items-center justify-center ${selected ? 'bg-[#2F6BFF] text-white' : 'bg-[#F1F4F9] text-[#3A4A5F]'}`}><MethodGlyph method={option.id} size={20} /></span>
                     <span className="flex-1 min-w-0">
                       <span className="flex items-center gap-2 text-[15px] font-bold text-[#0E1A2B]">{option.title}{option.badge && <span className="px-2 py-0.5 rounded-full bg-[#E3F4EC] text-[#0F8A5F] text-[10.5px] font-extrabold uppercase tracking-wide">{option.badge}</span>}</span>
                       <span className="block text-[12.5px] text-[#6F7E92] mt-0.5">{option.note}</span>
-                      {option.id === 'Card' && <span className="mt-2 flex gap-1.5 scale-90 origin-left"><BrandMark brand="Visa" /><BrandMark brand="Mastercard" /><BrandMark brand="RuPay" /><BrandMark brand="Amex" /></span>}
                     </span>
                     <span className={`w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center ${selected ? 'border-[#2F6BFF]' : 'border-[#CFD8E3]'}`}>{selected && <span className="w-2.5 h-2.5 rounded-full bg-[#2F6BFF]" />}</span>
                   </label>
                 );
               })}
             </div>
-            <p className="mt-5 text-[12.5px] text-[#6F7E92] flex items-start gap-2"><span className="mt-px"><Icon name="shield" size={15} stroke={1.5} /></span> Prepaid orders open Razorpay’s secure window. This is test mode — use the test UPI IDs and cards shown there; nothing is charged.</p>
+            <p className="mt-5 text-[12.5px] text-[#6F7E92] flex items-start gap-2"><span className="mt-px"><Icon name="shield" size={15} stroke={1.5} /></span> Choose Razorpay to pay by UPI, card or net banking in one secure window, or choose cash on delivery. Test mode does not charge real money.</p>
           </Card>
         </div>
 
@@ -531,7 +548,6 @@ export function CheckoutPage() {
       {paying && (
         <RazorpayCheckout
           amount={totals.total}
-          method={payment as GatewayMethod}
           gateway={gateway}
           prefill={{ name: address.name, email: address.email, phone: address.phone }}
           onSuccess={(receipt) => { setPaying(false); place(receipt); }}
@@ -921,7 +937,7 @@ const FAQS: [string, string][] = [
   ['How long does delivery take?', 'Most orders arrive in 3 to 5 working days. You will see the expected date on your order page as soon as you place an order, and it updates as your parcel moves.'],
   ['How much does delivery cost?', `Delivery is complimentary on orders of ${inr(FREE_DELIVERY_FROM)} or more. Smaller orders have a flat ₹149 delivery fee.`],
   ['Can I return something?', STORE_INFO.returnPolicy],
-  ['Which payment options do you offer?', 'UPI, cards and cash on delivery. Prices already include GST, so there is nothing extra to pay at checkout apart from any delivery fee.'],
+  ['Which payment options do you offer?', 'Razorpay supports UPI, cards and net banking in one secure checkout, or choose cash on delivery. Prices already include GST, so there is nothing extra to pay at checkout apart from any delivery fee.'],
   ['How do I track my order?', 'Sign in and tap your name in the top corner — your latest order and its live status are right there. Every order also has its own tracking page with courier details once it ships.'],
   ['Do I need an account to order?', 'No. You can check out as a guest. An account simply fills in your details for you and keeps all your orders in one place.'],
   ['How do I use a promo code?', 'Enter it in your bag before checkout, or tap Apply on one of the available offers. Each code has a minimum order value and dates, and your bag tells you if a code cannot be used.'],
