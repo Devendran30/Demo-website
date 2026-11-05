@@ -46,7 +46,7 @@ export const wishlistStore = createStore<string[]>('store.wishlist', [], Array.i
 export const promoStore = createStore<string>('store.v2.promo', '', (v) => typeof v === 'string');
 export const myOrdersStore = createStore<string[]>('store.v2.myOrders', [], Array.isArray);
 /** The signed-in shopper's email on this device ('' when signed out). */
-export const sessionStore = createStore<string>('store.v2.session', '', (v) => typeof v === 'string');
+export const sessionStore = createStore<string>('store.v3.session', '', (v) => typeof v === 'string');
 
 export function useAccount() {
   const email = useStore(sessionStore);

@@ -118,7 +118,7 @@ function SignInForm({ idPrefix, next, onSwitch }: { idPrefix: string; next: stri
 
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
-      <Field id={`${idPrefix}-email`} label="Email address" icon="mail" type="email" inputMode="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(v) => { setEmail(v); setError(''); }} autoFocus />
+      <Field id={`${idPrefix}-email`} label="Email address" icon="mail" type="email" inputMode="email" autoComplete="email" placeholder="demo.you@example.com" value={email} onChange={(v) => { setEmail(v); setError(''); }} autoFocus />
       <PasswordField id={`${idPrefix}-password`} label="Password" autoComplete="current-password" value={password} onChange={(v) => { setPassword(v); setError(''); }} />
       <div className="flex justify-end -mt-2">
         <button type="button" onClick={() => showToast('A reset link would be emailed to you — this is a demo', null)} className="text-[13.5px] font-semibold text-[#2F6BFF] hover:underline">
@@ -129,11 +129,11 @@ function SignInForm({ idPrefix, next, onSwitch }: { idPrefix: string; next: stri
       <Button type="submit" variant="accent" disabled={busy} className="w-full">{busy ? 'Signing in…' : <>Sign in <Icon name="arrow" size={16} /></>}</Button>
       <button
         type="button"
-        onClick={() => { setEmail('meera.iyer@example.com'); setPassword('demo1234'); setError(''); }}
+        onClick={() => { setEmail('demo.shopper@example.com'); setPassword('demo1234'); setError(''); }}
         className="w-full px-4 py-3 rounded-[14px] border border-dashed border-[#CFD8E3] bg-[#F6F8FB] hover:border-[#2F6BFF] text-left transition-colors group"
       >
         <span className="block text-[11.5px] uppercase tracking-[0.14em] font-bold text-[#6F7E92] group-hover:text-[#2F6BFF]">Demo account — tap to fill</span>
-        <span className="block mt-0.5 text-[13.5px] text-[#3A4A5F]">meera.iyer@example.com · demo1234</span>
+        <span className="block mt-0.5 text-[13.5px] text-[#3A4A5F]">demo.shopper@example.com · demo1234</span>
       </button>
       <p className="text-center text-[14px] text-[#5B6B80]">
         New here? <button type="button" onClick={onSwitch} className="font-bold text-[#0E1A2B] hover:text-[#2F6BFF]">Create an account</button>
@@ -186,8 +186,8 @@ function SignUpForm({ idPrefix, next, onSwitch }: { idPrefix: string; next: stri
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
       <Field id={`${idPrefix}-name`} label="Full name" icon="user" autoComplete="name" placeholder="e.g. Riya Kapoor" value={form.name} onChange={set('name')} error={shown('name')} autoFocus />
-      <Field id={`${idPrefix}-email`} label="Email address" icon="mail" type="email" inputMode="email" autoComplete="email" placeholder="you@example.com" value={form.email} onChange={set('email')} error={shown('email')} />
-      <Field id={`${idPrefix}-phone`} label="Mobile number (optional)" icon="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="98765 43210" value={form.phone} onChange={set('phone')} error={shown('phone')} />
+      <Field id={`${idPrefix}-email`} label="Email address" icon="mail" type="email" inputMode="email" autoComplete="email" placeholder="demo.you@example.com" value={form.email} onChange={set('email')} error={shown('email')} />
+      <Field id={`${idPrefix}-phone`} label="Mobile number (optional)" icon="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="00000 00000" value={form.phone} onChange={set('phone')} error={shown('phone')} />
       <div>
         <PasswordField id={`${idPrefix}-password`} label="Password" autoComplete="new-password" value={form.password} onChange={set('password')} error={shown('password')} />
         {form.password && (

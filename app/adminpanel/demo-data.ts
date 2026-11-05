@@ -258,6 +258,39 @@ export interface Store<T> {
   subscribe: (listener: () => void) => () => void;
 }
 
+const DEMO_SEED_CONTACTS: Record<string, { name: string; email: string; phone: string; shippingAddress?: string }> = {
+  'ord-106': { name: 'Demo Customer 01', email: 'demo.customer01@example.com', phone: '+91 00000 00001', shippingAddress: 'Demo House 01, Demo Layout' },
+  'ord-105': { name: 'Demo Customer 02', email: 'demo.customer02@example.com', phone: '+91 00000 00002', shippingAddress: 'Demo House 02, Demo Layout' },
+  'ord-101': { name: 'Demo Customer 03', email: 'demo.customer03@example.com', phone: '+91 00000 00003', shippingAddress: 'Demo House 03, Demo Layout' },
+  'ord-102': { name: 'Demo Customer 04', email: 'demo.customer04@example.com', phone: '+91 00000 00004', shippingAddress: 'Demo House 04, Demo Layout' },
+  'ord-103': { name: 'Demo Customer 05', email: 'demo.customer05@example.com', phone: '+91 00000 00005', shippingAddress: 'Demo House 05, Demo Layout' },
+  'ord-104': { name: 'Demo Customer 06', email: 'demo.customer06@example.com', phone: '+91 00000 00006', shippingAddress: 'Demo House 06, Demo Layout' },
+  'cus-7': { name: 'Demo Customer 01', email: 'demo.customer01@example.com', phone: '+91 00000 00001' },
+  'cus-1': { name: 'Demo Customer 02', email: 'demo.customer02@example.com', phone: '+91 00000 00002' },
+  'cus-2': { name: 'Demo Customer 03', email: 'demo.customer03@example.com', phone: '+91 00000 00003' },
+  'cus-3': { name: 'Demo Customer 04', email: 'demo.customer04@example.com', phone: '+91 00000 00004' },
+  'cus-4': { name: 'Demo Customer 05', email: 'demo.customer05@example.com', phone: '+91 00000 00005' },
+  'cus-5': { name: 'Demo Customer 06', email: 'demo.customer06@example.com', phone: '+91 00000 00006' },
+  'cus-6': { name: 'Demo Customer 07', email: 'demo.customer07@example.com', phone: '+91 00000 00007' },
+  'acc-1': { name: 'Demo Shopper', email: 'demo.shopper@example.com', phone: '' },
+};
+
+function normalizeStoredDemoContacts(key: string, value: unknown): unknown {
+  if (Array.isArray(value) && ['demo.v2.orders', 'demo.v2.customers', 'demo.v2.shoppers'].includes(key)) {
+    return value.map((item) => {
+      if (!item || typeof item !== 'object' || typeof item.id !== 'string') return item;
+      const replacement = DEMO_SEED_CONTACTS[item.id];
+      if (!replacement) return item;
+      const { name, ...contact } = replacement;
+      return key === 'demo.v2.orders' ? { ...item, ...contact, customerName: name } : { ...item, ...replacement };
+    });
+  }
+  if (key === 'demo.v2.admin' && value && typeof value === 'object' && (value as { email?: string }).email === 'shop@admin.com') {
+    return { ...(value as object), email: 'demo.admin@example.com' };
+  }
+  return value;
+}
+
 /** A value kept in localStorage (when `key` is set) that every component using it re-renders on. */
 export function createStore<T>(key: string | null, initial: T, isValid: (value: unknown) => boolean = () => true): Store<T> {
   let value = initial;
@@ -269,7 +302,11 @@ export function createStore<T>(key: string | null, initial: T, isValid: (value: 
     loaded = true;
     try {
       const saved = JSON.parse(window.localStorage.getItem(key) ?? 'null');
-      if (saved !== null && isValid(saved)) value = saved;
+      const normalized = saved === null ? saved : normalizeStoredDemoContacts(key, saved);
+      if (normalized !== null && isValid(normalized)) {
+        value = normalized;
+        if (JSON.stringify(saved) !== JSON.stringify(normalized)) window.localStorage.setItem(key, JSON.stringify(normalized));
+      }
     } catch {
       // Blocked or damaged storage just means starting from the sample data.
     }
@@ -325,8 +362,8 @@ export function useStore<T>(store: Store<T>) {
 export const STORE_INFO = {
   name: 'Demo Website',
   tagline: 'Considered electronics, delivered across India',
-  email: 'care@demowebsite.in',
-  phone: '+91 80 4567 8900',
+  email: 'demo.support@example.com',
+  phone: '+91 00000 00000',
   address: '3rd Floor, 100 Feet Road, Indiranagar, Bengaluru, Karnataka 560038',
   gstin: '29ABCDE1234F1Z5',
   returnPolicy: 'Unused items in their original box can be returned within 7 days of delivery. Every gadget carries a one-year warranty against manufacturing defects.',
@@ -850,22 +887,22 @@ const order = (o: Omit<Order, 'subtotal' | 'discount' | 'delivery' | 'promo' | '
 };
 
 const SEED_ORDERS: Order[] = [
-  order({ id: 'ord-106', orderNumber: 'ORD-98216', customerName: 'Kavya Reddy', email: 'kavya.r@example.com', phone: '+91 99860 11223', shippingAddress: 'Flat 302, Prestige Lakeside, Whitefield', city: 'Bengaluru', state: 'Karnataka', postalCode: '560066', date: '2026-11-03', time: '19:42', items: [line(BUDS, STANDARD, 'Arctic White')], paymentMethod: 'Credit Card', paymentStatus: 'Pending', orderStatus: 'Pending', source: 'Website' }),
-  order({ id: 'ord-105', orderNumber: 'ORD-98215', customerName: 'Meera Iyer', email: 'meera.iyer@example.com', phone: '+91 98450 12345', shippingAddress: '22, 3rd Cross, Indiranagar 1st Stage', city: 'Bengaluru', state: 'Karnataka', postalCode: '560038', date: '2026-11-02', time: '11:05', items: [line(KEYBOARD, 'Full Size', 'Space Grey')], paymentMethod: 'UPI', paymentId: 'pay_QX81mK2vLr7T', paymentStatus: 'Paid', orderStatus: 'Pending', source: 'Website' }),
-  order({ id: 'ord-101', orderNumber: 'ORD-98214', customerName: 'Aarav Mehta', email: 'aarav.m@example.com', phone: '+91 99001 23456', shippingAddress: '14, Palm Grove Apartments, Bandra West', city: 'Mumbai', state: 'Maharashtra', postalCode: '400050', date: '2026-11-01', time: '16:20', items: [line(HEADPHONES, STANDARD, 'Midnight Black')], paymentMethod: 'UPI', paymentId: 'pay_QX7a9Hc3Np2D', paymentStatus: 'Paid', orderStatus: 'Processing', source: 'Website' }),
-  order({ id: 'ord-102', orderNumber: 'ORD-98213', customerName: 'Priya Sundaram', email: 'priya.s@example.com', phone: '+91 94440 56789', shippingAddress: '8, Lakshmi Street, T. Nagar', city: 'Chennai', state: 'Tamil Nadu', postalCode: '600017', date: '2026-10-31', time: '10:12', items: [line(HEADPHONES, STANDARD, 'Silver Mist'), line(KEYBOARD, 'TKL', 'Arctic White')], paymentMethod: 'Credit Card', paymentId: 'pay_QX5tY4bWm8Kc', paymentStatus: 'Paid', orderStatus: 'Shipped', source: 'Website', shipment: { courier: 'Delhivery', awb: '1490223655213', pickup: 'Bengaluru Warehouse', weightKg: 1.4, dimensions: '30 × 25 × 12 cm', status: 'In Transit', createdAt: '2026-11-01T09:30:00+05:30', srOrderId: 734120558, srShipmentId: 731998204, remoteStatus: 'IN TRANSIT', deliveryState: 'Tamil Nadu' } }),
-  order({ id: 'ord-103', orderNumber: 'ORD-98212', customerName: 'Vikram Joshi', email: 'v.joshi@example.com', phone: '+91 98220 34567', shippingAddress: '5B, Shivaji Nagar, FC Road', city: 'Pune', state: 'Maharashtra', postalCode: '411005', date: '2026-10-30', time: '13:48', items: [line(BACKPACK, '15 inch', 'Tan Brown')], paymentMethod: 'Cash on Delivery', paymentStatus: 'Pending', orderStatus: 'Processing', source: 'Website' }),
-  order({ id: 'ord-104', orderNumber: 'ORD-98211', customerName: 'Ananya Roy', email: 'ananya.roy@example.com', phone: '+91 98300 45678', shippingAddress: '41, Lake Gardens, Southern Avenue', city: 'Kolkata', state: 'West Bengal', postalCode: '700045', date: '2026-10-28', time: '18:30', items: [line(SMARTWATCH, '45mm', 'Midnight Black')], paymentMethod: 'Net Banking', paymentId: 'pay_QX2pR6dZs1Ve', paymentStatus: 'Paid', orderStatus: 'Delivered', source: 'Website', shipment: { courier: 'Blue Dart', awb: '7730091846521', pickup: 'Bengaluru Warehouse', weightKg: 0.6, dimensions: '18 × 12 × 9 cm', status: 'Delivered', createdAt: '2026-10-29T10:00:00+05:30', srOrderId: 733870412, srShipmentId: 731745690, remoteStatus: 'DELIVERED', deliveryState: 'West Bengal' } }),
+  order({ id: 'ord-106', orderNumber: 'ORD-98216', customerName: 'Demo Customer 01', email: 'demo.customer01@example.com', phone: '+91 00000 00001', shippingAddress: 'Demo House 01, Demo Layout', city: 'Bengaluru', state: 'Karnataka', postalCode: '560066', date: '2026-11-03', time: '19:42', items: [line(BUDS, STANDARD, 'Arctic White')], paymentMethod: 'Credit Card', paymentStatus: 'Pending', orderStatus: 'Pending', source: 'Website' }),
+  order({ id: 'ord-105', orderNumber: 'ORD-98215', customerName: 'Demo Customer 02', email: 'demo.customer02@example.com', phone: '+91 00000 00002', shippingAddress: 'Demo House 02, Demo Layout', city: 'Bengaluru', state: 'Karnataka', postalCode: '560038', date: '2026-11-02', time: '11:05', items: [line(KEYBOARD, 'Full Size', 'Space Grey')], paymentMethod: 'UPI', paymentId: 'pay_QX81mK2vLr7T', paymentStatus: 'Paid', orderStatus: 'Pending', source: 'Website' }),
+  order({ id: 'ord-101', orderNumber: 'ORD-98214', customerName: 'Demo Customer 03', email: 'demo.customer03@example.com', phone: '+91 00000 00003', shippingAddress: 'Demo House 03, Demo Layout', city: 'Mumbai', state: 'Maharashtra', postalCode: '400050', date: '2026-11-01', time: '16:20', items: [line(HEADPHONES, STANDARD, 'Midnight Black')], paymentMethod: 'UPI', paymentId: 'pay_QX7a9Hc3Np2D', paymentStatus: 'Paid', orderStatus: 'Processing', source: 'Website' }),
+  order({ id: 'ord-102', orderNumber: 'ORD-98213', customerName: 'Demo Customer 04', email: 'demo.customer04@example.com', phone: '+91 00000 00004', shippingAddress: 'Demo House 04, Demo Layout', city: 'Chennai', state: 'Tamil Nadu', postalCode: '600017', date: '2026-10-31', time: '10:12', items: [line(HEADPHONES, STANDARD, 'Silver Mist'), line(KEYBOARD, 'TKL', 'Arctic White')], paymentMethod: 'Credit Card', paymentId: 'pay_QX5tY4bWm8Kc', paymentStatus: 'Paid', orderStatus: 'Shipped', source: 'Website', shipment: { courier: 'Delhivery', awb: '1490223655213', pickup: 'Bengaluru Warehouse', weightKg: 1.4, dimensions: '30 × 25 × 12 cm', status: 'In Transit', createdAt: '2026-11-01T09:30:00+05:30', srOrderId: 734120558, srShipmentId: 731998204, remoteStatus: 'IN TRANSIT', deliveryState: 'Tamil Nadu' } }),
+  order({ id: 'ord-103', orderNumber: 'ORD-98212', customerName: 'Demo Customer 05', email: 'demo.customer05@example.com', phone: '+91 00000 00005', shippingAddress: 'Demo House 05, Demo Layout', city: 'Pune', state: 'Maharashtra', postalCode: '411005', date: '2026-10-30', time: '13:48', items: [line(BACKPACK, '15 inch', 'Tan Brown')], paymentMethod: 'Cash on Delivery', paymentStatus: 'Pending', orderStatus: 'Processing', source: 'Website' }),
+  order({ id: 'ord-104', orderNumber: 'ORD-98211', customerName: 'Demo Customer 06', email: 'demo.customer06@example.com', phone: '+91 00000 00006', shippingAddress: 'Demo House 06, Demo Layout', city: 'Kolkata', state: 'West Bengal', postalCode: '700045', date: '2026-10-28', time: '18:30', items: [line(SMARTWATCH, '45mm', 'Midnight Black')], paymentMethod: 'Net Banking', paymentId: 'pay_QX2pR6dZs1Ve', paymentStatus: 'Paid', orderStatus: 'Delivered', source: 'Website', shipment: { courier: 'Blue Dart', awb: '7730091846521', pickup: 'Bengaluru Warehouse', weightKg: 0.6, dimensions: '18 × 12 × 9 cm', status: 'Delivered', createdAt: '2026-10-29T10:00:00+05:30', srOrderId: 733870412, srShipmentId: 731745690, remoteStatus: 'DELIVERED', deliveryState: 'West Bengal' } }),
 ];
 
 const SEED_CUSTOMERS: Customer[] = [
-  { id: 'cus-7', name: 'Kavya Reddy', email: 'kavya.r@example.com', phone: '+91 99860 11223', registeredDate: '2026-11-03' },
-  { id: 'cus-1', name: 'Meera Iyer', email: 'meera.iyer@example.com', phone: '+91 98450 12345', registeredDate: '2026-10-20' },
-  { id: 'cus-2', name: 'Aarav Mehta', email: 'aarav.m@example.com', phone: '+91 99001 23456', registeredDate: '2026-09-14' },
-  { id: 'cus-3', name: 'Priya Sundaram', email: 'priya.s@example.com', phone: '+91 94440 56789', registeredDate: '2026-08-02' },
-  { id: 'cus-4', name: 'Vikram Joshi', email: 'v.joshi@example.com', phone: '+91 98220 34567', registeredDate: '2026-10-11' },
-  { id: 'cus-5', name: 'Ananya Roy', email: 'ananya.roy@example.com', phone: '+91 98300 45678', registeredDate: '2026-07-23' },
-  { id: 'cus-6', name: 'Rohan Kapoor', email: 'rohan.k@example.com', phone: '', registeredDate: '2026-10-25' },
+  { id: 'cus-7', name: 'Demo Customer 01', email: 'demo.customer01@example.com', phone: '+91 00000 00001', registeredDate: '2026-11-03' },
+  { id: 'cus-1', name: 'Demo Customer 02', email: 'demo.customer02@example.com', phone: '+91 00000 00002', registeredDate: '2026-10-20' },
+  { id: 'cus-2', name: 'Demo Customer 03', email: 'demo.customer03@example.com', phone: '+91 00000 00003', registeredDate: '2026-09-14' },
+  { id: 'cus-3', name: 'Demo Customer 04', email: 'demo.customer04@example.com', phone: '+91 00000 00004', registeredDate: '2026-08-02' },
+  { id: 'cus-4', name: 'Demo Customer 05', email: 'demo.customer05@example.com', phone: '+91 00000 00005', registeredDate: '2026-10-11' },
+  { id: 'cus-5', name: 'Demo Customer 06', email: 'demo.customer06@example.com', phone: '+91 00000 00006', registeredDate: '2026-07-23' },
+  { id: 'cus-6', name: 'Demo Customer 07', email: 'demo.customer07@example.com', phone: '', registeredDate: '2026-10-25' },
 ];
 
 const SEED_COUPONS: Coupon[] = [
@@ -973,11 +1010,11 @@ export function recordVideoView(id: string) {
 }
 
 export const shopperAccountsStore = createStore<ShopperAccount[]>(KEY('shoppers'), [
-  { id: 'acc-1', name: 'Meera Iyer', email: 'meera.iyer@example.com', phone: '+91 98450 12345', password: 'demo1234', createdAt: '2026-10-20T10:00:00+05:30' },
+  { id: 'acc-1', name: 'Demo Shopper', email: 'demo.shopper@example.com', phone: '', password: 'demo1234', createdAt: '2026-10-20T10:00:00+05:30' },
 ], Array.isArray);
 export const adminAccountStore = createStore<AdminAccount>(
   KEY('admin'),
-  { email: 'shop@admin.com', password: 'shop123' },
+  { email: 'demo.admin@example.com', password: 'shop123' },
   (v) => typeof v === 'object' && v !== null && typeof (v as AdminAccount).email === 'string' && typeof (v as AdminAccount).password === 'string'
 );
 

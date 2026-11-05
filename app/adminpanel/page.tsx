@@ -5171,8 +5171,8 @@ export default function EcommerceAdminPanel() {
             <div className="space-y-4">
               {[
                 { label: 'Full Name *', type: 'text', value: newCustomerName, set: setNewCustomerName, placeholder: 'e.g. Kavya Reddy' },
-                { label: 'Email Address *', type: 'email', value: newCustomerEmail, set: setNewCustomerEmail, placeholder: 'name@example.com' },
-                { label: 'Phone Number', type: 'tel', value: newCustomerPhone, set: setNewCustomerPhone, placeholder: '+91 98765 43210' },
+                { label: 'Email Address *', type: 'email', value: newCustomerEmail, set: setNewCustomerEmail, placeholder: 'demo.customer@example.com' },
+                { label: 'Phone Number', type: 'tel', value: newCustomerPhone, set: setNewCustomerPhone, placeholder: '+91 00000 00000' },
               ].map((field) => (
                 <div key={field.label}>
                   <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">{field.label}</label>
@@ -5641,7 +5641,7 @@ export default function EcommerceAdminPanel() {
                 value={customerLookupQuery}
                 onChange={(e) => setCustomerLookupQuery(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && matches.length === 1) pick(matches[0]); }}
-                placeholder="e.g. Meera or 98450"
+                placeholder="e.g. Demo Customer or demo.customer"
                 aria-label="Search customers"
                 className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-xl text-[14px] text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF] focus:ring-2 focus:ring-[#2F6BFF]/20"
               />

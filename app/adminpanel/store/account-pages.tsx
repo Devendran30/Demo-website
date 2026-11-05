@@ -437,7 +437,7 @@ export function CheckoutPage() {
           <Card step="1" title="Contact details">
             <div className="grid sm:grid-cols-2 gap-x-5 gap-y-5">
               {field('name', 'Full name', { autoComplete: 'name', className: 'sm:col-span-2', placeholder: 'As it should appear on the parcel' })}
-              {field('phone', 'Mobile number', { autoComplete: 'tel-national', type: 'tel', inputMode: 'tel', prefix: '+91', maxLength: 14, placeholder: '98765 43210' })}
+              {field('phone', 'Mobile number', { autoComplete: 'tel-national', type: 'tel', inputMode: 'tel', prefix: '+91', maxLength: 14, placeholder: '00000 00000' })}
               {field('email', 'Email', { autoComplete: 'email', type: 'email', inputMode: 'email', placeholder: 'For your receipt and updates' })}
             </div>
           </Card>
