@@ -5,7 +5,7 @@ import { ProductBarcode } from '../product-barcode';
 import { VideoPlayerModal } from '../video-player';
 import {
   bannersStore, instagramStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, videosStore, recordVideoView,
-  stockForVariant, productPhotos, percentOff, photoUrl, sizeTotal, colorTotal,
+  stockForVariant, productPhotos, percentOff, photoUrl, sizeTotal, colorTotal, variantSizes, variantColors,
   FREE_DELIVERY_FROM,
   type Product, type HeroBanner, type EcommerceVideo,
 } from '../demo-data';
@@ -66,7 +66,6 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
         {slides.map((s, i) => (
           <picture key={s.id}>
             {s.mobileImage && <source media="(max-width: 767px)" srcSet={photoUrl(s.mobileImage, 1000)} />}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={photoUrl(s.image, 2000)}
               alt=""
@@ -1039,17 +1038,6 @@ export function ProductPage({ product }: { product: Product }) {
               <Icon name="heart" filled={saved} />
             </button>
           </div>
-          {available > 0 && (
-            <Button
-              variant="outline"
-              onClick={() => {
-                if (addToBag(product, size, color, chosenQty)) navigate('#/checkout');
-              }}
-              className="w-full mt-3"
-            >
-              Buy now
-            </Button>
-          )}
           {inBag > 0 && (
             <p className="mt-4 text-[13.5px] text-[#5B6B80]">{inBag} in your bag. <a href="#/bag" className="text-[#0E1A2B] border-b border-[#0E1A2B]/40">View bag</a></p>
           )}
@@ -1129,17 +1117,101 @@ export function DealsPage() {
   );
 }
 
+/** Adds a saved piece to the bag in the chosen size and colour, then takes it off the wishlist. */
+function moveToBag(product: Product, size: string, color: string) {
+  if (!addToBag(product, size, color)) return false;
+  wishlistStore.set(wishlistStore.get().filter((id) => id !== product.id));
+  return true;
+}
+
+function WishlistCard({ product, colorHex }: { product: Product; colorHex: Record<string, string> }) {
+  const [choice, setChoice] = useState(() => firstAvailable(product));
+  const sizes = variantSizes(product.sizes);
+  const colors = variantColors(product.colors);
+  const inStock = stockForVariant(product, choice.size, choice.color) > 0;
+  const soldOut = product.stock <= 0;
+  const select = 'w-full h-10 pl-3 pr-8 rounded-full border border-[#CFD8E3] bg-white text-[13px] font-semibold text-[#0E1A2B] outline-none focus:border-[#2F6BFF] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:12px] bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%235B6B80%27 stroke-width=%272.5%27%3E%3Cpath d=%27M6 9l6 6 6-6%27/%3E%3C/svg%3E")]';
+
+  return (
+    <li className="group flex flex-col bg-white border border-[#E3E8EF] rounded-[24px] overflow-hidden hover:shadow-[0_24px_50px_-30px_rgba(14,26,43,0.35)] transition-shadow">
+      <div className="relative">
+        <a href={`#/product/${product.id}`} className="block aspect-[4/5] bg-[#EDF1F6] overflow-hidden">
+          <Photo src={productPhotos(product, choice.color)[0]} alt={product.name} width={600} className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] ${soldOut ? 'opacity-60' : ''}`} />
+        </a>
+        <button onClick={() => toggleWishlist(product)} aria-label={`Remove ${product.name} from wishlist`} className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/90 backdrop-blur text-[#5B6B80] hover:text-[#D23B3B] flex items-center justify-center shadow-sm">
+          <Icon name="close" size={16} />
+        </button>
+        {soldOut && <span className="absolute left-3 top-3 px-3 py-1 rounded-full bg-[#0E1A2B] text-white text-[11px] font-bold uppercase tracking-wider">Sold out</span>}
+      </div>
+      <div className="flex-1 flex flex-col p-5">
+        <p className="text-[10.5px] uppercase tracking-[0.2em] text-[#8A97A8]">{product.category}</p>
+        <a href={`#/product/${product.id}`} className="mt-1 text-[15.5px] font-bold leading-snug text-[#0E1A2B] hover:text-[#2F6BFF] line-clamp-2">{product.name}</a>
+        <div className="mt-2"><Price product={product} /></div>
+        {!soldOut && (sizes.length > 1 || colors.length > 1) && (
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {colors.length > 1 && (
+              <label className={sizes.length > 1 ? '' : 'col-span-2'}>
+                <span className="sr-only">Colour</span>
+                <span className="relative block">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full ring-1 ring-black/10" style={{ backgroundColor: colorHex[choice.color] }} />
+                  <select value={choice.color} onChange={(e) => setChoice({ ...choice, color: e.target.value })} className={`${select} pl-8`}>
+                    {colors.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </span>
+              </label>
+            )}
+            {sizes.length > 1 && (
+              <label className={colors.length > 1 ? '' : 'col-span-2'}>
+                <span className="sr-only">Size</span>
+                <select value={choice.size} onChange={(e) => setChoice({ ...choice, size: e.target.value })} className={select}>
+                  {sizes.map((sz) => <option key={sz} value={sz}>{sz}{stockForVariant(product, sz, choice.color) > 0 ? '' : ' (sold out)'}</option>)}
+                </select>
+              </label>
+            )}
+          </div>
+        )}
+        <div className="mt-auto pt-4">
+          <button
+            onClick={() => moveToBag(product, choice.size, choice.color)}
+            disabled={!inStock}
+            className="w-full h-11 rounded-full bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white text-[13.5px] font-bold shadow-[0_12px_28px_-14px_rgba(47,107,255,0.8)] hover:brightness-110 transition disabled:from-[#CFD8E3] disabled:to-[#CFD8E3] disabled:shadow-none disabled:text-[#5B6B80] flex items-center justify-center gap-2"
+          >
+            <Icon name="bag" size={16} /> {soldOut ? 'Sold out' : inStock ? 'Move to bag' : 'Not in stock in this option'}
+          </button>
+        </div>
+      </div>
+    </li>
+  );
+}
+
 export function WishlistPage() {
-  const { productById, colorHex, categoryOf } = useCatalog();
+  const { productById, colorHex } = useCatalog();
   const wishlist = useStore(wishlistStore);
   const saved = wishlist.flatMap((id) => productById(id) ?? []);
+  const movable = saved.filter((p) => p.stock > 0);
   if (!saved.length) {
     return <EmptyState icon="heart" title="Nothing saved yet" text="Tap the heart on anything you love and it will wait for you here." action={{ label: 'Discover pieces', href: '#/shop' }} />;
   }
+  const moveAll = () => {
+    let moved = 0;
+    for (const product of movable) {
+      const { size, color } = firstAvailable(product);
+      if (moveToBag(product, size, color)) moved++;
+    }
+    if (moved) navigate('#/bag');
+  };
   return (
     <div className={T.shell}>
       <PageTitle eyebrow="Saved for later" title={<>Your <em>wishlist</em></>} text={`${saved.length} ${saved.length === 1 ? 'piece' : 'pieces'} you have your eye on.`} />
-      <ProductGrid products={saved} colorHex={colorHex} categoryOf={categoryOf} />
+      {movable.length > 1 && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5 rounded-[20px] bg-[#EAF1FF] border border-[#DCE7FF]">
+          <p className="text-[14px] text-[#3A4A5F]"><span className="font-bold text-[#0E1A2B]">Ready to buy?</span> Move everything that’s in stock to your bag in one go.</p>
+          <button onClick={moveAll} className="h-11 px-5 rounded-full bg-[#0E1A2B] text-white text-[13.5px] font-bold hover:bg-[#22344F] flex items-center gap-2"><Icon name="bag" size={16} /> Move all to bag ({movable.length})</button>
+        </div>
+      )}
+      <ul className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+        {saved.map((product) => <WishlistCard key={product.id} product={product} colorHex={colorHex} />)}
+      </ul>
     </div>
   );
 }

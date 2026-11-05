@@ -11,6 +11,7 @@ import { VariantStockGrid } from './variant-stock-grid';
 import { ImageListField } from './image-list-field';
 import { ShiprocketDialog } from './shiprocket-dialog';
 import { VideoPlayerModal } from './video-player';
+import { RazorpaySettings } from './payment-settings';
 import { K, KaavuDetails, KaavuImageUploader, KaavuInventoryRow, KaavuStockFields } from './kaavu-ui';
 // Products, orders, coupons, banners and the rest are shared with the storefront and saved in the browser.
 import {
@@ -1128,7 +1129,7 @@ export default function EcommerceAdminPanel() {
   if (!isLoggedIn) {
     return (
       <div
-        className="min-h-screen bg-[#f5f5f7] flex items-center justify-center p-4 antialiased"
+        className="min-h-screen bg-[#F3F6FA] flex items-center justify-center p-4 antialiased"
         style={{
           fontFamily:
             '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -1137,38 +1138,38 @@ export default function EcommerceAdminPanel() {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#ea580c] to-[#f97316] text-white flex items-center justify-center mx-auto shadow-xl shadow-orange-500/20 mb-5">
+            <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#2F6BFF] to-[#5A8BFF] text-white flex items-center justify-center mx-auto shadow-xl shadow-[#2F6BFF]/20 mb-5">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-[#1d1d1f]">Demo Hub</h1>
-            <p className="text-[13px] text-[#86868b] font-semibold mt-1">E-Commerce Admin Control Suite</p>
+            <h1 className="text-3xl font-black tracking-tight text-[#0E1A2B]">Demo Hub</h1>
+            <p className="text-[13px] text-[#6F7E92] font-semibold mt-1">E-Commerce Admin Control Suite</p>
           </div>
 
           {/* Login Card */}
-          <div className="bg-white border border-[#e5e5ea] rounded-[32px] p-8 shadow-sm">
-            <h2 className="text-xl font-bold text-[#1d1d1f] mb-6">Sign in to Admin Panel</h2>
+          <div className="bg-white border border-[#E3E8EF] rounded-[32px] p-8 shadow-sm">
+            <h2 className="text-xl font-bold text-[#0E1A2B] mb-6">Sign in to Admin Panel</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[12px] font-extrabold text-[#86868b] uppercase tracking-wider mb-2">Email Address</label>
+                <label className="block text-[12px] font-extrabold text-[#6F7E92] uppercase tracking-wider mb-2">Email Address</label>
                 <input
                   type="email"
                   value={loginEmail}
                   onChange={(e) => { setLoginEmail(e.target.value); setLoginError(''); }}
                   onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
                   placeholder={adminEmail}
-                  className="w-full px-5 py-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold placeholder:text-[#c7c7cc]"
+                  className="w-full px-5 py-3.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-2xl text-[14px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] transition-all font-semibold placeholder:text-[#A9B4C2]"
                 />
               </div>
               <div>
-                <label className="block text-[12px] font-extrabold text-[#86868b] uppercase tracking-wider mb-2">Password</label>
+                <label className="block text-[12px] font-extrabold text-[#6F7E92] uppercase tracking-wider mb-2">Password</label>
                 <input
                   type="password"
                   value={loginPassword}
                   onChange={(e) => { setLoginPassword(e.target.value); setLoginError(''); }}
                   onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
                   placeholder="••••••"
-                  className="w-full px-5 py-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold placeholder:text-[#c7c7cc]"
+                  className="w-full px-5 py-3.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-2xl text-[14px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] transition-all font-semibold placeholder:text-[#A9B4C2]"
                 />
               </div>
 
@@ -1178,7 +1179,7 @@ export default function EcommerceAdminPanel() {
 
               <button
                 onClick={handleLogin}
-                className="w-full py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[14px] rounded-2xl shadow-md shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/30 transition-all active:scale-[0.98]"
+                className="w-full py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[14px] rounded-2xl shadow-md shadow-[#2F6BFF]/20 hover:shadow-lg hover:shadow-[#2F6BFF]/30 transition-all active:scale-[0.98]"
               >
                 Sign In
               </button>
@@ -1191,20 +1192,20 @@ export default function EcommerceAdminPanel() {
                 setLoginPassword(adminPassword);
                 setLoginError('');
               }}
-              className="mt-6 p-4 bg-[#f5f5f7] hover:bg-[#fff2e8] border border-transparent hover:border-[#ea580c]/30 rounded-2xl cursor-pointer transition-all group"
+              className="mt-6 p-4 bg-[#F3F6FA] hover:bg-[#EAF1FF] border border-transparent hover:border-[#2F6BFF]/30 rounded-2xl cursor-pointer transition-all group"
             >
-              <p className="text-[11px] font-extrabold text-[#86868b] group-hover:text-[#ea580c] uppercase tracking-wider mb-2 transition-colors">Demo Credentials</p>
+              <p className="text-[11px] font-extrabold text-[#6F7E92] group-hover:text-[#2F6BFF] uppercase tracking-wider mb-2 transition-colors">Demo Credentials</p>
               <div className="space-y-1">
-                <p className="text-[13px] font-semibold text-[#6e6e73]">Email: <span className="font-bold text-[#1d1d1f] group-hover:text-[#ea580c]">{adminEmail}</span></p>
-                <p className="text-[13px] font-semibold text-[#6e6e73]">Password: <span className="font-bold text-[#1d1d1f] group-hover:text-[#ea580c]">{adminPassword}</span></p>
+                <p className="text-[13px] font-semibold text-[#5B6B80]">Email: <span className="font-bold text-[#0E1A2B] group-hover:text-[#2F6BFF]">{adminEmail}</span></p>
+                <p className="text-[13px] font-semibold text-[#5B6B80]">Password: <span className="font-bold text-[#0E1A2B] group-hover:text-[#2F6BFF]">{adminPassword}</span></p>
               </div>
             </div>
             {demoSubAdmins.length > 0 && (
-              <div className="mt-3 p-4 rounded-2xl border border-[#e5e5ea] bg-white">
-                <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b]">Demo sub-admin logins</p>
+              <div className="mt-3 p-4 rounded-2xl border border-[#E3E8EF] bg-white">
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92]">Demo sub-admin logins</p>
                 <div className="mt-2 space-y-2">
-                  {demoSubAdmins.map((account) => <button key={account.id} onClick={() => { setLoginEmail(account.email); setLoginPassword(account.password); setLoginError(''); }} className="w-full text-left rounded-xl p-2.5 hover:bg-[#fff2e8]">
-                    <span className="block text-sm font-bold text-[#1d1d1f]">{account.name}</span><span className="block text-xs text-[#6e6e73]">{account.email} · {account.permissions.length} modules · click to fill</span>
+                  {demoSubAdmins.map((account) => <button key={account.id} onClick={() => { setLoginEmail(account.email); setLoginPassword(account.password); setLoginError(''); }} className="w-full text-left rounded-xl p-2.5 hover:bg-[#EAF1FF]">
+                    <span className="block text-sm font-bold text-[#0E1A2B]">{account.name}</span><span className="block text-xs text-[#5B6B80]">{account.email} · {account.permissions.length} modules · click to fill</span>
                   </button>)}
                 </div>
               </div>
@@ -1215,7 +1216,7 @@ export default function EcommerceAdminPanel() {
           <div className="text-center mt-6">
             <button
               onClick={() => window.location.href = '/'}
-              className="text-[13px] font-bold text-[#86868b] hover:text-[#ea580c] transition-colors"
+              className="text-[13px] font-bold text-[#6F7E92] hover:text-[#2F6BFF] transition-colors"
             >
               ← Back to Portal Home
             </button>
@@ -1227,15 +1228,15 @@ export default function EcommerceAdminPanel() {
 
   if (signedInSubAdmin && !signedInSubAdmin.permissions.includes(activeTab)) {
     return (
-      <div className="min-h-screen bg-[#f5f5f7] flex items-center justify-center p-6">
-        <section className="max-w-lg w-full rounded-[28px] bg-white border border-[#e5e5ea] p-8 text-center shadow-sm">
-<p className="flex justify-center text-[#ea580c]"><PanelIcon name="lock" size={34} /></p>
+      <div className="min-h-screen bg-[#F3F6FA] flex items-center justify-center p-6">
+        <section className="max-w-lg w-full rounded-[28px] bg-white border border-[#E3E8EF] p-8 text-center shadow-sm">
+<p className="flex justify-center text-[#2F6BFF]"><PanelIcon name="lock" size={34} /></p>
           <h1 className="mt-4 text-2xl font-black">This section isn&apos;t assigned to you</h1>
-          <p className="mt-2 text-sm text-[#6e6e73]">Signed in as {signedInSubAdmin.name}. Your demo access is limited to the modules selected by the super admin.</p>
+          <p className="mt-2 text-sm text-[#5B6B80]">Signed in as {signedInSubAdmin.name}. Your demo access is limited to the modules selected by the super admin.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
-            {signedInSubAdmin.permissions.map((permission) => <button key={permission} onClick={() => setActiveTab(permission)} className="px-4 py-2 rounded-full bg-[#fff2e8] text-[#c2410c] text-sm font-bold">{TAB_TITLES[permission]}</button>)}
+            {signedInSubAdmin.permissions.map((permission) => <button key={permission} onClick={() => setActiveTab(permission)} className="px-4 py-2 rounded-full bg-[#EAF1FF] text-[#1F55E0] text-sm font-bold">{TAB_TITLES[permission]}</button>)}
           </div>
-          <button onClick={() => { setIsLoggedIn(false); setSignedInSubAdmin(null); setLoginPassword(''); }} className="mt-7 px-5 py-2.5 rounded-full bg-[#1d1d1f] text-white text-sm font-bold">Sign out</button>
+          <button onClick={() => { setIsLoggedIn(false); setSignedInSubAdmin(null); setLoginPassword(''); }} className="mt-7 px-5 py-2.5 rounded-full bg-[#0E1A2B] text-white text-sm font-bold">Sign out</button>
         </section>
       </div>
     );
@@ -1243,7 +1244,7 @@ export default function EcommerceAdminPanel() {
 
   return (
     <div
-      className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] flex antialiased selection:bg-orange-100 selection:text-[#ea580c]"
+      className="min-h-screen bg-[#F3F6FA] text-[#0E1A2B] flex antialiased selection:bg-[#DCE7FF] selection:text-[#2F6BFF]"
       style={{
         fontFamily:
           '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -1255,16 +1256,16 @@ export default function EcommerceAdminPanel() {
       )}
 
       {/* Sidebar Navigation - Clean Inline, No Section Titles */}
-      <aside className={`w-[280px] min-w-[280px] bg-gradient-to-b from-[#1f1b18] via-[#191512] to-[#120f0d] border-r border-white/[0.06] flex flex-col justify-between h-screen shadow-[4px_0_32px_rgba(0,0,0,0.18)] z-40 transition-transform duration-300 ${isMobileSidebarOpen ? 'fixed top-0 bottom-0 left-0 translate-x-0' : 'fixed top-0 bottom-0 left-0 -translate-x-full md:translate-x-0 md:sticky md:top-0'
+      <aside className={`w-[280px] min-w-[280px] bg-gradient-to-b from-[#13233A] via-[#0E1A2B] to-[#0B1524] border-r border-white/[0.06] flex flex-col justify-between h-screen shadow-[4px_0_32px_rgba(0,0,0,0.18)] z-40 transition-transform duration-300 ${isMobileSidebarOpen ? 'fixed top-0 bottom-0 left-0 translate-x-0' : 'fixed top-0 bottom-0 left-0 -translate-x-full md:translate-x-0 md:sticky md:top-0'
         }`}>
         <div className="space-y-2 overflow-y-auto px-4 pt-8 pb-4 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.14)_transparent]">
           {/* Brand Header */}
           <div className="flex flex-col items-center text-center pb-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#ea580c] to-[#f97316] text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-orange-500/30 ring-1 ring-white/10 mb-3 transform hover:scale-105 transition-transform">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#2F6BFF] to-[#5A8BFF] text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-[#2F6BFF]/30 ring-1 ring-white/10 mb-3 transform hover:scale-105 transition-transform">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
             </div>
             <h2 className="text-xl font-black tracking-tight text-white">Commerce Hub</h2>
-            <p className="text-[10px] text-[#fb923c]/80 mt-0.5 font-extrabold uppercase tracking-[0.2em]">
+            <p className="text-[10px] text-[#8FB0FF]/80 mt-0.5 font-extrabold uppercase tracking-[0.2em]">
               Admin Control Suite
             </p>
           </div>
@@ -1274,8 +1275,8 @@ export default function EcommerceAdminPanel() {
             {canSeeAdminTab('dashboard') && <button
               onClick={() => { setActiveTab('dashboard'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all duration-300 flex justify-between items-center ${activeTab === 'dashboard'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
-                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-lg shadow-[#2F6BFF]/30'
+                : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -1289,13 +1290,13 @@ export default function EcommerceAdminPanel() {
             {(['add-product', 'product-list', 'inventory', 'attributes'] as AdminTab[]).some(canSeeAdminTab) && <div className="space-y-1">
               <button
                 onClick={() => setIsProductsDropdownOpen(!isProductsDropdownOpen)}
-                className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
+                className="w-full text-left px-5 py-3 rounded-full text-[#F6F8FB] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg></span>
                   <span>Products</span>
                 </div>
-                <span className={`text-[12px] text-[#8a7f77] transition-transform duration-200 ${isProductsDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
+                <span className={`text-[12px] text-[#6F7E92] transition-transform duration-200 ${isProductsDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
               </button>
 
               {isProductsDropdownOpen && (
@@ -1303,8 +1304,8 @@ export default function EcommerceAdminPanel() {
                   {canSeeAdminTab('add-product') && <button
                     onClick={() => { openAddProduct(); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === 'add-product'
-                      ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                      ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-sm'
+                      : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></span>
@@ -1313,21 +1314,21 @@ export default function EcommerceAdminPanel() {
                   {canSeeAdminTab('product-list') && <button
                     onClick={() => { setActiveTab('product-list'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center justify-between ${activeTab === 'product-list'
-                      ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                      ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-sm'
+                      : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg></span>
                       <span>Product List</span>
                     </div>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'product-list' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#d6cfc9]'}`}>{products.length}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'product-list' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#C9D2DD]'}`}>{products.length}</span>
                   </button>}
                   {canSeeAdminTab('inventory') && <button
                     onClick={() => { setActiveTab('inventory'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center justify-between ${activeTab === 'inventory'
-                      ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                      ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-sm'
+                      : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <div className="flex items-center gap-2.5">
@@ -1341,8 +1342,8 @@ export default function EcommerceAdminPanel() {
                   {canSeeAdminTab('attributes') && <button
                     onClick={() => { setActiveTab('attributes'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === 'attributes'
-                      ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                      ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-sm'
+                      : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="2.5" /><circle cx="19" cy="13" r="2.5" /><circle cx="6" cy="12" r="2.5" /><circle cx="10" cy="19" r="2.5" /></svg></span>
@@ -1356,13 +1357,13 @@ export default function EcommerceAdminPanel() {
             {(['category', 'sub-category', 'sub-sub-category'] as AdminTab[]).some(canSeeAdminTab) && <div className="space-y-1">
               <button
                 onClick={() => setIsCategoriesDropdownOpen(!isCategoriesDropdownOpen)}
-                className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
+                className="w-full text-left px-5 py-3 rounded-full text-[#F6F8FB] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg></span>
                   <span>Categories</span>
                 </div>
-                <span className={`text-[12px] text-[#8a7f77] transition-transform duration-200 ${isCategoriesDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
+                <span className={`text-[12px] text-[#6F7E92] transition-transform duration-200 ${isCategoriesDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
               </button>
 
               {isCategoriesDropdownOpen && (
@@ -1376,8 +1377,8 @@ export default function EcommerceAdminPanel() {
                       key={item.id}
                       onClick={() => { setActiveTab(item.id); setIsMobileSidebarOpen(false); }}
                       className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === item.id
-                        ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                        : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                        ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-sm'
+                        : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                         }`}
                     >
                       <span className="w-4 h-4 flex items-center justify-center opacity-70">{item.icon}</span>
@@ -1392,8 +1393,8 @@ export default function EcommerceAdminPanel() {
             {canSeeAdminTab('coupons') && <button
               onClick={() => { setActiveTab('coupons'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'coupons'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
-                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-lg shadow-[#2F6BFF]/30'
+                : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -1407,43 +1408,43 @@ export default function EcommerceAdminPanel() {
             {canSeeAdminTab('orders') && <button
               onClick={() => { setActiveTab('orders'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'orders'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
-                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-lg shadow-[#2F6BFF]/30'
+                : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
                 <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg></span>
                 <span>Orders</span>
               </div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'orders' ? 'bg-white/20 text-white' : 'bg-[#ea580c]/20 text-[#fdba74]'}`}>{orders.length}</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'orders' ? 'bg-white/20 text-white' : 'bg-[#2F6BFF]/20 text-[#A9C2FF]'}`}>{orders.length}</span>
             </button>}
 
             {/* Customers */}
             {canSeeAdminTab('customers') && <button
               onClick={() => { setActiveTab('customers'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'customers'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
-                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-lg shadow-[#2F6BFF]/30'
+                : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
                 <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg></span>
                 <span>Customers</span>
               </div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'customers' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#d6cfc9]'}`}>{customers.length}</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'customers' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#C9D2DD]'}`}>{customers.length}</span>
             </button>}
 
             {/* POS Dropdown */}
             {(['pos-terminal', 'pos-history'] as AdminTab[]).some(canSeeAdminTab) && <div className="space-y-1">
               <button
                 onClick={() => setIsPosDropdownOpen(!isPosDropdownOpen)}
-                className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
+                className="w-full text-left px-5 py-3 rounded-full text-[#F6F8FB] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg></span>
                   <span>POS Terminal</span>
                 </div>
-                <span className={`text-[12px] text-[#8a7f77] transition-transform duration-200 ${isPosDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
+                <span className={`text-[12px] text-[#6F7E92] transition-transform duration-200 ${isPosDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
               </button>
 
               {isPosDropdownOpen && (
@@ -1451,8 +1452,8 @@ export default function EcommerceAdminPanel() {
                   {canSeeAdminTab('pos-terminal') && <button
                     onClick={() => { setActiveTab('pos-terminal'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === 'pos-terminal'
-                      ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                      ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-sm'
+                      : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg></span>
@@ -1461,15 +1462,15 @@ export default function EcommerceAdminPanel() {
                   {canSeeAdminTab('pos-history') && <button
                     onClick={() => { setActiveTab('pos-history'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center justify-between ${activeTab === 'pos-history'
-                      ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                      ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-sm'
+                      : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg></span>
                       <span>POS History</span>
                     </div>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'pos-history' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#d6cfc9]'}`}>{posHistory.length}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'pos-history' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#C9D2DD]'}`}>{posHistory.length}</span>
                   </button>}
                 </div>
               )}
@@ -1479,13 +1480,13 @@ export default function EcommerceAdminPanel() {
             {(['banners', 'instagram'] as AdminTab[]).some(canSeeAdminTab) && <div className="space-y-1">
               <button
                 onClick={() => setIsStorefrontDropdownOpen(!isStorefrontDropdownOpen)}
-                className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
+                className="w-full text-left px-5 py-3 rounded-full text-[#F6F8FB] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l1-5h16l1 5" /><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" /><path d="M5 12v8h14v-8" /></svg></span>
                   <span>Storefront</span>
                 </div>
-                <span className={`text-[12px] text-[#8a7f77] transition-transform duration-200 ${isStorefrontDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
+                <span className={`text-[12px] text-[#6F7E92] transition-transform duration-200 ${isStorefrontDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
               </button>
 
               {isStorefrontDropdownOpen && (
@@ -1498,15 +1499,15 @@ export default function EcommerceAdminPanel() {
                       key={item.id}
                       onClick={() => { setActiveTab(item.id); setIsMobileSidebarOpen(false); }}
                       className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center justify-between ${activeTab === item.id
-                        ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                        : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                        ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-sm'
+                        : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                         }`}
                     >
                       <div className="flex items-center gap-2.5">
                         <span className="w-4 h-4 flex items-center justify-center opacity-70">{item.icon}</span>
                         <span>{item.label}</span>
                       </div>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === item.id ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#d6cfc9]'}`}>{item.count}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === item.id ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#C9D2DD]'}`}>{item.count}</span>
                     </button>
                   ))}
                 </div>
@@ -1517,8 +1518,8 @@ export default function EcommerceAdminPanel() {
             {canSeeAdminTab('videos') && <button
               onClick={() => { setActiveTab('videos'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'videos'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
-                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-lg shadow-[#2F6BFF]/30'
+                : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -1532,8 +1533,8 @@ export default function EcommerceAdminPanel() {
             {canSeeAdminTab('reports') && <button
               onClick={() => { setActiveTab('reports'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'reports'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
-                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-lg shadow-[#2F6BFF]/30'
+                : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -1547,8 +1548,8 @@ export default function EcommerceAdminPanel() {
             {!signedInSubAdmin && <button
               onClick={() => { setActiveTab('settings'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'settings'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
-                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
+                ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-lg shadow-[#2F6BFF]/30'
+                : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -1564,7 +1565,7 @@ export default function EcommerceAdminPanel() {
         <div className="p-4 border-t border-white/[0.08]">
           <button
             onClick={() => setIsLoggedIn(false)}
-            className="w-full py-3 px-4 bg-white/[0.05] hover:bg-gradient-to-r hover:from-[#ea580c] hover:to-[#f97316] text-[#fb923c] hover:text-white font-bold rounded-full text-[13px] transition-all text-center border border-white/10 hover:border-transparent flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 bg-white/[0.05] hover:bg-gradient-to-r hover:from-[#2F6BFF] hover:to-[#5A8BFF] text-[#8FB0FF] hover:text-white font-bold rounded-full text-[13px] transition-all text-center border border-white/10 hover:border-transparent flex items-center justify-center gap-2"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
             <span>Log Out Securely</span>
@@ -1577,9 +1578,9 @@ export default function EcommerceAdminPanel() {
         {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-          className="fixed top-4 left-4 z-20 md:hidden w-10 h-10 bg-white border border-[#e5e5ea] rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all"
+          className="fixed top-4 left-4 z-20 md:hidden w-10 h-10 bg-white border border-[#E3E8EF] rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d1d1f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E1A2B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             {isMobileSidebarOpen ? (
               <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
             ) : (
@@ -1589,14 +1590,14 @@ export default function EcommerceAdminPanel() {
         </button>
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Top Header Breadcrumb */}
-          <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#e5e5ea]">
+          <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#E3E8EF]">
             <div>
-              <div className="flex items-center gap-2 text-[12px] font-extrabold text-[#86868b] uppercase tracking-wider mb-1">
+              <div className="flex items-center gap-2 text-[12px] font-extrabold text-[#6F7E92] uppercase tracking-wider mb-1">
                 <span>E-Commerce</span>
                 <span>/</span>
-                <span className="text-[#ea580c] capitalize">{activeTab.replaceAll('-', ' ')}</span>
+                <span className="text-[#2F6BFF] capitalize">{activeTab.replaceAll('-', ' ')}</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[#1d1d1f] capitalize">
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[#0E1A2B] capitalize">
                 {activeTab === 'add-product' && editingProductId ? 'Edit Product' : TAB_TITLES[activeTab]}
               </h1>
             </div>
@@ -1607,7 +1608,7 @@ export default function EcommerceAdminPanel() {
                 target="_blank"
                 rel="noopener"
                 title="Open the storefront in a new tab — changes here appear there instantly"
-                className="px-4 py-2 bg-white border border-[#e5e5ea] hover:border-[#ea580c] text-[#1d1d1f] rounded-full text-[13px] font-bold shadow-sm flex items-center gap-2 transition-all"
+                className="px-4 py-2 bg-white border border-[#E3E8EF] hover:border-[#2F6BFF] text-[#0E1A2B] rounded-full text-[13px] font-bold shadow-sm flex items-center gap-2 transition-all"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 View Website ↗
@@ -1616,7 +1617,7 @@ export default function EcommerceAdminPanel() {
               {(activeTab === 'product-list' || activeTab === 'pos-terminal') && (
                 <button
                   onClick={() => (activeTab === 'pos-terminal' ? setIsPosCameraOpen(true) : handleTriggerScanner())}
-                  className="px-5 py-2 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  className="px-5 py-2 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
                   <span className="flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5h2v14H3z M7 5h1v14H7z M11 5h2v14h-2z M15 5h1v14h-1z M19 5h2v14h-2z" /></svg></span>
                   <span>Quick Scan</span>
@@ -1634,30 +1635,30 @@ export default function EcommerceAdminPanel() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                   { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}`, sub: `Website ₹${websiteRevenue.toLocaleString('en-IN')} • POS ₹${posRevenue.toLocaleString('en-IN')}`, color: 'text-[#10b981]', icon: 'money' },
-                  { label: 'Active Orders', value: orders.filter((o) => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').length.toString(), sub: `${orders.filter((o) => o.orderStatus === 'Pending' || o.orderStatus === 'Processing').length} require dispatch`, color: 'text-[#ea580c]', icon: 'box' },
-                  { label: 'Total Products', value: products.length.toString(), sub: `Across ${categories.length} categories`, color: 'text-[#1d1d1f]', icon: 'tag' },
+                  { label: 'Active Orders', value: orders.filter((o) => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').length.toString(), sub: `${orders.filter((o) => o.orderStatus === 'Pending' || o.orderStatus === 'Processing').length} require dispatch`, color: 'text-[#2F6BFF]', icon: 'box' },
+                  { label: 'Total Products', value: products.length.toString(), sub: `Across ${categories.length} categories`, color: 'text-[#0E1A2B]', icon: 'tag' },
                   { label: 'Low Stock Alerts', value: products.filter((p) => p.status !== 'In Stock').length.toString(), sub: `${products.filter((p) => p.status === 'Out of Stock').length} sold out • restock recommended`, color: 'text-[#ef4444]', icon: 'warning' },
                 ].map((stat, i) => (
                   <div
                     key={i}
-                    className="bg-white border border-[#e5e5ea] p-7 rounded-[32px] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+                    className="bg-white border border-[#E3E8EF] p-7 rounded-[32px] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300"
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <p className="text-[12px] font-extrabold text-[#86868b] uppercase tracking-wider">{stat.label}</p>
-                      <span className="text-xl p-2 bg-[#f5f5f7] rounded-xl"><PanelIcon name={stat.icon as 'money' | 'box' | 'tag' | 'warning'} /></span>
+                      <p className="text-[12px] font-extrabold text-[#6F7E92] uppercase tracking-wider">{stat.label}</p>
+                      <span className="text-xl p-2 bg-[#F3F6FA] rounded-xl"><PanelIcon name={stat.icon as 'money' | 'box' | 'tag' | 'warning'} /></span>
                     </div>
                     <p className={`text-3xl font-black tracking-tight ${stat.color}`}>{stat.value}</p>
-                    <p className="text-[12px] text-[#6e6e73] font-semibold mt-2">{stat.sub}</p>
+                    <p className="text-[12px] text-[#5B6B80] font-semibold mt-2">{stat.sub}</p>
                   </div>
                 ))}
               </div>
 
               {/* Store Catalog Statistics (live, shared with the storefront) */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm space-y-6">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 shadow-sm space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Store Catalog</h3>
-                    <p className="text-[13px] text-[#86868b] font-semibold mt-1">What shoppers see on the website right now</p>
+                    <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Store Catalog</h3>
+                    <p className="text-[13px] text-[#6F7E92] font-semibold mt-1">What shoppers see on the website right now</p>
                   </div>
                   <span className="px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-[12px] font-extrabold flex items-center gap-2 w-fit">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -1674,14 +1675,14 @@ export default function EcommerceAdminPanel() {
                     <button
                       key={tile.label}
                       onClick={() => setActiveTab(tile.tab)}
-                      className="p-5 bg-[#f5f5f7] hover:bg-[#fff2e8] border border-[#e5e5ea] hover:border-[#ea580c] rounded-[24px] text-left transition-all group"
+                      className="p-5 bg-[#F3F6FA] hover:bg-[#EAF1FF] border border-[#E3E8EF] hover:border-[#2F6BFF] rounded-[24px] text-left transition-all group"
                     >
                       <div className="flex justify-between items-start">
-                        <p className="text-3xl font-black tracking-tight text-[#1d1d1f] group-hover:text-[#ea580c]">{tile.value}</p>
-                        <span className="text-[#ea580c]"><PanelIcon name={tile.icon} size={22} /></span>
+                        <p className="text-3xl font-black tracking-tight text-[#0E1A2B] group-hover:text-[#2F6BFF]">{tile.value}</p>
+                        <span className="text-[#2F6BFF]"><PanelIcon name={tile.icon} size={22} /></span>
                       </div>
-                      <p className="text-[12px] font-extrabold text-[#1d1d1f] uppercase tracking-wider mt-2">{tile.label}</p>
-                      <p className="text-[11px] text-[#86868b] font-semibold mt-0.5">{tile.sub}</p>
+                      <p className="text-[12px] font-extrabold text-[#0E1A2B] uppercase tracking-wider mt-2">{tile.label}</p>
+                      <p className="text-[11px] text-[#6F7E92] font-semibold mt-0.5">{tile.sub}</p>
                     </button>
                   ))}
                 </div>
@@ -1690,12 +1691,12 @@ export default function EcommerceAdminPanel() {
               {/* Quick Actions & Recent Orders Row */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Recent Orders Overview */}
-                <div className="lg:col-span-2 bg-white border border-[#e5e5ea] rounded-[36px] p-8 space-y-6 shadow-sm">
+                <div className="lg:col-span-2 bg-white border border-[#E3E8EF] rounded-[36px] p-8 space-y-6 shadow-sm">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Recent Customer Orders</h3>
+                    <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Recent Customer Orders</h3>
                     <button
                       onClick={() => setActiveTab('orders')}
-                      className="text-[#ea580c] text-[13px] font-bold hover:underline"
+                      className="text-[#2F6BFF] text-[13px] font-bold hover:underline"
                     >
                       View All Orders →
                     </button>
@@ -1705,20 +1706,20 @@ export default function EcommerceAdminPanel() {
                     {orders.slice(0, 3).map((ord) => (
                       <div
                         key={ord.id}
-                        className="p-5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-[24px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:bg-white hover:shadow-sm transition-all"
+                        className="p-5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-[24px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:bg-white hover:shadow-sm transition-all"
                       >
                         <div>
                           <div className="flex items-center gap-2.5">
-                            <span className="font-mono font-bold text-[#ea580c] text-[13px]">{ord.orderNumber}</span>
-                            <span className="text-[#86868b]">•</span>
-                            <span className="font-bold text-[#1d1d1f] text-[14px]">{ord.customerName}</span>
+                            <span className="font-mono font-bold text-[#2F6BFF] text-[13px]">{ord.orderNumber}</span>
+                            <span className="text-[#6F7E92]">•</span>
+                            <span className="font-bold text-[#0E1A2B] text-[14px]">{ord.customerName}</span>
                           </div>
-                          <p className="text-[12px] text-[#6e6e73] font-semibold mt-1">
+                          <p className="text-[12px] text-[#5B6B80] font-semibold mt-1">
                             {ord.itemsCount} item(s) via {ord.paymentMethod}
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="font-black text-[#1d1d1f] text-[15px]">₹{ord.total.toLocaleString()}</span>
+                          <span className="font-black text-[#0E1A2B] text-[15px]">₹{ord.total.toLocaleString()}</span>
                           <span
                             className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider ${ord.orderStatus === 'Delivered'
                               ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
@@ -1736,24 +1737,24 @@ export default function EcommerceAdminPanel() {
                 </div>
 
                 {/* Quick Catalog Actions */}
-                <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 space-y-6 shadow-sm flex flex-col justify-between">
+                <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 space-y-6 shadow-sm flex flex-col justify-between">
                   <div>
-                    <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] mb-4">Quick Operations</h3>
+                    <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B] mb-4">Quick Operations</h3>
                     <div className="space-y-3">
                       <button
                         onClick={openAddProduct}
-                        className="w-full p-4 bg-[#f5f5f7] hover:bg-[#fff2e8] border border-[#e5e5ea] hover:border-[#ea580c] rounded-2xl text-left transition-all group flex items-center justify-between"
+                        className="w-full p-4 bg-[#F3F6FA] hover:bg-[#EAF1FF] border border-[#E3E8EF] hover:border-[#2F6BFF] rounded-2xl text-left transition-all group flex items-center justify-between"
                       >
                         <div className="flex items-center gap-3">
                           <PanelIcon name="plus" size={20} />
                           <div>
-                            <span className="font-bold text-[#1d1d1f] group-hover:text-[#ea580c] block text-[14px]">
+                            <span className="font-bold text-[#0E1A2B] group-hover:text-[#2F6BFF] block text-[14px]">
                               Add Single Product
                             </span>
-                            <span className="text-[11px] text-[#86868b]">New inventory item form</span>
+                            <span className="text-[11px] text-[#6F7E92]">New inventory item form</span>
                           </div>
                         </div>
-                        <span className="text-[#86868b] group-hover:text-[#ea580c]">→</span>
+                        <span className="text-[#6F7E92] group-hover:text-[#2F6BFF]">→</span>
                       </button>
 
                       <button
@@ -1761,46 +1762,46 @@ export default function EcommerceAdminPanel() {
                           setActiveTab('product-list');
                           setIsMultiProductModalOpen(true);
                         }}
-                        className="w-full p-4 bg-[#f5f5f7] hover:bg-[#fff2e8] border border-[#e5e5ea] hover:border-[#ea580c] rounded-2xl text-left transition-all group flex items-center justify-between"
+                        className="w-full p-4 bg-[#F3F6FA] hover:bg-[#EAF1FF] border border-[#E3E8EF] hover:border-[#2F6BFF] rounded-2xl text-left transition-all group flex items-center justify-between"
                       >
                         <div className="flex items-center gap-3">
                           <PanelIcon name="file" size={20} />
                           <div>
-                            <span className="font-bold text-[#1d1d1f] group-hover:text-[#ea580c] block text-[14px]">
+                            <span className="font-bold text-[#0E1A2B] group-hover:text-[#2F6BFF] block text-[14px]">
                               Bulk Multi-Product Add
                             </span>
-                            <span className="text-[11px] text-[#86868b]">Import multiple items</span>
+                            <span className="text-[11px] text-[#6F7E92]">Import multiple items</span>
                           </div>
                         </div>
-                        <span className="text-[#86868b] group-hover:text-[#ea580c]">→</span>
+                        <span className="text-[#6F7E92] group-hover:text-[#2F6BFF]">→</span>
                       </button>
 
                       <button
                         onClick={() => setActiveTab('pos-terminal')}
-                        className="w-full p-4 bg-[#f5f5f7] hover:bg-[#fff2e8] border border-[#e5e5ea] hover:border-[#ea580c] rounded-2xl text-left transition-all group flex items-center justify-between"
+                        className="w-full p-4 bg-[#F3F6FA] hover:bg-[#EAF1FF] border border-[#E3E8EF] hover:border-[#2F6BFF] rounded-2xl text-left transition-all group flex items-center justify-between"
                       >
                         <div className="flex items-center gap-3">
                           <PanelIcon name="monitor" size={20} />
                           <div>
-                            <span className="font-bold text-[#1d1d1f] group-hover:text-[#ea580c] block text-[14px]">
+                            <span className="font-bold text-[#0E1A2B] group-hover:text-[#2F6BFF] block text-[14px]">
                               Open POS Terminal
                             </span>
-                            <span className="text-[11px] text-[#86868b]">In-store checkout & receipt</span>
+                            <span className="text-[11px] text-[#6F7E92]">In-store checkout & receipt</span>
                           </div>
                         </div>
-                        <span className="text-[#86868b] group-hover:text-[#ea580c]">→</span>
+                        <span className="text-[#6F7E92] group-hover:text-[#2F6BFF]">→</span>
                       </button>
                     </div>
                   </div>
 
                   <button
                     onClick={() => setActiveTab('coupons')}
-                    className="w-full p-4 bg-orange-50/60 border border-orange-200/60 rounded-2xl text-center hover:bg-orange-50 transition-all"
+                    className="w-full p-4 bg-[#EAF1FF]/60 border border-[#C9D9FF]/60 rounded-2xl text-center hover:bg-[#EAF1FF] transition-all"
                   >
-                    <p className="text-[11px] font-bold text-[#ea580c] uppercase tracking-wider">
+                    <p className="text-[11px] font-bold text-[#2F6BFF] uppercase tracking-wider">
                       {headerCoupons.length ? 'Coupon Shown in Store Header' : 'No Coupon in Store Header'}
                     </p>
-                    <p className="text-[13px] font-black text-[#1d1d1f] mt-0.5">
+                    <p className="text-[13px] font-black text-[#0E1A2B] mt-0.5">
                       {headerCoupons.length
                         ? headerCoupons.map((c) => `${c.code} (${c.discountType === 'Percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue} OFF`})`).join(' • ')
                         : 'Pick one in Coupons →'}
@@ -1810,28 +1811,28 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Sales Performance Chart */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 shadow-sm">
                 <div className="flex justify-between items-end mb-8">
                   <div>
-                    <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Sales Performance</h3>
-                    <p className="text-[13px] text-[#86868b] font-semibold mt-1">Revenue over the last 7 days</p>
+                    <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Sales Performance</h3>
+                    <p className="text-[13px] text-[#6F7E92] font-semibold mt-1">Revenue over the last 7 days</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[12px] font-extrabold text-[#ea580c] uppercase tracking-wider">Total</p>
-                    <p className="text-2xl font-black text-[#1d1d1f]">₹{totalRevenue.toLocaleString('en-IN')}</p>
+                    <p className="text-[12px] font-extrabold text-[#2F6BFF] uppercase tracking-wider">Total</p>
+                    <p className="text-2xl font-black text-[#0E1A2B]">₹{totalRevenue.toLocaleString('en-IN')}</p>
                   </div>
                 </div>
                 <div className="h-64 flex items-end justify-between gap-2 px-2 mt-4">
                   {[45, 60, 35, 80, 50, 95, 75].map((h, i) => (
-                    <div key={i} className="w-full bg-[#f5f5f7] rounded-t-xl relative group h-full flex items-end">
+                    <div key={i} className="w-full bg-[#F3F6FA] rounded-t-xl relative group h-full flex items-end">
                       <div
-                        className="w-full bg-gradient-to-t from-[#ea580c] to-[#f97316] rounded-t-xl opacity-80 group-hover:opacity-100 transition-opacity"
+                        className="w-full bg-gradient-to-t from-[#2F6BFF] to-[#5A8BFF] rounded-t-xl opacity-80 group-hover:opacity-100 transition-opacity"
                         style={{ height: `${h}%` }}
                       ></div>
                     </div>
                   ))}
                 </div>
-                <div className="flex justify-between mt-4 text-[11px] font-extrabold text-[#86868b] uppercase tracking-wider px-2">
+                <div className="flex justify-between mt-4 text-[11px] font-extrabold text-[#6F7E92] uppercase tracking-wider px-2">
                   <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
                 </div>
               </div>
@@ -1856,11 +1857,11 @@ export default function EcommerceAdminPanel() {
                   <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
                       <button type="button" onClick={backToProducts} className={`text-xs ${K.link}`}>← Back to products</button>
-                      <h1 className={`${K.serif} text-2xl sm:text-3xl text-[#1d1d1f] mt-2`}>{editingProductId ? 'Refine your product' : 'Create a new product'}</h1>
-                      <p className="text-sm text-[#86868b] mt-1">Add details, allocate stock by size and colour, and upload photos for each colour.</p>
+                      <h1 className={`${K.serif} text-2xl sm:text-3xl text-[#0E1A2B] mt-2`}>{editingProductId ? 'Refine your product' : 'Create a new product'}</h1>
+                      <p className="text-sm text-[#6F7E92] mt-1">Add details, allocate stock by size and colour, and upload photos for each colour.</p>
                     </div>
                     {!editingProductId && (
-                      <button type="button" onClick={() => setIsMultiProductModalOpen(true)} className="self-start sm:self-auto px-4 py-2.5 bg-white border border-[#e5e5ea] hover:border-[#ea580c] rounded-lg text-xs font-semibold text-[#1d1d1f] whitespace-nowrap transition-colors">
+                      <button type="button" onClick={() => setIsMultiProductModalOpen(true)} className="self-start sm:self-auto px-4 py-2.5 bg-white border border-[#E3E8EF] hover:border-[#2F6BFF] rounded-lg text-xs font-semibold text-[#0E1A2B] whitespace-nowrap transition-colors">
                         Bulk add multiple
                       </button>
                     )}
@@ -1869,7 +1870,7 @@ export default function EcommerceAdminPanel() {
                   <form id="product-form" onSubmit={handleSaveProduct} className="grid grid-cols-1 xl:grid-cols-2 gap-6 text-sm items-start">
                     {/* ===== Product details ===== */}
                     <section className={`${K.card} min-w-0`}>
-                      <h2 className={`${K.serif} text-xl text-[#1d1d1f]`}>Product details</h2>
+                      <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Product details</h2>
                       <div>
                         <label htmlFor="prod-name" className={K.label}>Name</label>
                         <input id="prod-name" type="text" required value={newProdName} onChange={(e) => setNewProdName(e.target.value)} placeholder="e.g. Wireless Noise-Cancelling Headphones" className={K.input} />
@@ -1917,11 +1918,11 @@ export default function EcommerceAdminPanel() {
                         </div>
                         <input id="prod-sku" type="text" required value={newProdSku} onChange={(e) => setNewProdSku(e.target.value)} placeholder="e.g. WNC-HP-01" className={`${K.input} font-mono uppercase placeholder:normal-case`} />
                         {newProdSku.trim() && (
-                          <div className="mt-3 rounded-xl border border-[#e5e5ea] bg-[#f9f9fb] p-3 text-center">
-                            <div className="bg-white p-2 rounded-lg border border-[#e5e5ea]">
+                          <div className="mt-3 rounded-xl border border-[#E3E8EF] bg-[#F6F8FB] p-3 text-center">
+                            <div className="bg-white p-2 rounded-lg border border-[#E3E8EF]">
                               <ProductBarcode value={newProdSku} className="w-full h-14" />
                             </div>
-                            <p className="font-mono text-xs font-semibold text-[#1d1d1f] mt-2 tracking-widest">{newProdSku}</p>
+                            <p className="font-mono text-xs font-semibold text-[#0E1A2B] mt-2 tracking-widest">{newProdSku}</p>
                           </div>
                         )}
                       </div>
@@ -1931,7 +1932,7 @@ export default function EcommerceAdminPanel() {
                       {/* ===== Sizes & inventory ===== */}
                       <section className={K.card}>
                         <div className="flex items-baseline justify-between gap-3">
-                          <h2 className={`${K.serif} text-xl text-[#1d1d1f]`}>Sizes &amp; inventory</h2>
+                          <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Sizes &amp; inventory</h2>
                           <button type="button" onClick={() => setActiveTab('attributes')} className={`text-xs whitespace-nowrap ${K.link}`}>Manage options →</button>
                         </div>
                         <div>
@@ -1945,8 +1946,8 @@ export default function EcommerceAdminPanel() {
                           </div>
                         </div>
                         <KaavuStockFields sizes={chosenSizes} colors={chosenColors} values={newProdVariantStock} onChange={setNewProdVariantStock} colorHex={colorHex} />
-                        <p className="text-xs text-[#86868b]">
-                          Each size and colour has its own stock. Checkout deducts only the size and colour the shopper picks. Total: <strong className="text-[#1d1d1f]">{totalStock}</strong> · {stockStatus(totalStock)}
+                        <p className="text-xs text-[#6F7E92]">
+                          Each size and colour has its own stock. Checkout deducts only the size and colour the shopper picks. Total: <strong className="text-[#0E1A2B]">{totalStock}</strong> · {stockStatus(totalStock)}
                         </p>
                         <div>
                           <p className={K.label}>Tags</p>
@@ -1962,7 +1963,7 @@ export default function EcommerceAdminPanel() {
 
                       {/* ===== Product page details ===== */}
                       <section className={K.card}>
-                        <h2 className={`${K.serif} text-xl text-[#1d1d1f]`}>Product page details</h2>
+                        <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Product page details</h2>
                         <div>
                           <label htmlFor="prod-highlights" className={K.label}>Key highlights (one per line)</label>
                           <textarea id="prod-highlights" rows={4} value={newProdHighlights} onChange={(e) => setNewProdHighlights(e.target.value)} placeholder={'Adaptive noise cancelling\n40-hour battery\nFolds into a travel case'} className={K.input} />
@@ -1976,7 +1977,7 @@ export default function EcommerceAdminPanel() {
 
                     {/* ===== Colors & photography ===== */}
                     <section className={`${K.card} xl:col-span-2 min-w-0`}>
-                      <h2 className={`${K.serif} text-xl text-[#1d1d1f]`}>Colors &amp; photography</h2>
+                      <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Colors &amp; photography</h2>
                       <div>
                         <p className={K.label}>Available Colors</p>
                         <div className="flex flex-wrap gap-2 mt-1">
@@ -2001,20 +2002,20 @@ export default function EcommerceAdminPanel() {
                         </KaavuDetails>
                       </div>
                       <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1">
-                        <label className="flex items-center gap-2 text-xs text-[#1d1d1f] cursor-pointer">
-                          <input type="checkbox" checked={newProdIsNew} onChange={(e) => setNewProdIsNew(e.target.checked)} className="accent-[#ea580c] w-4 h-4" />
+                        <label className="flex items-center gap-2 text-xs text-[#0E1A2B] cursor-pointer">
+                          <input type="checkbox" checked={newProdIsNew} onChange={(e) => setNewProdIsNew(e.target.checked)} className="accent-[#2F6BFF] w-4 h-4" />
                           Mark as New Arrival
                         </label>
-                        <label className="flex items-center gap-2 text-xs text-[#1d1d1f] cursor-pointer">
-                          <input type="checkbox" checked={newProdIsFeatured} onChange={(e) => setNewProdIsFeatured(e.target.checked)} className="accent-[#ea580c] w-4 h-4" />
+                        <label className="flex items-center gap-2 text-xs text-[#0E1A2B] cursor-pointer">
+                          <input type="checkbox" checked={newProdIsFeatured} onChange={(e) => setNewProdIsFeatured(e.target.checked)} className="accent-[#2F6BFF] w-4 h-4" />
                           Feature on Home Page
                         </label>
                       </div>
                       {productFormError && (
-                        <p role="alert" className="rounded-lg border border-[#ea580c]/40 bg-[#ea580c]/5 p-3 text-sm font-medium text-[#ea580c]">{productFormError}</p>
+                        <p role="alert" className="rounded-lg border border-[#2F6BFF]/40 bg-[#2F6BFF]/5 p-3 text-sm font-medium text-[#2F6BFF]">{productFormError}</p>
                       )}
                       <div className="flex flex-col-reverse sm:flex-row gap-3">
-                        <button type="button" onClick={backToProducts} className="sm:w-40 py-3.5 bg-white border border-[#e5e5ea] hover:border-[#ea580c] text-[#1d1d1f] text-xs uppercase tracking-[0.24em] font-semibold rounded transition-colors">Cancel</button>
+                        <button type="button" onClick={backToProducts} className="sm:w-40 py-3.5 bg-white border border-[#E3E8EF] hover:border-[#2F6BFF] text-[#0E1A2B] text-xs uppercase tracking-[0.24em] font-semibold rounded transition-colors">Cancel</button>
                         <button type="submit" className={`flex-1 py-3.5 text-xs uppercase tracking-[0.24em] font-semibold shadow-md rounded ${K.button}`}>
                           {editingProductId ? 'Save changes' : 'Publish product'}
                         </button>
@@ -2032,10 +2033,10 @@ export default function EcommerceAdminPanel() {
           {activeTab === 'product-list' && (
             <div className="space-y-6">
               {/* Action Toolbar */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#fffdfa] p-5 rounded-[24px] border border-[#ead9bd] shadow-sm">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#FBFCFE] p-5 rounded-[24px] border border-[#DCE5F2] shadow-sm">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Inventory Catalog</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Inventory Catalog</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">
                     {visibleProducts.length} matching {visibleProducts.length === 1 ? 'product' : 'products'}
                   </p>
                 </div>
@@ -2043,7 +2044,7 @@ export default function EcommerceAdminPanel() {
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     onClick={() => setIsMultiProductModalOpen(true)}
-                    className="px-5 py-2.5 bg-[#f5f5f7] hover:bg-[#e5e5ea] text-[#1d1d1f] border border-[#e5e5ea] rounded-full text-[13px] font-extrabold transition-all flex items-center gap-2"
+                    className="px-5 py-2.5 bg-[#F3F6FA] hover:bg-[#E3E8EF] text-[#0E1A2B] border border-[#E3E8EF] rounded-full text-[13px] font-extrabold transition-all flex items-center gap-2"
                   >
                     <PanelIcon name="file" size={16} />
                     <span>Add Multiple Products</span>
@@ -2051,7 +2052,7 @@ export default function EcommerceAdminPanel() {
 
                   <button
                     onClick={openAddProduct}
-                    className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                    className="px-6 py-2.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                   >
                     <span>➕</span>
                     <span>New Product</span>
@@ -2066,13 +2067,13 @@ export default function EcommerceAdminPanel() {
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                   placeholder="Search products by name, SKU or category..."
-                  className="flex-1 px-6 py-3.5 bg-white border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c] transition-all font-semibold shadow-sm"
+                  className="flex-1 px-6 py-3.5 bg-white border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF] transition-all font-semibold shadow-sm"
                 />
                 <select
                   value={productCategoryFilter}
                   onChange={(e) => setProductCategoryFilter(e.target.value)}
                   aria-label="Filter by category"
-                  className="px-6 py-3.5 bg-white border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c] transition-all font-bold cursor-pointer shadow-sm"
+                  className="px-6 py-3.5 bg-white border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF] transition-all font-bold cursor-pointer shadow-sm"
                 >
                   <option value="All">All Categories ({products.length})</option>
                   {categories.map((c) => (
@@ -2084,39 +2085,39 @@ export default function EcommerceAdminPanel() {
               {/* Product cards on phones (the table below is for tablets and desktops) */}
               <div className="md:hidden space-y-3">
                 {visibleProducts.length === 0 && (
-                  <p className="py-10 text-center text-[13px] font-semibold text-[#86868b] bg-[#fffdfa] border border-[#ead9bd] rounded-[20px]">No products match your search or filter.</p>
+                  <p className="py-10 text-center text-[13px] font-semibold text-[#6F7E92] bg-[#FBFCFE] border border-[#DCE5F2] rounded-[20px]">No products match your search or filter.</p>
                 )}
                 {visibleProducts.map((prod) => (
-                  <div key={prod.id} className="bg-[#fffdfa] border border-[#ead9bd] rounded-[20px] p-4 shadow-sm">
+                  <div key={prod.id} className="bg-[#FBFCFE] border border-[#DCE5F2] rounded-[20px] p-4 shadow-sm">
                     <div className="flex gap-3.5">
-                      <img src={prod.image} alt={prod.name} className="w-16 h-16 shrink-0 rounded-2xl object-cover border border-[#f0e4d1] bg-white" />
+                      <img src={prod.image} alt={prod.name} className="w-16 h-16 shrink-0 rounded-2xl object-cover border border-[#E3E8EF] bg-white" />
                       <div className="min-w-0 flex-1">
-                        <p className="font-bold text-[#351313] text-[14.5px] leading-snug line-clamp-2">{prod.name}</p>
+                        <p className="font-bold text-[#0E1A2B] text-[14.5px] leading-snug line-clamp-2">{prod.name}</p>
                         <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                          <span className="text-[11px] text-[#8b7867] font-semibold font-mono">{prod.sku}</span>
+                          <span className="text-[11px] text-[#6F7E92] font-semibold font-mono">{prod.sku}</span>
                           {prod.colors.map((c) => (
-                            <span key={c} title={c} className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: colorHex[c] ?? '#d2d2d7' }} />
+                            <span key={c} title={c} className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: colorHex[c] ?? '#CFD8E3' }} />
                           ))}
                         </div>
-                        <p className="mt-1 text-[12px] text-[#8b7867] truncate">{prod.category} · {prod.subCategory}</p>
+                        <p className="mt-1 text-[12px] text-[#6F7E92] truncate">{prod.category} · {prod.subCategory}</p>
                       </div>
                     </div>
                     <div className="mt-3.5 flex items-center justify-between gap-2">
                       <div className="whitespace-nowrap">
-                        <span className="font-bold text-[#351313] text-[15px]">₹{prod.price.toLocaleString()}</span>
-                        {prod.mrp && prod.mrp > prod.price && <span className="ml-1.5 text-[12px] text-[#86868b] line-through">₹{prod.mrp.toLocaleString()}</span>}
+                        <span className="font-bold text-[#0E1A2B] text-[15px]">₹{prod.price.toLocaleString()}</span>
+                        {prod.mrp && prod.mrp > prod.price && <span className="ml-1.5 text-[12px] text-[#6F7E92] line-through">₹{prod.mrp.toLocaleString()}</span>}
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <button onClick={() => openStockEditor(prod)} className="px-3 py-1.5 rounded-full bg-[#fbf4e3] text-[#8d661b] text-[12px] font-bold whitespace-nowrap">{prod.stock} units</button>
-                        <span className={`px-3 py-1.5 rounded-full text-[11.5px] font-bold whitespace-nowrap ${prod.status === 'In Stock' ? 'bg-gradient-to-r from-[#e6bb55] to-[#f4d889] text-[#44280b]' : prod.status === 'Low Stock' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700'}`}>{prod.status}</span>
+                        <button onClick={() => openStockEditor(prod)} className="px-3 py-1.5 rounded-full bg-[#EEF3FC] text-[#1F55E0] text-[12px] font-bold whitespace-nowrap">{prod.stock} units</button>
+                        <span className={`px-3 py-1.5 rounded-full text-[11.5px] font-bold whitespace-nowrap ${prod.status === 'In Stock' ? 'bg-gradient-to-r from-[#DCE7FF] to-[#EAF1FF] text-[#1F55E0]' : prod.status === 'Low Stock' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700'}`}>{prod.status}</span>
                       </div>
                     </div>
-                    <div className="mt-3.5 pt-3.5 border-t border-[#f0e4d1] grid grid-cols-[1fr_1fr_auto] gap-2">
-                      <button onClick={() => { setActiveBarcodeProduct(prod); setBarcodeLabelCount(1); setIsPrintBarcodeModalOpen(true); }} className="h-10 rounded-full border border-[#ead9bd] text-[#401717] font-bold text-[13px] inline-flex items-center justify-center gap-2"><PanelIcon name="barcode" size={15} /> Barcode</button>
-                      <button onClick={() => openEditProduct(prod)} className="h-10 rounded-full border border-[#ead9bd] text-[#401717] font-bold text-[13px] inline-flex items-center justify-center gap-2">
+                    <div className="mt-3.5 pt-3.5 border-t border-[#E3E8EF] grid grid-cols-[1fr_1fr_auto] gap-2">
+                      <button onClick={() => { setActiveBarcodeProduct(prod); setBarcodeLabelCount(1); setIsPrintBarcodeModalOpen(true); }} className="h-10 rounded-full border border-[#DCE5F2] text-[#0E1A2B] font-bold text-[13px] inline-flex items-center justify-center gap-2"><PanelIcon name="barcode" size={15} /> Barcode</button>
+                      <button onClick={() => openEditProduct(prod)} className="h-10 rounded-full border border-[#DCE5F2] text-[#0E1A2B] font-bold text-[13px] inline-flex items-center justify-center gap-2">
                         <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m14.5 6.5 3 3" /><path d="M4 20l4.2-.9L19.5 7.8a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z" /></svg> Edit
                       </button>
-                      <button onClick={() => handleDeleteProduct(prod.id)} aria-label={`Delete ${prod.name}`} className="w-10 h-10 rounded-full border border-[#ead9bd] text-[#401717] inline-flex items-center justify-center">
+                      <button onClick={() => handleDeleteProduct(prod.id)} aria-label={`Delete ${prod.name}`} className="w-10 h-10 rounded-full border border-[#DCE5F2] text-[#0E1A2B] inline-flex items-center justify-center">
                         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16" /><path d="M10 11v6M14 11v6" /><path d="m5 7 1 13h12l1-13" /><path d="M9 7V4h6v3" /></svg>
                       </button>
                     </div>
@@ -2125,11 +2126,11 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Product Table */}
-              <div className="hidden md:block bg-[#fffdfa] border border-[#ead9bd] rounded-[24px] shadow-sm overflow-hidden">
+              <div className="hidden md:block bg-[#FBFCFE] border border-[#DCE5F2] rounded-[24px] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-[14px]">
-                    <thead className="text-[#86868b] border-b border-[#e5e5ea]">
-                      <tr className="bg-[#fbf4e3] text-[#401717]">
+                    <thead className="text-[#6F7E92] border-b border-[#E3E8EF]">
+                      <tr className="bg-[#EEF3FC] text-[#0E1A2B]">
                         <th className="py-4 pl-5 pr-3 font-extrabold text-[13px]">Product</th>
                         <th className="py-4 px-3 font-extrabold text-[13px]">Category</th>
                         <th className="py-4 px-4 font-extrabold text-[13px] whitespace-nowrap">Price</th>
@@ -2138,41 +2139,41 @@ export default function EcommerceAdminPanel() {
                         <th className="py-4 px-5 font-extrabold text-[13px] text-right whitespace-nowrap">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#e5e5ea]">
+                    <tbody className="divide-y divide-[#E3E8EF]">
                       {visibleProducts.length === 0 && (
                         <tr>
-                          <td colSpan={6} className="py-12 text-center text-[13px] font-semibold text-[#86868b]">
+                          <td colSpan={6} className="py-12 text-center text-[13px] font-semibold text-[#6F7E92]">
                             No products match your search or filter.
                           </td>
                         </tr>
                       )}
                       {visibleProducts.map((prod) => (
                         <Fragment key={prod.id}>
-                        <tr className="group hover:bg-[#fff9ef] transition-colors">
+                        <tr className="group hover:bg-[#F6F8FB] transition-colors">
                           {/* Image & Title */}
                           <td className="py-3.5 pl-5 pr-3">
                             <div className="flex items-center gap-3.5 w-[270px]">
                               <img
                                 src={prod.image}
                                 alt={prod.name}
-                                className="w-12 h-12 shrink-0 rounded-2xl object-cover border border-[#f0e4d1] bg-white"
+                                className="w-12 h-12 shrink-0 rounded-2xl object-cover border border-[#E3E8EF] bg-white"
                               />
                               <div className="min-w-0">
-                                <span title={prod.name} className="font-bold text-[#351313] block text-[14px] leading-tight truncate">
+                                <span title={prod.name} className="font-bold text-[#0E1A2B] block text-[14px] leading-tight truncate">
                                   {prod.name}
                                 </span>
                                 <div className="flex flex-nowrap items-center gap-1.5 mt-1 whitespace-nowrap overflow-hidden">
-                                  <span className="text-[11px] text-[#8b7867] font-semibold font-mono">{prod.sku}</span>
+                                  <span className="text-[11px] text-[#6F7E92] font-semibold font-mono">{prod.sku}</span>
                                   {prod.colors.map((c) => (
                                     <span
                                       key={c}
                                       title={c}
                                       className="w-3 h-3 rounded-full border border-black/10"
-                                      style={{ backgroundColor: colorHex[c] ?? '#d2d2d7' }}
+                                      style={{ backgroundColor: colorHex[c] ?? '#CFD8E3' }}
                                     />
                                   ))}
                                   {prod.isNewArrival && <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[9px] font-black uppercase">New</span>}
-                                  {prod.isFeatured && <span className="px-1.5 py-0.5 bg-[#fff2e8] text-[#ea580c] rounded-md text-[9px] font-black uppercase">Featured</span>}
+                                  {prod.isFeatured && <span className="px-1.5 py-0.5 bg-[#EAF1FF] text-[#2F6BFF] rounded-md text-[9px] font-black uppercase">Featured</span>}
                                 </div>
                               </div>
                             </div>
@@ -2181,8 +2182,8 @@ export default function EcommerceAdminPanel() {
                           {/* Category */}
                           <td className="py-3.5 px-3">
                             <div className="w-[165px]">
-                            <span className="font-medium text-[#351313] block truncate">{prod.category}</span>
-                            <span title={`${prod.subCategory}${prod.subSubCategory ? ` > ${prod.subSubCategory}` : ''}`} className="text-[12px] text-[#8b7867] block truncate">
+                            <span className="font-medium text-[#0E1A2B] block truncate">{prod.category}</span>
+                            <span title={`${prod.subCategory}${prod.subSubCategory ? ` > ${prod.subSubCategory}` : ''}`} className="text-[12px] text-[#6F7E92] block truncate">
                               {prod.subCategory}{prod.subSubCategory && ` > ${prod.subSubCategory}`}
                             </span>
                             </div>
@@ -2190,22 +2191,22 @@ export default function EcommerceAdminPanel() {
 
                           {/* Price */}
                           <td className="py-3.5 px-4 whitespace-nowrap">
-                            <span className="font-semibold text-[#351313] text-[15px] block">₹{prod.price.toLocaleString()}</span>
+                            <span className="font-semibold text-[#0E1A2B] text-[15px] block">₹{prod.price.toLocaleString()}</span>
                             {prod.mrp && prod.mrp > prod.price && (
-                              <span className="text-[12px] text-[#86868b] font-semibold line-through">₹{prod.mrp.toLocaleString()}</span>
+                              <span className="text-[12px] text-[#6F7E92] font-semibold line-through">₹{prod.mrp.toLocaleString()}</span>
                             )}
                           </td>
 
                           {/* Stock (by size) */}
                           <td className="py-3.5 px-4 whitespace-nowrap">
-                            <button onClick={() => openStockEditor(prod)} title="Edit stock by size and color" className="px-3 py-2 rounded-full bg-[#fbf4e3] text-[#8d661b] text-[13px] font-bold hover:bg-[#f6ebd3] whitespace-nowrap">{prod.stock} units</button>
+                            <button onClick={() => openStockEditor(prod)} title="Edit stock by size and color" className="px-3 py-2 rounded-full bg-[#EEF3FC] text-[#1F55E0] text-[13px] font-bold hover:bg-[#E3ECFB] whitespace-nowrap">{prod.stock} units</button>
                           </td>
 
                           {/* Status */}
                           <td className="py-3.5 px-4 whitespace-nowrap">
                             <span
                               className={`inline-block px-3.5 py-2 rounded-full text-[12px] font-bold whitespace-nowrap ${prod.status === 'In Stock'
-                                ? 'bg-gradient-to-r from-[#e6bb55] to-[#f4d889] text-[#44280b]'
+                                ? 'bg-gradient-to-r from-[#DCE7FF] to-[#EAF1FF] text-[#1F55E0]'
                                 : prod.status === 'Low Stock'
                                   ? 'bg-amber-100 text-amber-800'
                                   : 'bg-red-100 text-red-700'
@@ -2218,14 +2219,14 @@ export default function EcommerceAdminPanel() {
                           {/* Actions: Scanner, Edit, Delete */}
                           <td className="py-3.5 pl-2 pr-5 whitespace-nowrap">
                             <div className="flex items-center justify-end gap-2 flex-nowrap">
-                              <button onClick={() => { setActiveBarcodeProduct(prod); setBarcodeLabelCount(1); setIsPrintBarcodeModalOpen(true); }} title="Print barcode labels" aria-label={`Print barcode labels for ${prod.name}`} className="h-9 px-2.5 2xl:px-3.5 rounded-full border border-[#ead9bd] text-[#401717] font-bold text-[13px] inline-flex items-center gap-2 hover:bg-[#fbf4e3] whitespace-nowrap"><PanelIcon name="barcode" size={15} /><span className="hidden 2xl:inline">Barcode</span></button>
+                              <button onClick={() => { setActiveBarcodeProduct(prod); setBarcodeLabelCount(1); setIsPrintBarcodeModalOpen(true); }} title="Print barcode labels" aria-label={`Print barcode labels for ${prod.name}`} className="h-9 px-2.5 2xl:px-3.5 rounded-full border border-[#DCE5F2] text-[#0E1A2B] font-bold text-[13px] inline-flex items-center gap-2 hover:bg-[#EEF3FC] whitespace-nowrap"><PanelIcon name="barcode" size={15} /><span className="hidden 2xl:inline">Barcode</span></button>
 
                               {/* Edit Button */}
                               <button
                                 onClick={() => openEditProduct(prod)}
                                 title="Edit Product"
                                 aria-label={`Edit ${prod.name}`}
-                                className="h-9 px-3.5 rounded-full border border-[#ead9bd] text-[#401717] hover:bg-[#fbf4e3] inline-flex items-center gap-2 text-[13px] font-bold whitespace-nowrap"
+                                className="h-9 px-3.5 rounded-full border border-[#DCE5F2] text-[#0E1A2B] hover:bg-[#EEF3FC] inline-flex items-center gap-2 text-[13px] font-bold whitespace-nowrap"
                               >
                                 <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m14.5 6.5 3 3" /><path d="M4 20l4.2-.9L19.5 7.8a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z" /></svg> Edit
                               </button>
@@ -2235,7 +2236,7 @@ export default function EcommerceAdminPanel() {
                                 onClick={() => handleDeleteProduct(prod.id)}
                                 title="Delete Product"
                                 aria-label={`Delete ${prod.name}`}
-                                className="w-9 h-9 shrink-0 rounded-full border border-[#ead9bd] text-[#401717] hover:bg-red-50 inline-flex items-center justify-center"
+                                className="w-9 h-9 shrink-0 rounded-full border border-[#DCE5F2] text-[#0E1A2B] hover:bg-red-50 inline-flex items-center justify-center"
                               >
                                 <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16" /><path d="M10 11v6M14 11v6" /><path d="m5 7 1 13h12l1-13" /><path d="M9 7V4h6v3" /></svg>
                               </button>
@@ -2244,14 +2245,14 @@ export default function EcommerceAdminPanel() {
                           </td>
                         </tr>
                         {expandedProductId === prod.id && (
-                          <tr className="bg-[#fafafa]">
+                          <tr className="bg-[#F8FAFC]">
                             <td colSpan={6} className="px-4 pb-6 pt-2">
                               <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                                 {/* Stock grid */}
-                                <div className="lg:col-span-2 bg-white border border-[#e5e5ea] rounded-[24px] p-5 overflow-x-auto">
-                                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b] mb-3">Stock by Size & Color</p>
+                                <div className="lg:col-span-2 bg-white border border-[#E3E8EF] rounded-[24px] p-5 overflow-x-auto">
+                                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92] mb-3">Stock by Size & Color</p>
                                   <table className="w-full text-[13px]">
-                                    <thead className="text-[#86868b]">
+                                    <thead className="text-[#6F7E92]">
                                       <tr>
                                         <th className="pb-2 pr-3 text-left font-extrabold uppercase text-[10px] tracking-wider">Size</th>
                                         {variantColors(prod.colors).map((color) => (
@@ -2261,13 +2262,13 @@ export default function EcommerceAdminPanel() {
                                     </thead>
                                     <tbody>
                                       {variantSizes(prod.sizes).map((size) => (
-                                        <tr key={size} className="border-t border-[#f5f5f7]">
-                                          <td className="py-2 pr-3 font-bold text-[#1d1d1f]">{size === STANDARD ? 'One Size' : size}</td>
+                                        <tr key={size} className="border-t border-[#F3F6FA]">
+                                          <td className="py-2 pr-3 font-bold text-[#0E1A2B]">{size === STANDARD ? 'One Size' : size}</td>
                                           {variantColors(prod.colors).map((color) => {
                                             const qty = prod.variantStock[size]?.[color] ?? 0;
                                             return (
                                               <td key={color} className="py-2 px-3">
-                                                <span className={`px-2.5 py-1 rounded-lg font-black text-[12px] ${qty === 0 ? 'bg-red-50 text-red-600' : qty <= 5 ? 'bg-amber-50 text-amber-700' : 'bg-[#f5f5f7] text-[#1d1d1f]'}`}>{qty === 0 ? 'Sold out' : qty}</span>
+                                                <span className={`px-2.5 py-1 rounded-lg font-black text-[12px] ${qty === 0 ? 'bg-red-50 text-red-600' : qty <= 5 ? 'bg-amber-50 text-amber-700' : 'bg-[#F3F6FA] text-[#0E1A2B]'}`}>{qty === 0 ? 'Sold out' : qty}</span>
                                               </td>
                                             );
                                           })}
@@ -2277,31 +2278,31 @@ export default function EcommerceAdminPanel() {
                                   </table>
                                   {prod.tags.length > 0 && (
                                     <div className="flex flex-wrap gap-1.5 mt-4">
-                                      {prod.tags.map((t) => <span key={t} className="px-2.5 py-1 bg-[#fff2e8] text-[#ea580c] rounded-full text-[11px] font-bold">#{t}</span>)}
+                                      {prod.tags.map((t) => <span key={t} className="px-2.5 py-1 bg-[#EAF1FF] text-[#2F6BFF] rounded-full text-[11px] font-bold">#{t}</span>)}
                                     </div>
                                   )}
                                 </div>
                                 {/* Photos */}
-                                <div className="bg-white border border-[#e5e5ea] rounded-[24px] p-5 space-y-3">
-                                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b]">Photos</p>
+                                <div className="bg-white border border-[#E3E8EF] rounded-[24px] p-5 space-y-3">
+                                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92]">Photos</p>
                                   <div>
-                                    <p className="text-[12px] font-bold text-[#1d1d1f] mb-1.5">Main ({prod.images.length})</p>
+                                    <p className="text-[12px] font-bold text-[#0E1A2B] mb-1.5">Main ({prod.images.length})</p>
                                     <div className="flex flex-wrap gap-2">
-                                      {prod.images.map((src, i) => <img key={i} src={src} alt="" className="w-11 h-11 rounded-xl object-cover border border-[#e5e5ea]" />)}
+                                      {prod.images.map((src, i) => <img key={i} src={src} alt="" className="w-11 h-11 rounded-xl object-cover border border-[#E3E8EF]" />)}
                                     </div>
                                   </div>
                                   {prod.colors.map((color) => (
                                     <div key={color}>
-                                      <p className="text-[12px] font-bold text-[#1d1d1f] mb-1.5 flex items-center gap-1.5">
-                                        <span className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: colorHex[color] ?? '#d2d2d7' }} />
+                                      <p className="text-[12px] font-bold text-[#0E1A2B] mb-1.5 flex items-center gap-1.5">
+                                        <span className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: colorHex[color] ?? '#CFD8E3' }} />
                                         {color} ({prod.colorImages[color]?.length ?? 0})
                                       </p>
                                       {prod.colorImages[color]?.length ? (
                                         <div className="flex flex-wrap gap-2">
-                                          {prod.colorImages[color].map((src, i) => <img key={i} src={src} alt="" className="w-11 h-11 rounded-xl object-cover border border-[#e5e5ea]" />)}
+                                          {prod.colorImages[color].map((src, i) => <img key={i} src={src} alt="" className="w-11 h-11 rounded-xl object-cover border border-[#E3E8EF]" />)}
                                         </div>
                                       ) : (
-                                        <p className="text-[11px] text-[#86868b] font-semibold">Uses the main photos</p>
+                                        <p className="text-[11px] text-[#6F7E92] font-semibold">Uses the main photos</p>
                                       )}
                                     </div>
                                   ))}
@@ -2330,11 +2331,11 @@ export default function EcommerceAdminPanel() {
                 <div className="max-w-6xl mx-auto space-y-5">
                   <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
                     <div>
-                      <h1 className={`${K.serif} text-2xl sm:text-3xl text-[#1d1d1f]`}>Stock by size &amp; color</h1>
-                      <p className="text-sm text-[#86868b] mt-1">Review and update quantities. Checkout deducts only the selected size and color.</p>
+                      <h1 className={`${K.serif} text-2xl sm:text-3xl text-[#0E1A2B]`}>Stock by size &amp; color</h1>
+                      <p className="text-sm text-[#6F7E92] mt-1">Review and update quantities. Checkout deducts only the selected size and color.</p>
                     </div>
-                    <p className="text-xs text-[#86868b] whitespace-nowrap">
-                      <strong className="text-[#1d1d1f]">{products.reduce((sum, p) => sum + p.stock, 0).toLocaleString('en-IN')}</strong> units across {products.length} products
+                    <p className="text-xs text-[#6F7E92] whitespace-nowrap">
+                      <strong className="text-[#0E1A2B]">{products.reduce((sum, p) => sum + p.stock, 0).toLocaleString('en-IN')}</strong> units across {products.length} products
                     </p>
                   </div>
                   <input
@@ -2343,10 +2344,10 @@ export default function EcommerceAdminPanel() {
                     onChange={(e) => setInventorySearch(e.target.value)}
                     placeholder="Search product name, SKU or ID"
                     aria-label="Search inventory"
-                    className="w-full border border-[#e5e5ea] rounded-lg p-3 bg-white text-sm text-[#1d1d1f] outline-none focus:border-[#ea580c]"
+                    className="w-full border border-[#E3E8EF] rounded-lg p-3 bg-white text-sm text-[#0E1A2B] outline-none focus:border-[#2F6BFF]"
                   />
                   <div className="space-y-3">
-                    {rows.length === 0 && <p className="py-10 text-center text-sm text-[#86868b] bg-white rounded-xl border border-[#e5e5ea]">No products match your search.</p>}
+                    {rows.length === 0 && <p className="py-10 text-center text-sm text-[#6F7E92] bg-white rounded-xl border border-[#E3E8EF]">No products match your search.</p>}
                     {rows.map((prod) => (
                       <KaavuInventoryRow
                         key={prod.id}
@@ -2371,10 +2372,10 @@ export default function EcommerceAdminPanel() {
           {activeTab === 'attributes' && (
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               {/* Sizes */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-7 shadow-sm space-y-5">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-7 shadow-sm space-y-5">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Size Options</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">The code shows on product chips and in stock tables.</p>
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Size Options</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">The code shows on product chips and in stock tables.</p>
                 </div>
                 <div className="space-y-3">
                   <input
@@ -2382,7 +2383,7 @@ export default function EcommerceAdminPanel() {
                     placeholder="Name (e.g. 45 mm Case)"
                     value={newSizeName}
                     onChange={(e) => setNewSizeName(e.target.value)}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF]"
                   />
                   <input
                     type="text"
@@ -2390,36 +2391,36 @@ export default function EcommerceAdminPanel() {
                     value={newSizeCode}
                     onChange={(e) => setNewSizeCode(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSaveSize()}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF]"
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={handleSaveSize}
-                      className="flex-1 py-3 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
+                      className="flex-1 py-3 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
                     >
                       {editingSizeId ? 'Save Changes' : 'Add Size'}
                     </button>
                     {editingSizeId && (
-                      <button onClick={resetSizeForm} className="px-5 py-3 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full">
+                      <button onClick={resetSizeForm} className="px-5 py-3 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full">
                         Cancel
                       </button>
                     )}
                   </div>
                 </div>
-                <div className="divide-y divide-[#e5e5ea]">
+                <div className="divide-y divide-[#E3E8EF]">
                   {sizeOptions.map((sz) => (
                     <div key={sz.id} className="py-3 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0">
-                        <span className="px-3 py-1 bg-[#fff2e8] text-[#ea580c] border border-orange-200 rounded-full text-[12px] font-black whitespace-nowrap">{sz.code}</span>
+                        <span className="px-3 py-1 bg-[#EAF1FF] text-[#2F6BFF] border border-[#C9D9FF] rounded-full text-[12px] font-black whitespace-nowrap">{sz.code}</span>
                         <div className="min-w-0">
-                          <p className="text-[13px] font-bold text-[#1d1d1f] truncate">{sz.name}</p>
-                          <p className="text-[11px] text-[#86868b] font-semibold">{productsUsing('sizes', sz.code)} product(s)</p>
+                          <p className="text-[13px] font-bold text-[#0E1A2B] truncate">{sz.name}</p>
+                          <p className="text-[11px] text-[#6F7E92] font-semibold">{productsUsing('sizes', sz.code)} product(s)</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">
                         <button
                           onClick={() => { setEditingSizeId(sz.id); setNewSizeName(sz.name); setNewSizeCode(sz.code); }}
-                          className="text-[12px] font-bold text-[#6e6e73] hover:text-[#1d1d1f]"
+                          className="text-[12px] font-bold text-[#5B6B80] hover:text-[#0E1A2B]"
                         >
                           Edit
                         </button>
@@ -2433,10 +2434,10 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Colors */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-7 shadow-sm space-y-5">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-7 shadow-sm space-y-5">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Color Palette</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Each color gets its own stock and photos on a product.</p>
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Color Palette</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">Each color gets its own stock and photos on a product.</p>
                 </div>
                 <div className="space-y-3">
                   <input
@@ -2445,7 +2446,7 @@ export default function EcommerceAdminPanel() {
                     value={newColorName}
                     onChange={(e) => setNewColorName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSaveColor()}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF]"
                   />
                   <div className="flex items-center gap-3">
                     <input
@@ -2453,44 +2454,44 @@ export default function EcommerceAdminPanel() {
                       aria-label="Pick color"
                       value={newColorHex}
                       onChange={(e) => setNewColorHex(e.target.value)}
-                      className="w-12 h-11 rounded-full border border-[#e5e5ea] bg-[#f5f5f7] cursor-pointer p-1"
+                      className="w-12 h-11 rounded-full border border-[#E3E8EF] bg-[#F3F6FA] cursor-pointer p-1"
                     />
                     <input
                       type="text"
                       placeholder="#2563EB"
                       value={newColorHex}
                       onChange={(e) => setNewColorHex(e.target.value)}
-                      className="flex-1 px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-mono font-bold text-[#1d1d1f] uppercase focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                      className="flex-1 px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-mono font-bold text-[#0E1A2B] uppercase focus:outline-none focus:bg-white focus:border-[#2F6BFF]"
                     />
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={handleSaveColor}
-                      className="flex-1 py-3 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
+                      className="flex-1 py-3 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
                     >
                       {editingColorId ? 'Save Changes' : 'Add Color'}
                     </button>
                     {editingColorId && (
-                      <button onClick={resetColorForm} className="px-5 py-3 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full">
+                      <button onClick={resetColorForm} className="px-5 py-3 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full">
                         Cancel
                       </button>
                     )}
                   </div>
                 </div>
-                <div className="divide-y divide-[#e5e5ea]">
+                <div className="divide-y divide-[#E3E8EF]">
                   {colorOptions.map((col) => (
                     <div key={col.id} className="py-3 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="w-8 h-8 rounded-full border border-black/10 shadow-sm shrink-0" style={{ backgroundColor: col.hex }} />
                         <div className="min-w-0">
-                          <p className="text-[13px] font-bold text-[#1d1d1f] truncate">{col.name}</p>
-                          <p className="text-[11px] text-[#86868b] font-semibold"><span className="font-mono uppercase">{col.hex}</span> • {productsUsing('colors', col.name)} product(s)</p>
+                          <p className="text-[13px] font-bold text-[#0E1A2B] truncate">{col.name}</p>
+                          <p className="text-[11px] text-[#6F7E92] font-semibold"><span className="font-mono uppercase">{col.hex}</span> • {productsUsing('colors', col.name)} product(s)</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">
                         <button
                           onClick={() => { setEditingColorId(col.id); setNewColorName(col.name); setNewColorHex(col.hex); }}
-                          className="text-[12px] font-bold text-[#6e6e73] hover:text-[#1d1d1f]"
+                          className="text-[12px] font-bold text-[#5B6B80] hover:text-[#0E1A2B]"
                         >
                           Edit
                         </button>
@@ -2504,10 +2505,10 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Tags */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-7 shadow-sm space-y-5">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-7 shadow-sm space-y-5">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Product Tags</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Used for storefront filters and collections.</p>
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Product Tags</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">Used for storefront filters and collections.</p>
                 </div>
                 <div className="space-y-3">
                   <input
@@ -2516,19 +2517,19 @@ export default function EcommerceAdminPanel() {
                     value={newTagName}
                     onChange={(e) => setNewTagName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSaveTag()}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF]"
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={handleSaveTag}
-                      className="flex-1 py-3 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
+                      className="flex-1 py-3 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
                     >
                       {editingTagId ? 'Save Changes' : 'Add Tag'}
                     </button>
                     {editingTagId && (
                       <button
                         onClick={() => { setEditingTagId(null); setNewTagName(''); }}
-                        className="px-5 py-3 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full"
+                        className="px-5 py-3 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full"
                       >
                         Cancel
                       </button>
@@ -2537,15 +2538,15 @@ export default function EcommerceAdminPanel() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {tagOptions.map((tag) => (
-                    <span key={tag.id} className="pl-4 pr-2 py-1.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold text-[#1d1d1f] flex items-center gap-2">
+                    <span key={tag.id} className="pl-4 pr-2 py-1.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-bold text-[#0E1A2B] flex items-center gap-2">
                       <button
                         onClick={() => { setEditingTagId(tag.id); setNewTagName(tag.name); }}
                         title="Edit tag"
-                        className="hover:text-[#ea580c]"
+                        className="hover:text-[#2F6BFF]"
                       >
                         #{tag.name}
                       </button>
-                      <span className="text-[11px] text-[#86868b]">{productsUsing('tags', tag.name)}</span>
+                      <span className="text-[11px] text-[#6F7E92]">{productsUsing('tags', tag.name)}</span>
                       <button
                         onClick={() => handleDeleteTag(tag)}
                         aria-label={`Delete tag ${tag.name}`}
@@ -2565,16 +2566,16 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {activeTab === 'category' && (
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="bg-white p-6 rounded-[28px] border border-[#E3E8EF] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Store Categories</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Store Categories</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">
                     {categories.filter((c) => c.status === 'Active').length} active categories shown on the storefront menu and home page
                   </p>
                 </div>
                 <button
                   onClick={() => openCategoryModal()}
-                  className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
                   <span>➕</span>
                   <span>Add New Category</span>
@@ -2585,22 +2586,22 @@ export default function EcommerceAdminPanel() {
                 {categories.map((cat) => {
                   const count = products.filter((p) => p.category === cat.name).length;
                   return (
-                    <div key={cat.id} className={`bg-white border border-[#e5e5ea] rounded-[32px] shadow-sm hover:shadow-md transition-all overflow-hidden ${cat.status === 'Active' ? '' : 'opacity-70'}`}>
-                      <div className="relative h-36 bg-[#f5f5f7]">
+                    <div key={cat.id} className={`bg-white border border-[#E3E8EF] rounded-[32px] shadow-sm hover:shadow-md transition-all overflow-hidden ${cat.status === 'Active' ? '' : 'opacity-70'}`}>
+                      <div className="relative h-36 bg-[#F3F6FA]">
                         {cat.image ? (
                           <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[12px] font-bold text-[#86868b]">No photo yet</div>
+                          <div className="w-full h-full flex items-center justify-center text-[12px] font-bold text-[#6F7E92]">No photo yet</div>
                         )}
-                        <span className="absolute -bottom-6 left-6 text-[#ea580c] w-14 h-14 bg-white border border-[#e5e5ea] rounded-2xl shadow-sm flex items-center justify-center"><PanelIcon name="folder" size={24} /></span>
+                        <span className="absolute -bottom-6 left-6 text-[#2F6BFF] w-14 h-14 bg-white border border-[#E3E8EF] rounded-2xl shadow-sm flex items-center justify-center"><PanelIcon name="folder" size={24} /></span>
                       </div>
                       <div className="p-6 pt-9 space-y-4">
                         <div>
-                          <h4 className="font-bold text-[#1d1d1f] text-[16px]">{cat.name}</h4>
-                          <p className="text-[12px] text-[#6e6e73] font-semibold mt-0.5">{cat.blurb || <span className="text-[#c7c7cc]">No description</span>}</p>
-                          <p className="text-[12px] text-[#86868b] font-semibold mt-1">{count} products • /{cat.slug}</p>
+                          <h4 className="font-bold text-[#0E1A2B] text-[16px]">{cat.name}</h4>
+                          <p className="text-[12px] text-[#5B6B80] font-semibold mt-0.5">{cat.blurb || <span className="text-[#A9B4C2]">No description</span>}</p>
+                          <p className="text-[12px] text-[#6F7E92] font-semibold mt-1">{count} products • /{cat.slug}</p>
                         </div>
-                        <div className="flex items-center justify-between gap-2 pt-3 border-t border-[#e5e5ea]">
+                        <div className="flex items-center justify-between gap-2 pt-3 border-t border-[#E3E8EF]">
                           <button
                             onClick={() => setCategories(categories.map((c) => (c.id === cat.id ? { ...c, status: c.status === 'Active' ? 'Inactive' : 'Active' } : c)))}
                             className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider ${cat.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}
@@ -2608,7 +2609,7 @@ export default function EcommerceAdminPanel() {
                             {cat.status}
                           </button>
                           <div className="flex items-center gap-4">
-                            <button onClick={() => openCategoryModal(cat)} className="text-[12px] font-bold text-[#ea580c] hover:underline">
+                            <button onClick={() => openCategoryModal(cat)} className="text-[12px] font-bold text-[#2F6BFF] hover:underline">
                               Edit
                             </button>
                             <button
@@ -2639,9 +2640,9 @@ export default function EcommerceAdminPanel() {
           {activeTab === 'sub-category' && (
             <div className="space-y-8">
               {/* Add Sub Category Form */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm max-w-3xl">
-                <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] mb-2">Create Sub Category</h3>
-                <p className="text-[13px] text-[#86868b] font-semibold mb-6">Map sub-categories under parent category groups.</p>
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 shadow-sm max-w-3xl">
+                <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B] mb-2">Create Sub Category</h3>
+                <p className="text-[13px] text-[#6F7E92] font-semibold mb-6">Map sub-categories under parent category groups.</p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <input
@@ -2649,12 +2650,12 @@ export default function EcommerceAdminPanel() {
                     placeholder="Sub-Category Name"
                     value={newSubCatName}
                     onChange={(e) => setNewSubCatName(e.target.value)}
-                    className="sm:col-span-1 px-6 py-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold"
+                    className="sm:col-span-1 px-6 py-3.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] transition-all font-semibold"
                   />
                   <select
                     value={newSubCatParent}
                     onChange={(e) => setNewSubCatParent(e.target.value)}
-                    className="sm:col-span-1 px-6 py-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-bold cursor-pointer"
+                    className="sm:col-span-1 px-6 py-3.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] transition-all font-bold cursor-pointer"
                   >
                     {categories.map((c) => (
                       <option key={c.id} value={c.name}>
@@ -2676,7 +2677,7 @@ export default function EcommerceAdminPanel() {
                       ]);
                       setNewSubCatName('');
                     }}
-                    className="sm:col-span-1 px-6 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
+                    className="sm:col-span-1 px-6 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
                   >
                     Save Sub Category
                   </button>
@@ -2684,9 +2685,9 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Sub Categories Table */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 shadow-sm overflow-hidden">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-6 shadow-sm overflow-hidden">
                 <table className="w-full text-left text-[14px]">
-                  <thead className="text-[#86868b] border-b border-[#e5e5ea]">
+                  <thead className="text-[#6F7E92] border-b border-[#E3E8EF]">
                     <tr>
                       <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Sub Category</th>
                       <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Parent Category</th>
@@ -2695,16 +2696,16 @@ export default function EcommerceAdminPanel() {
                       <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e5e5ea]">
+                  <tbody className="divide-y divide-[#E3E8EF]">
                     {subCategories.map((sc) => (
-                      <tr key={sc.id} className="hover:bg-[#f5f5f7]/60 transition-colors">
-                        <td className="py-4 px-4 font-bold text-[#1d1d1f]">{sc.name}</td>
+                      <tr key={sc.id} className="hover:bg-[#F3F6FA]/60 transition-colors">
+                        <td className="py-4 px-4 font-bold text-[#0E1A2B]">{sc.name}</td>
                         <td className="py-4 px-4">
-                          <span className="px-3 py-1 bg-white border border-[#e5e5ea] rounded-full text-[12px] font-extrabold text-[#ea580c] shadow-sm">
+                          <span className="px-3 py-1 bg-white border border-[#E3E8EF] rounded-full text-[12px] font-extrabold text-[#2F6BFF] shadow-sm">
                             {sc.parentCategory}
                           </span>
                         </td>
-                        <td className="py-4 px-4 font-semibold text-[#6e6e73]">{products.filter((p) => p.category === sc.parentCategory && p.subCategory === sc.name).length} items</td>
+                        <td className="py-4 px-4 font-semibold text-[#5B6B80]">{products.filter((p) => p.category === sc.parentCategory && p.subCategory === sc.name).length} items</td>
                         <td className="py-4 px-4">
                           <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[11px] font-black uppercase tracking-wider">
                             {sc.status}
@@ -2732,9 +2733,9 @@ export default function EcommerceAdminPanel() {
           {activeTab === 'sub-sub-category' && (
             <div className="space-y-8">
               {/* Add Sub Sub Category Form */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm max-w-4xl">
-                <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] mb-2">Create Sub Sub Category (Level 3)</h3>
-                <p className="text-[13px] text-[#86868b] font-semibold mb-6">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 shadow-sm max-w-4xl">
+                <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B] mb-2">Create Sub Sub Category (Level 3)</h3>
+                <p className="text-[13px] text-[#6F7E92] font-semibold mb-6">
                   Niche classification (e.g. Electronics → Audio & Sound → Over-Ear Headphones).
                 </p>
 
@@ -2744,12 +2745,12 @@ export default function EcommerceAdminPanel() {
                     placeholder="Sub Sub Category Name"
                     value={newSubSubCatName}
                     onChange={(e) => setNewSubSubCatName(e.target.value)}
-                    className="sm:col-span-1 px-6 py-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold"
+                    className="sm:col-span-1 px-6 py-3.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] transition-all font-semibold"
                   />
                   <select
                     value={newSubSubCatParent}
                     onChange={(e) => setNewSubSubCatParent(e.target.value)}
-                    className="sm:col-span-1 px-5 py-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-bold cursor-pointer"
+                    className="sm:col-span-1 px-5 py-3.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] transition-all font-bold cursor-pointer"
                   >
                     {categories.map((c) => (
                       <option key={c.id} value={c.name}>
@@ -2760,7 +2761,7 @@ export default function EcommerceAdminPanel() {
                   <select
                     value={newSubSubCatSubParent}
                     onChange={(e) => setNewSubSubCatSubParent(e.target.value)}
-                    className="sm:col-span-1 px-5 py-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-bold cursor-pointer"
+                    className="sm:col-span-1 px-5 py-3.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] transition-all font-bold cursor-pointer"
                   >
                     {subCategories
                       .filter((sc) => sc.parentCategory === newSubSubCatParent)
@@ -2785,7 +2786,7 @@ export default function EcommerceAdminPanel() {
                       ]);
                       setNewSubSubCatName('');
                     }}
-                    className="sm:col-span-1 px-6 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
+                    className="sm:col-span-1 px-6 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg transition-all"
                   >
                     Add Level 3
                   </button>
@@ -2793,9 +2794,9 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Sub Sub Categories Table */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 shadow-sm overflow-hidden">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-6 shadow-sm overflow-hidden">
                 <table className="w-full text-left text-[14px]">
-                  <thead className="text-[#86868b] border-b border-[#e5e5ea]">
+                  <thead className="text-[#6F7E92] border-b border-[#E3E8EF]">
                     <tr>
                       <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Sub Sub Category</th>
                       <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Hierarchy Path</th>
@@ -2804,16 +2805,16 @@ export default function EcommerceAdminPanel() {
                       <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e5e5ea]">
+                  <tbody className="divide-y divide-[#E3E8EF]">
                     {subSubCategories.map((ssc) => (
-                      <tr key={ssc.id} className="hover:bg-[#f5f5f7]/60 transition-colors">
-                        <td className="py-4 px-4 font-bold text-[#1d1d1f]">{ssc.name}</td>
+                      <tr key={ssc.id} className="hover:bg-[#F3F6FA]/60 transition-colors">
+                        <td className="py-4 px-4 font-bold text-[#0E1A2B]">{ssc.name}</td>
                         <td className="py-4 px-4 text-[13px]">
-                          <span className="font-semibold text-[#6e6e73]">{ssc.parentCategory}</span>
-                          <span className="text-[#86868b] mx-1.5">→</span>
-                          <span className="font-bold text-[#ea580c]">{ssc.parentSubCategory}</span>
+                          <span className="font-semibold text-[#5B6B80]">{ssc.parentCategory}</span>
+                          <span className="text-[#6F7E92] mx-1.5">→</span>
+                          <span className="font-bold text-[#2F6BFF]">{ssc.parentSubCategory}</span>
                         </td>
-                        <td className="py-4 px-4 font-semibold text-[#6e6e73]">{products.filter((p) => p.subCategory === ssc.parentSubCategory && p.subSubCategory === ssc.name).length} items</td>
+                        <td className="py-4 px-4 font-semibold text-[#5B6B80]">{products.filter((p) => p.subCategory === ssc.parentSubCategory && p.subSubCategory === ssc.name).length} items</td>
                         <td className="py-4 px-4">
                           <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[11px] font-black uppercase tracking-wider">
                             {ssc.status}
@@ -2840,14 +2841,14 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {activeTab === 'coupons' && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm">
+              <div className="flex justify-between items-center bg-white p-6 rounded-[28px] border border-[#E3E8EF] shadow-sm">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Discount Coupons</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Manage promo codes and checkout discounts</p>
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Discount Coupons</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">Manage promo codes and checkout discounts</p>
                 </div>
                 <button
                   onClick={() => openCouponModal()}
-                  className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
                   <PanelIcon name="ticket" size={16} />
                   <span>Create Coupon</span>
@@ -2855,9 +2856,9 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Store Header Marquee Preview */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[28px] p-5 shadow-sm space-y-3">
-                <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b] pl-1">Store Header Preview</p>
-                <div className="bg-[#1d1d1f] text-white rounded-full px-6 py-2.5 text-[12px] font-bold text-center overflow-hidden whitespace-nowrap text-ellipsis">
+              <div className="bg-white border border-[#E3E8EF] rounded-[28px] p-5 shadow-sm space-y-3">
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92] pl-1">Store Header Preview</p>
+                <div className="bg-[#0E1A2B] text-white rounded-full px-6 py-2.5 text-[12px] font-bold text-center overflow-hidden whitespace-nowrap text-ellipsis">
                   {headerCoupons.length
                     ? headerCoupons.map((c) => `Use ${c.code} — ${c.discountType === 'Percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue} OFF`} on orders above ₹${c.minPurchase.toLocaleString()}`).join('   •   ')
                     : 'No coupon is shown in the store header. Turn on "Show in header" on a coupon below.'}
@@ -2869,14 +2870,14 @@ export default function EcommerceAdminPanel() {
                 {coupons.map((cp) => (
                   <div
                     key={cp.id}
-                    className="bg-white border border-[#e5e5ea] rounded-[32px] p-7 shadow-sm hover:shadow-md transition-all relative overflow-hidden flex flex-col justify-between"
+                    className="bg-white border border-[#E3E8EF] rounded-[32px] p-7 shadow-sm hover:shadow-md transition-all relative overflow-hidden flex flex-col justify-between"
                   >
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <button
                           onClick={() => copyText(cp.code, `Code ${cp.code}`)}
                           title="Copy coupon code"
-                          className="px-3.5 py-1.5 bg-[#fff2e8] hover:bg-orange-100 text-[#ea580c] border border-orange-200 font-mono font-black rounded-xl text-[14px] flex items-center gap-2 transition-all"
+                          className="px-3.5 py-1.5 bg-[#EAF1FF] hover:bg-[#DCE7FF] text-[#2F6BFF] border border-[#C9D9FF] font-mono font-black rounded-xl text-[14px] flex items-center gap-2 transition-all"
                         >
                           {cp.code}
                           <span className="text-[12px] opacity-60">⧉</span>
@@ -2900,37 +2901,37 @@ export default function EcommerceAdminPanel() {
                       </div>
 
                       <div>
-                        <p className="text-3xl font-black text-[#1d1d1f]">
+                        <p className="text-3xl font-black text-[#0E1A2B]">
                           {cp.discountType === 'Percentage' ? `${cp.discountValue}% OFF` : `₹${cp.discountValue} FLAT`}
                         </p>
                         {cp.description && (
-                          <p className="text-[13px] text-[#1d1d1f] font-semibold mt-1">{cp.description}</p>
+                          <p className="text-[13px] text-[#0E1A2B] font-semibold mt-1">{cp.description}</p>
                         )}
-                        <p className="text-[13px] text-[#6e6e73] font-semibold mt-1">
-                          Min. Purchase: <span className="font-bold text-[#1d1d1f]">₹{cp.minPurchase.toLocaleString()}</span>
+                        <p className="text-[13px] text-[#5B6B80] font-semibold mt-1">
+                          Min. Purchase: <span className="font-bold text-[#0E1A2B]">₹{cp.minPurchase.toLocaleString()}</span>
                           {cp.maxDiscount !== undefined && (
-                            <> • Max: <span className="font-bold text-[#1d1d1f]">₹{cp.maxDiscount.toLocaleString()}</span></>
+                            <> • Max: <span className="font-bold text-[#0E1A2B]">₹{cp.maxDiscount.toLocaleString()}</span></>
                           )}
                         </p>
                       </div>
 
-                      <div className="pt-2 text-[12px] text-[#86868b] font-semibold space-y-1">
+                      <div className="pt-2 text-[12px] text-[#6F7E92] font-semibold space-y-1">
                         <p>Valid: {cp.validFrom || 'now'} → {cp.validTill || 'no end date'}</p>
                         <p>Used: {cp.usageCount}{cp.usageLimit ? ` / ${cp.usageLimit}` : ''} times{cp.usageLimit ? '' : ' (no limit)'}</p>
                       </div>
 
-                      <label className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full cursor-pointer">
-                        <span className="text-[12px] font-bold text-[#1d1d1f]">Show in store header</span>
+                      <label className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full cursor-pointer">
+                        <span className="text-[12px] font-bold text-[#0E1A2B]">Show in store header</span>
                         <input
                           type="checkbox"
                           checked={cp.showInHeader}
                           onChange={(e) => setCoupons(coupons.map((c) => (c.id === cp.id ? { ...c, showInHeader: e.target.checked } : c)))}
-                          className="w-4 h-4 accent-[#ea580c]"
+                          className="w-4 h-4 accent-[#2F6BFF]"
                         />
                       </label>
                     </div>
 
-                    <div className="pt-6 border-t border-[#e5e5ea] mt-4 flex justify-between items-center">
+                    <div className="pt-6 border-t border-[#E3E8EF] mt-4 flex justify-between items-center">
                       <button
                         onClick={() =>
                           setCoupons(
@@ -2941,14 +2942,14 @@ export default function EcommerceAdminPanel() {
                             )
                           )
                         }
-                        className="text-[12px] font-bold text-[#6e6e73] hover:text-[#1d1d1f]"
+                        className="text-[12px] font-bold text-[#5B6B80] hover:text-[#0E1A2B]"
                       >
                         {cp.status === 'Active' ? 'Pause' : 'Activate'}
                       </button>
                       <div className="flex items-center gap-4">
                         <button
                           onClick={() => openCouponModal(cp)}
-                          className="text-[12px] font-bold text-[#ea580c] hover:underline"
+                          className="text-[12px] font-bold text-[#2F6BFF] hover:underline"
                         >
                           Edit
                         </button>
@@ -2988,28 +2989,28 @@ export default function EcommerceAdminPanel() {
                     type="button"
                     disabled={checkingPayments}
                     onClick={reconcilePayments}
-                    className="px-5 py-2.5 bg-white hover:bg-[#fff2e8] border border-[#ea580c] text-[#ea580c] rounded-full text-[13px] font-extrabold transition-all disabled:opacity-50"
+                    className="px-5 py-2.5 bg-white hover:bg-[#EAF1FF] border border-[#2F6BFF] text-[#2F6BFF] rounded-full text-[13px] font-extrabold transition-all disabled:opacity-50"
                   >
                     {checkingPayments ? 'Checking captured payments…' : 'Check pending payments'}
                   </button>
-                  {paymentCheckMessage && <p role="status" className="text-[13px] font-semibold text-[#6e6e73]">{paymentCheckMessage}</p>}
+                  {paymentCheckMessage && <p role="status" className="text-[13px] font-semibold text-[#5B6B80]">{paymentCheckMessage}</p>}
                 </div>
 
                 {/* Key order & revenue numbers */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white border border-[#e5e5ea] rounded-[24px] p-5 space-y-2 shadow-sm">
-                    <span className="block text-[10.5px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Total Orders (All-Time)</span>
-                    <p className="text-3xl font-black tracking-tight text-[#1d1d1f]">{orders.length}</p>
-                    <span className="block text-[11.5px] font-bold text-[#ea580c]">{countOf('Delivered')} Delivered · {countOf('Pending')} Pending</span>
+                  <div className="bg-white border border-[#E3E8EF] rounded-[24px] p-5 space-y-2 shadow-sm">
+                    <span className="block text-[10.5px] uppercase tracking-[0.16em] font-extrabold text-[#6F7E92]">Total Orders (All-Time)</span>
+                    <p className="text-3xl font-black tracking-tight text-[#0E1A2B]">{orders.length}</p>
+                    <span className="block text-[11.5px] font-bold text-[#2F6BFF]">{countOf('Delivered')} Delivered · {countOf('Pending')} Pending</span>
                   </div>
                   <div className="bg-amber-50 border border-amber-200 rounded-[24px] p-5 space-y-2 shadow-sm">
                     <span className="block text-[10.5px] uppercase tracking-[0.16em] font-extrabold text-amber-900">This Month&apos;s Orders</span>
                     <p className="text-3xl font-black tracking-tight text-amber-700">{thisMonth.length}</p>
                     <span className="block text-[11.5px] font-bold text-amber-700 uppercase">{monthLabel}</span>
                   </div>
-                  <div className="bg-white border border-[#e5e5ea] rounded-[24px] p-5 space-y-2 shadow-sm">
-                    <span className="block text-[10.5px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Total Sales Revenue</span>
-                    <p className="text-2xl sm:text-3xl font-black tracking-tight text-[#ea580c]">₹{revenue(orders).toLocaleString('en-IN')}</p>
+                  <div className="bg-white border border-[#E3E8EF] rounded-[24px] p-5 space-y-2 shadow-sm">
+                    <span className="block text-[10.5px] uppercase tracking-[0.16em] font-extrabold text-[#6F7E92]">Total Sales Revenue</span>
+                    <p className="text-2xl sm:text-3xl font-black tracking-tight text-[#2F6BFF]">₹{revenue(orders).toLocaleString('en-IN')}</p>
                     <span className="block text-[11.5px] font-bold text-emerald-700">{counted.length} orders, excluding cancelled</span>
                   </div>
                   <div className="bg-emerald-50 border border-emerald-200 rounded-[24px] p-5 space-y-2 shadow-sm">
@@ -3020,7 +3021,7 @@ export default function EcommerceAdminPanel() {
                 </div>
 
                 {/* Search & status filter */}
-                <div className="bg-white p-4 rounded-[24px] border border-[#e5e5ea] shadow-sm flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
+                <div className="bg-white p-4 rounded-[24px] border border-[#E3E8EF] shadow-sm flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
                   <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <input
                       type="search"
@@ -3028,66 +3029,66 @@ export default function EcommerceAdminPanel() {
                       onChange={(e) => setOrderSearch(e.target.value)}
                       placeholder="Search orders by Order #, Name, Email or Phone..."
                       aria-label="Search orders"
-                      className="flex-1 px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] font-semibold focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all"
+                      className="flex-1 px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] font-semibold focus:outline-none focus:bg-white focus:border-[#2F6BFF] transition-all"
                     />
                     <select
                       value={orderStatusFilter}
                       onChange={(e) => setOrderStatusFilter(e.target.value as 'All' | OrderStatus)}
                       aria-label="Filter by status"
-                      className="px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] text-[#1d1d1f] font-extrabold uppercase tracking-wider focus:outline-none focus:border-[#ea580c] cursor-pointer"
+                      className="px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] text-[#0E1A2B] font-extrabold uppercase tracking-wider focus:outline-none focus:border-[#2F6BFF] cursor-pointer"
                     >
                       <option value="All">All Statuses ({orders.length})</option>
                       {ORDER_STATUSES.map((status) => <option key={status} value={status}>{status} ({countOf(status)})</option>)}
                     </select>
                   </div>
-                  <p className="text-[13px] font-bold text-[#86868b] whitespace-nowrap">Showing {visibleOrders.length} of {orders.length} orders</p>
+                  <p className="text-[13px] font-bold text-[#6F7E92] whitespace-nowrap">Showing {visibleOrders.length} of {orders.length} orders</p>
                 </div>
 
-                <div className="bg-white border border-[#e5e5ea] rounded-[24px] shadow-sm overflow-hidden">
+                <div className="bg-white border border-[#E3E8EF] rounded-[24px] shadow-sm overflow-hidden">
                   {/* Phones, tablets and small laptops: one card per order */}
                   <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3 p-3">
-                    {visibleOrders.length === 0 && <p className="md:col-span-2 p-6 text-center text-[13px] font-semibold text-[#86868b]">No orders match your filters.</p>}
+                    {visibleOrders.length === 0 && <p className="md:col-span-2 p-6 text-center text-[13px] font-semibold text-[#6F7E92]">No orders match your filters.</p>}
                     {visibleOrders.map((ord) => (
-                      <div key={ord.id} className="rounded-[20px] border border-[#e5e5ea] p-4 space-y-3 text-[14px]">
+                      <div key={ord.id} className="rounded-[20px] border border-[#E3E8EF] p-4 space-y-3 text-[14px]">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <p className="font-mono font-black text-[#ea580c]">#{ord.orderNumber}</p>
-                            <p className="font-bold text-[#1d1d1f] truncate">{ord.customerName}</p>
+                            <p className="font-mono font-black text-[#2F6BFF]">#{ord.orderNumber}</p>
+                            <p className="font-bold text-[#0E1A2B] truncate">{ord.customerName}</p>
                           </div>
                           <span className={`shrink-0 px-3 py-1 rounded-full text-[10.5px] font-black uppercase tracking-wider border ${orderStatusStyle(ord.orderStatus)}`}>{ord.orderStatus}</span>
                         </div>
-                        <div className="flex justify-between gap-3"><span className="text-[#86868b] font-semibold">Total</span><strong className="font-black text-[#ea580c]">₹{ord.total.toLocaleString('en-IN')}</strong></div>
-                        <div className="flex justify-between items-center gap-2 text-[12px] py-2 border-y border-[#f0f0f2]">
-                          <span className="text-[#86868b] font-semibold">Payment:</span>
+                        <div className="flex justify-between gap-3"><span className="text-[#6F7E92] font-semibold">Total</span><strong className="font-black text-[#2F6BFF]">₹{ord.total.toLocaleString('en-IN')}</strong></div>
+                        <div className="flex justify-between items-center gap-2 text-[12px] py-2 border-y border-[#EDF1F6]">
+                          <span className="text-[#6F7E92] font-semibold">Payment:</span>
                           <span className="flex items-center gap-2 min-w-0">
                             <span className={`px-2 py-0.5 rounded-md border text-[9.5px] font-black uppercase ${paymentBadge(ord)}`}>{ord.paymentStatus}</span>
-                            <span className="font-mono text-[11px] text-[#1d1d1f] truncate">{ord.paymentId ?? ord.paymentMethod}</span>
+                            <span className="font-mono text-[11px] text-[#0E1A2B] truncate">{ord.paymentId ?? ord.paymentMethod}</span>
                           </span>
                         </div>
-                        <p className="text-[12px] font-semibold text-[#86868b]">{itemCount(ord)} · {shortDate(ord)}</p>
-                        <div className="bg-[#f9f9fb] border border-[#e5e5ea] rounded-xl p-3 space-y-0.5">
-                          <p className="font-bold text-[#1d1d1f]">{ord.customerName}</p>
-                          <p className="text-[12px] text-[#86868b] break-all">{ord.email}</p>
-                          <p className="text-[12px] text-[#86868b]">{ord.phone}</p>
+                        <p className="text-[12px] font-semibold text-[#6F7E92]">{itemCount(ord)} · {shortDate(ord)}</p>
+                        <div className="bg-[#F6F8FB] border border-[#E3E8EF] rounded-xl p-3 space-y-0.5">
+                          <p className="font-bold text-[#0E1A2B]">{ord.customerName}</p>
+                          <p className="text-[12px] text-[#6F7E92] break-all">{ord.email}</p>
+                          <p className="text-[12px] text-[#6F7E92]">{ord.phone}</p>
                         </div>
-                        <label className="block text-[12px] font-bold text-[#86868b]">
+                        <label className="block text-[12px] font-bold text-[#6F7E92]">
                           Order status
                           <select
                             aria-label={`Status for ${ord.orderNumber}`}
                             value={ord.orderStatus}
                             disabled={ord.orderStatus === 'Cancelled'}
                             onChange={(e) => changeOrderStatus(ord, e.target.value as OrderStatus)}
-                            className="block w-full mt-2 p-3 border border-[#e5e5ea] rounded-xl bg-white text-[14px] font-bold text-[#1d1d1f] disabled:opacity-60"
+                            className="block w-full mt-2 p-3 border border-[#E3E8EF] rounded-xl bg-white text-[14px] font-bold text-[#0E1A2B] disabled:opacity-60"
                           >
                             {ORDER_STATUSES.map((status) => <option key={status}>{status}</option>)}
                           </select>
                         </label>
-                        <button type="button" onClick={() => setShiprocketOrderId(ord.id)} className="w-full border border-[#ea580c] text-[#ea580c] rounded-xl py-3 text-[13px] font-bold">
+                        <button type="button" onClick={() => setShiprocketOrderId(ord.id)} className="w-full border border-[#2F6BFF] text-[#2F6BFF] rounded-xl py-3 text-[13px] font-bold">
                           {shipLabel(ord) === 'Shipment' ? 'View shipment' : 'Shipping · enter parcel details'}
                         </button>
                         <div className="grid grid-cols-2 gap-2">
-                          <button type="button" onClick={() => openInvoice(ord)} className="border border-[#e5e5ea] text-[#1d1d1f] rounded-xl py-3 text-[13px] font-bold">Invoice</button>
-                          <button type="button" onClick={() => setOrderDetailsId(ord.id)} className="bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-xl py-3 text-[13px] font-bold">View details</button>
+                          <button type="button" onClick={() => openInvoice(ord)} className="border border-[#E3E8EF] text-[#0E1A2B] rounded-xl py-3 text-[13px] font-bold">Invoice</button>
+                          <button type="button" onClick={() => setOrderDetailsId(ord.id)} className="bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-xl py-3 text-[13px] font-bold">View details</button>
                         </div>
                       </div>
                     ))}
@@ -3097,7 +3098,7 @@ export default function EcommerceAdminPanel() {
                   <div className="hidden xl:block overflow-x-auto">
                     <table className="w-full text-left text-[13px]">
                       <thead>
-                        <tr className="border-b border-[#e5e5ea] uppercase tracking-wider text-[10.5px] font-extrabold text-[#86868b] bg-[#f9f9fb]">
+                        <tr className="border-b border-[#E3E8EF] uppercase tracking-wider text-[10.5px] font-extrabold text-[#6F7E92] bg-[#F6F8FB]">
                           <th className="py-3.5 px-2.5">Order #</th>
                           <th className="py-3.5 px-2.5">Customer</th>
                           <th className="py-3.5 px-2.5">Total</th>
@@ -3106,17 +3107,17 @@ export default function EcommerceAdminPanel() {
                           <th className="py-3.5 px-2.5 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#f0f0f2]">
+                      <tbody className="divide-y divide-[#EDF1F6]">
                         {visibleOrders.length === 0 && (
                           <tr>
-                            <td colSpan={6} className="py-10 text-center text-[13px] font-semibold text-[#86868b]">No orders matching the selected filter criteria.</td>
+                            <td colSpan={6} className="py-10 text-center text-[13px] font-semibold text-[#6F7E92]">No orders matching the selected filter criteria.</td>
                           </tr>
                         )}
                         {visibleOrders.map((ord) => (
-                          <tr key={ord.id} className="hover:bg-[#f9f9fb] transition-colors">
+                          <tr key={ord.id} className="hover:bg-[#F6F8FB] transition-colors">
                             <td className="py-3 px-2.5">
-                              <span className="font-mono font-black text-[#ea580c] block whitespace-nowrap">#{ord.orderNumber}</span>
-                              <span className="block text-[11px] text-[#86868b] font-semibold">{shortDate(ord)}</span>
+                              <span className="font-mono font-black text-[#2F6BFF] block whitespace-nowrap">#{ord.orderNumber}</span>
+                              <span className="block text-[11px] text-[#6F7E92] font-semibold">{shortDate(ord)}</span>
                               {ord.shipment && (
                                 <span className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9.5px] font-black uppercase whitespace-nowrap ${ord.shipment.status === 'Cancelled' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-700'}`}>
                                   <PanelIcon name="truck" size={11} />{ord.shipment.remoteStatus ?? ord.shipment.status}
@@ -3124,17 +3125,17 @@ export default function EcommerceAdminPanel() {
                               )}
                             </td>
                             <td className="py-3 px-2.5">
-                              <span className="font-bold text-[#1d1d1f] block">{ord.customerName}</span>
-                              <span className="text-[11px] text-[#86868b] block max-w-[170px] truncate" title={ord.email}>{ord.email}</span>
-                              <span className="text-[11px] text-[#ea580c] font-semibold block">{ord.phone}</span>
+                              <span className="font-bold text-[#0E1A2B] block">{ord.customerName}</span>
+                              <span className="text-[11px] text-[#6F7E92] block max-w-[170px] truncate" title={ord.email}>{ord.email}</span>
+                              <span className="text-[11px] text-[#2F6BFF] font-semibold block">{ord.phone}</span>
                             </td>
                             <td className="py-3 px-2.5 whitespace-nowrap">
-                              <span className="block text-[14px] font-black text-[#ea580c]">₹{ord.total.toLocaleString('en-IN')}</span>
-                              <span className="block text-[11px] font-semibold text-[#86868b]">{itemCount(ord)}</span>
+                              <span className="block text-[14px] font-black text-[#2F6BFF]">₹{ord.total.toLocaleString('en-IN')}</span>
+                              <span className="block text-[11px] font-semibold text-[#6F7E92]">{itemCount(ord)}</span>
                             </td>
                             <td className="py-3 px-2.5">
                               <span className={`inline-flex px-2 py-0.5 rounded-md border text-[10px] font-black uppercase tracking-wider ${paymentBadge(ord)}`}>{ord.paymentStatus}</span>
-                              <span className="block mt-1 font-mono text-[11px] text-[#86868b] whitespace-nowrap">{ord.paymentId ?? '—'}</span>
+                              <span className="block mt-1 font-mono text-[11px] text-[#6F7E92] whitespace-nowrap">{ord.paymentId ?? '—'}</span>
                             </td>
                             <td className="py-3 px-2.5">
                               <select
@@ -3150,11 +3151,11 @@ export default function EcommerceAdminPanel() {
                             </td>
                             <td className="py-3 px-2.5 text-right">
                               <div className="flex items-center justify-end gap-1.5">
-                                <button type="button" onClick={() => setShiprocketOrderId(ord.id)} className="px-2.5 py-1.5 border border-[#ea580c] text-[#ea580c] hover:bg-[#fff2e8] rounded-lg text-[11px] font-extrabold whitespace-nowrap">{shipLabel(ord)}</button>
-                                <button type="button" onClick={() => openInvoice(ord)} title="Open the invoice to print or save as PDF" className="px-2.5 py-1.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-lg text-[11px] font-extrabold inline-flex items-center gap-1 shadow-sm">
+                                <button type="button" onClick={() => setShiprocketOrderId(ord.id)} className="px-2.5 py-1.5 border border-[#2F6BFF] text-[#2F6BFF] hover:bg-[#EAF1FF] rounded-lg text-[11px] font-extrabold whitespace-nowrap">{shipLabel(ord)}</button>
+                                <button type="button" onClick={() => openInvoice(ord)} title="Open the invoice to print or save as PDF" className="px-2.5 py-1.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-lg text-[11px] font-extrabold inline-flex items-center gap-1 shadow-sm">
                                   <PanelIcon name="receipt" size={13} /> Invoice
                                 </button>
-                                <button type="button" onClick={() => setOrderDetailsId(ord.id)} className="px-2.5 py-1.5 bg-[#f5f5f7] hover:bg-[#1d1d1f] hover:text-white text-[#1d1d1f] border border-[#e5e5ea] rounded-lg text-[11px] font-extrabold transition-colors">Details</button>
+                                <button type="button" onClick={() => setOrderDetailsId(ord.id)} className="px-2.5 py-1.5 bg-[#F3F6FA] hover:bg-[#0E1A2B] hover:text-white text-[#0E1A2B] border border-[#E3E8EF] rounded-lg text-[11px] font-extrabold transition-colors">Details</button>
                               </div>
                             </td>
                           </tr>
@@ -3172,17 +3173,17 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {activeTab === 'customers' && (
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="bg-white p-6 rounded-[28px] border border-[#E3E8EF] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Registered Customers</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Registered Customers</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">
                     {customers.length} customers • {customers.filter((c) => customerStats(c.email).orderCount > 0).length} have ordered
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     onClick={exportCustomersCsv}
-                    className="px-5 py-2.5 bg-[#f5f5f7] hover:bg-[#e5e5ea] text-[#1d1d1f] border border-[#e5e5ea] rounded-full text-[13px] font-extrabold transition-all flex items-center gap-2"
+                    className="px-5 py-2.5 bg-[#F3F6FA] hover:bg-[#E3E8EF] text-[#0E1A2B] border border-[#E3E8EF] rounded-full text-[13px] font-extrabold transition-all flex items-center gap-2"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                     <span>Export CSV</span>
@@ -3195,7 +3196,7 @@ export default function EcommerceAdminPanel() {
                       setCustomerFormError('');
                       setIsCustomerModalOpen(true);
                     }}
-                    className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                    className="px-6 py-2.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                   >
                     <span>➕</span>
                     <span>Add Customer</span>
@@ -3209,15 +3210,15 @@ export default function EcommerceAdminPanel() {
                   value={customerSearch}
                   onChange={(e) => setCustomerSearch(e.target.value)}
                   placeholder="Search customers by name, email or phone..."
-                  className="flex-1 px-6 py-3.5 bg-white border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c] transition-all font-semibold shadow-sm"
+                  className="flex-1 px-6 py-3.5 bg-white border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF] transition-all font-semibold shadow-sm"
                 />
-                <div className="flex bg-white border border-[#e5e5ea] rounded-full p-1 shadow-sm" role="group" aria-label="Filter customers">
+                <div className="flex bg-white border border-[#E3E8EF] rounded-full p-1 shadow-sm" role="group" aria-label="Filter customers">
                   {([['all', 'All'], ['ordered', 'Ordered'], ['new', 'New (0 orders)']] as const).map(([key, label]) => (
                     <button
                       key={key}
                       onClick={() => setCustomerFilter(key)}
                       aria-pressed={customerFilter === key}
-                      className={`px-4 py-2 rounded-full text-[12px] font-extrabold transition-all whitespace-nowrap ${customerFilter === key ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'}`}
+                      className={`px-4 py-2 rounded-full text-[12px] font-extrabold transition-all whitespace-nowrap ${customerFilter === key ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white shadow-sm' : 'text-[#5B6B80] hover:text-[#0E1A2B]'}`}
                     >
                       {label}
                     </button>
@@ -3227,7 +3228,7 @@ export default function EcommerceAdminPanel() {
                   value={customerSort}
                   onChange={(e) => setCustomerSort(e.target.value as typeof customerSort)}
                   aria-label="Sort customers"
-                  className="px-6 py-3.5 bg-white border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c] transition-all font-bold cursor-pointer shadow-sm"
+                  className="px-6 py-3.5 bg-white border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF] transition-all font-bold cursor-pointer shadow-sm"
                 >
                   <option value="recent">Recently Registered</option>
                   <option value="name">Name (A-Z)</option>
@@ -3236,10 +3237,10 @@ export default function EcommerceAdminPanel() {
                 </select>
               </div>
 
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 shadow-sm overflow-hidden">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-6 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-[14px]">
-                    <thead className="text-[#86868b] border-b border-[#e5e5ea]">
+                    <thead className="text-[#6F7E92] border-b border-[#E3E8EF]">
                       <tr>
                         <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Customer</th>
                         <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Phone</th>
@@ -3249,10 +3250,10 @@ export default function EcommerceAdminPanel() {
                         <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#e5e5ea]">
+                    <tbody className="divide-y divide-[#E3E8EF]">
                       {visibleCustomers.length === 0 && (
                         <tr>
-                          <td colSpan={6} className="py-12 text-center text-[13px] font-semibold text-[#86868b]">
+                          <td colSpan={6} className="py-12 text-center text-[13px] font-semibold text-[#6F7E92]">
                             No customers match your search.
                           </td>
                         </tr>
@@ -3260,26 +3261,26 @@ export default function EcommerceAdminPanel() {
                       {visibleCustomers.map((cus) => {
                         const stats = customerStats(cus.email);
                         return (
-                          <tr key={cus.id} className="hover:bg-[#f5f5f7]/60 transition-colors">
+                          <tr key={cus.id} className="hover:bg-[#F3F6FA]/60 transition-colors">
                             <td className="py-4 px-4">
                               <div className="flex items-center gap-3">
-                                <span className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#ea580c] to-[#f97316] text-white flex items-center justify-center font-black text-[13px] shrink-0">
+                                <span className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#2F6BFF] to-[#5A8BFF] text-white flex items-center justify-center font-black text-[13px] shrink-0">
                                   {cus.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()}
                                 </span>
                                 <div>
-                                  <span className="font-bold text-[#1d1d1f] block">{cus.name}</span>
-                                  <span className="text-[12px] text-[#86868b] flex items-center gap-1.5">
+                                  <span className="font-bold text-[#0E1A2B] block">{cus.name}</span>
+                                  <span className="text-[12px] text-[#6F7E92] flex items-center gap-1.5">
                                     {cus.email}
-                                    <button onClick={() => copyText(cus.email, 'Email')} title="Copy email address" className="text-[#c7c7cc] hover:text-[#ea580c]">⧉</button>
+                                    <button onClick={() => copyText(cus.email, 'Email')} title="Copy email address" className="text-[#A9B4C2] hover:text-[#2F6BFF]">⧉</button>
                                   </span>
                                 </div>
                               </div>
                             </td>
-                            <td className="py-4 px-4 text-[13px] font-semibold text-[#6e6e73]">
+                            <td className="py-4 px-4 text-[13px] font-semibold text-[#5B6B80]">
                               {cus.phone ? (
                                 <span className="flex items-center gap-2 whitespace-nowrap">
                                   {cus.phone}
-                                  <button onClick={() => copyText(cus.phone, 'Phone number')} title="Copy phone number" className="text-[#c7c7cc] hover:text-[#ea580c]">⧉</button>
+                                  <button onClick={() => copyText(cus.phone, 'Phone number')} title="Copy phone number" className="text-[#A9B4C2] hover:text-[#2F6BFF]">⧉</button>
                                   <a
                                     href={whatsappLink(cus.phone)}
                                     target="_blank"
@@ -3291,21 +3292,21 @@ export default function EcommerceAdminPanel() {
                                   </a>
                                 </span>
                               ) : (
-                                <span className="text-[#c7c7cc]">Not provided</span>
+                                <span className="text-[#A9B4C2]">Not provided</span>
                               )}
                             </td>
-                            <td className="py-4 px-4 text-[13px] font-semibold text-[#6e6e73]">{cus.registeredDate}</td>
-                            <td className="py-4 px-4 font-bold text-[#1d1d1f]">
+                            <td className="py-4 px-4 text-[13px] font-semibold text-[#5B6B80]">{cus.registeredDate}</td>
+                            <td className="py-4 px-4 font-bold text-[#0E1A2B]">
                               {stats.orderCount || <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-black uppercase">0 • New</span>}
                             </td>
-                            <td className="py-4 px-4 font-black text-[#1d1d1f]">₹{stats.totalSpent.toLocaleString()}</td>
+                            <td className="py-4 px-4 font-black text-[#0E1A2B]">₹{stats.totalSpent.toLocaleString()}</td>
                             <td className="py-4 px-4 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => setCustomerHistoryEmail(cus.email)}
                                   disabled={stats.orderCount === 0}
                                   title="See this customer's order history"
-                                  className="px-4 py-1.5 bg-[#f5f5f7] hover:bg-[#fff2e8] text-[#ea580c] border border-[#e5e5ea] rounded-full text-[12px] font-extrabold transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                                  className="px-4 py-1.5 bg-[#F3F6FA] hover:bg-[#EAF1FF] text-[#2F6BFF] border border-[#E3E8EF] rounded-full text-[12px] font-extrabold transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
                                 >
                                   View Orders
                                 </button>
@@ -3336,20 +3337,20 @@ export default function EcommerceAdminPanel() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Product Grid on Left */}
               <div className="lg:col-span-8 space-y-5">
-                <div className="bg-white p-5 rounded-[28px] border border-[#e5e5ea] shadow-sm space-y-3">
-                  <h3 className="text-lg font-bold tracking-tight text-[#1d1d1f]">Catalog Selector</h3>
+                <div className="bg-white p-5 rounded-[28px] border border-[#E3E8EF] shadow-sm space-y-3">
+                  <h3 className="text-lg font-bold tracking-tight text-[#0E1A2B]">Catalog Selector</h3>
                   <div className="relative">
                     <input
                       type="text"
                       placeholder="Search product by title, SKU, or category..."
                       value={posSearchTerm}
                       onChange={(e) => setPosSearchTerm(e.target.value)}
-                      className="w-full pl-5 pr-14 sm:pr-28 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] font-semibold"
+                      className="w-full pl-5 pr-14 sm:pr-28 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] font-semibold"
                     />
                     <button
                       onClick={() => setIsPosCameraOpen(true)}
                       aria-label="Scan a QR code with the camera"
-                      className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 sm:px-4 py-1.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[11px] font-extrabold shadow-sm flex items-center gap-1.5"
+                      className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 sm:px-4 py-1.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full text-[11px] font-extrabold shadow-sm flex items-center gap-1.5"
                     >
                       <span className="flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg></span>
                       <span className="hidden sm:inline">Scan</span>
@@ -3369,34 +3370,34 @@ export default function EcommerceAdminPanel() {
                     .map((prod) => (
                       <div
                         key={prod.id}
-                        className="bg-white border border-[#e5e5ea] rounded-[24px] p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                        className="bg-white border border-[#E3E8EF] rounded-[24px] p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
                       >
                         <div className="flex gap-3 items-start">
                           <img
                             src={prod.image}
                             alt={prod.name}
-                            className="w-14 h-14 rounded-xl object-cover border border-[#e5e5ea] bg-white shrink-0"
+                            className="w-14 h-14 rounded-xl object-cover border border-[#E3E8EF] bg-white shrink-0"
                           />
                           <div className="min-w-0 flex-1">
-                            <span className="text-[9px] font-black text-[#ea580c] uppercase tracking-wider block">
+                            <span className="text-[9px] font-black text-[#2F6BFF] uppercase tracking-wider block">
                               {prod.category}
                             </span>
-                            <h4 className="font-bold text-[#1d1d1f] text-[13px] leading-snug line-clamp-2">
+                            <h4 className="font-bold text-[#0E1A2B] text-[13px] leading-snug line-clamp-2">
                               {prod.name}
                             </h4>
-                            <span className="font-black text-[#1d1d1f] text-[15px] block mt-1">
+                            <span className="font-black text-[#0E1A2B] text-[15px] block mt-1">
                               ₹{prod.price.toLocaleString()}
                             </span>
                           </div>
                         </div>
 
-                        <div className="pt-3 mt-2.5 border-t border-[#e5e5ea] flex justify-between items-center">
-                          <span className="text-[11px] text-[#86868b] font-semibold">Stock: {prod.stock}</span>
+                        <div className="pt-3 mt-2.5 border-t border-[#E3E8EF] flex justify-between items-center">
+                          <span className="text-[11px] text-[#6F7E92] font-semibold">Stock: {prod.stock}</span>
                           <button
                             onClick={() => addToPosCart(prod)}
                             disabled={prod.stock <= 0}
                             className={`px-3 py-1.5 rounded-full text-[11px] font-black transition-all ${prod.stock > 0
-                              ? 'bg-[#f5f5f7] hover:bg-[#fff2e8] text-[#ea580c] hover:border-[#ea580c] border border-[#e5e5ea]'
+                              ? 'bg-[#F3F6FA] hover:bg-[#EAF1FF] text-[#2F6BFF] hover:border-[#2F6BFF] border border-[#E3E8EF]'
                               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                               }`}
                           >
@@ -3409,12 +3410,12 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Compact Current Bill Card */}
-              <div className="lg:col-span-4 bg-white border border-[#e5e5ea] rounded-[24px] p-4 shadow-sm flex flex-col gap-2.5 sticky top-6 self-start w-full">
+              <div className="lg:col-span-4 bg-white border border-[#E3E8EF] rounded-[24px] p-4 shadow-sm flex flex-col gap-2.5 sticky top-6 self-start w-full">
                 {/* Header */}
-                <div className="flex justify-between items-center pb-2.5 border-b border-[#e5e5ea]">
+                <div className="flex justify-between items-center pb-2.5 border-b border-[#E3E8EF]">
                   <div>
-                    <h3 className="text-[14px] font-black text-[#1d1d1f] uppercase tracking-wide">Current Bill</h3>
-                    <p className="text-[10px] text-[#86868b] font-semibold">Terminal #01 · Walk-in Sale</p>
+                    <h3 className="text-[14px] font-black text-[#0E1A2B] uppercase tracking-wide">Current Bill</h3>
+                    <p className="text-[10px] text-[#6F7E92] font-semibold">Terminal #01 · Walk-in Sale</p>
                   </div>
                   {posCart.length > 0 && (
                     <button onClick={() => setPosCart([])} className="text-[11px] text-red-500 hover:text-red-700 font-bold px-2 py-0.5 rounded-full hover:bg-red-50">Clear All</button>
@@ -3422,12 +3423,12 @@ export default function EcommerceAdminPanel() {
                 </div>
 
                 {/* Customer Row */}
-                <div className="bg-[#f9f9fb] p-2.5 rounded-2xl border border-[#e5e5ea] space-y-1.5">
+                <div className="bg-[#F6F8FB] p-2.5 rounded-2xl border border-[#E3E8EF] space-y-1.5">
                   <div className="flex justify-between items-center px-1">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#86868b]">Customer Info</span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#6F7E92]">Customer Info</span>
                     <div className="flex gap-2">
-                      <button className="text-[10px] font-bold text-[#ea580c] hover:underline" onClick={() => { setCustomerLookupQuery(posCustomerPhone.trim() || posCustomerName.trim()); setIsCustomerLookupOpen(true); }}>Lookup</button>
-                      <button className="text-[10px] font-bold text-[#ea580c] hover:underline" onClick={() => { setNewCustomerFormName(posCustomerName); setNewCustomerFormPhone(posCustomerPhone); setNewCustomerFormError(''); setIsNewCustomerModalOpen(true); }}>+ New</button>
+                      <button className="text-[10px] font-bold text-[#2F6BFF] hover:underline" onClick={() => { setCustomerLookupQuery(posCustomerPhone.trim() || posCustomerName.trim()); setIsCustomerLookupOpen(true); }}>Lookup</button>
+                      <button className="text-[10px] font-bold text-[#2F6BFF] hover:underline" onClick={() => { setNewCustomerFormName(posCustomerName); setNewCustomerFormPhone(posCustomerPhone); setNewCustomerFormError(''); setIsNewCustomerModalOpen(true); }}>+ New</button>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-1.5">
@@ -3437,7 +3438,7 @@ export default function EcommerceAdminPanel() {
                       onChange={(e) => setPosCustomerName(e.target.value)}
                       placeholder="Name *"
                       required
-                      className="w-full px-2.5 py-1.5 bg-white border border-[#e5e5ea] rounded-xl text-[12px] font-semibold text-[#1d1d1f] focus:outline-none focus:border-[#ea580c]"
+                      className="w-full px-2.5 py-1.5 bg-white border border-[#E3E8EF] rounded-xl text-[12px] font-semibold text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF]"
                     />
                     <input
                       id="pos-customer-phone"
@@ -3447,7 +3448,7 @@ export default function EcommerceAdminPanel() {
                       onChange={(e) => setPosCustomerPhone(e.target.value)}
                       placeholder="Phone *"
                       required
-                      className="w-full px-2.5 py-1.5 bg-white border border-[#e5e5ea] rounded-xl text-[12px] font-semibold text-[#1d1d1f] focus:outline-none focus:border-[#ea580c]"
+                      className="w-full px-2.5 py-1.5 bg-white border border-[#E3E8EF] rounded-xl text-[12px] font-semibold text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF]"
                     />
                   </div>
                 </div>
@@ -3455,20 +3456,20 @@ export default function EcommerceAdminPanel() {
                 {/* Cart Items */}
                 <div className="space-y-1.5 max-h-44 overflow-y-auto pr-0.5 custom-scrollbar">
                   {posCart.length === 0 ? (
-                    <div className="py-7 text-center text-[#86868b] text-[12px] font-semibold border border-dashed border-[#e5e5ea] rounded-2xl">
+                    <div className="py-7 text-center text-[#6F7E92] text-[12px] font-semibold border border-dashed border-[#E3E8EF] rounded-2xl">
                       Cart empty · Click &quot;+ Add to Bill&quot;
                     </div>
                   ) : (
                     posCart.map((item) => (
-                      <div key={item.product.id} className="p-2 bg-[#f5f5f7] rounded-xl flex justify-between items-center">
+                      <div key={item.product.id} className="p-2 bg-[#F3F6FA] rounded-xl flex justify-between items-center">
                         <div className="min-w-0 flex-1 mr-2">
-                          <span className="font-bold text-[#1d1d1f] text-[12px] block truncate">{item.product.name}</span>
-                          <span className="text-[11px] text-[#ea580c] font-black">₹{item.product.price.toLocaleString()}</span>
+                          <span className="font-bold text-[#0E1A2B] text-[12px] block truncate">{item.product.name}</span>
+                          <span className="text-[11px] text-[#2F6BFF] font-black">₹{item.product.price.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
-                          <button onClick={() => updatePosQty(item.product.id, -1)} className="w-5 h-5 rounded-full bg-white border border-[#e5e5ea] font-black text-[11px] hover:bg-[#fff2e8] flex items-center justify-center">-</button>
+                          <button onClick={() => updatePosQty(item.product.id, -1)} className="w-5 h-5 rounded-full bg-white border border-[#E3E8EF] font-black text-[11px] hover:bg-[#EAF1FF] flex items-center justify-center">-</button>
                           <span className="font-black text-[12px] w-4 text-center">{item.quantity}</span>
-                          <button onClick={() => updatePosQty(item.product.id, 1)} className="w-5 h-5 rounded-full bg-white border border-[#e5e5ea] font-black text-[11px] hover:bg-[#fff2e8] flex items-center justify-center">+</button>
+                          <button onClick={() => updatePosQty(item.product.id, 1)} className="w-5 h-5 rounded-full bg-white border border-[#E3E8EF] font-black text-[11px] hover:bg-[#EAF1FF] flex items-center justify-center">+</button>
                         </div>
                       </div>
                     ))
@@ -3476,14 +3477,14 @@ export default function EcommerceAdminPanel() {
                 </div>
 
                 {/* Totals */}
-                <div className="border-t border-[#e5e5ea] pt-2 space-y-1 text-[11.5px] font-semibold text-[#6e6e73]">
-                  <div className="flex justify-between"><span>Subtotal</span><span className="font-bold text-[#1d1d1f]">₹{posSubtotal.toLocaleString()}</span></div>
-                  <div className="flex justify-between"><span>GST (18%)</span><span className="font-bold text-[#1d1d1f]">₹{posTax.toLocaleString()}</span></div>
-                  <div className="flex justify-between items-center text-[14px] font-black text-[#1d1d1f] pt-1 border-t border-[#e5e5ea]">
+                <div className="border-t border-[#E3E8EF] pt-2 space-y-1 text-[11.5px] font-semibold text-[#5B6B80]">
+                  <div className="flex justify-between"><span>Subtotal</span><span className="font-bold text-[#0E1A2B]">₹{posSubtotal.toLocaleString()}</span></div>
+                  <div className="flex justify-between"><span>GST (18%)</span><span className="font-bold text-[#0E1A2B]">₹{posTax.toLocaleString()}</span></div>
+                  <div className="flex justify-between items-center text-[14px] font-black text-[#0E1A2B] pt-1 border-t border-[#E3E8EF]">
                     <span>Total</span>
-                    <div className="flex items-center text-[#ea580c]">
+                    <div className="flex items-center text-[#2F6BFF]">
                       <span>₹</span>
-                      <input type="number" value={posManualTotal !== '' ? posManualTotal : posCalculatedTotal} onChange={(e) => setPosManualTotal(e.target.value)} className="w-20 bg-transparent outline-none border-b border-dashed border-[#ea580c] ml-1 text-right py-0 font-black text-[14px]" />
+                      <input type="number" value={posManualTotal !== '' ? posManualTotal : posCalculatedTotal} onChange={(e) => setPosManualTotal(e.target.value)} className="w-20 bg-transparent outline-none border-b border-dashed border-[#2F6BFF] ml-1 text-right py-0 font-black text-[14px]" />
                     </div>
                   </div>
                 </div>
@@ -3492,7 +3493,7 @@ export default function EcommerceAdminPanel() {
                 <div className="grid grid-cols-3 gap-1.5">
                   {(['UPI', 'Card', 'COD'] as const).map((method) => (
                     <button key={method} onClick={() => setPosPaymentMethod(method)}
-                      className={`py-1 rounded-lg text-[11px] font-black border transition-all ${posPaymentMethod === method ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white border-transparent shadow-xs' : 'bg-[#f5f5f7] text-[#6e6e73] border-[#e5e5ea] hover:bg-white'}`}>
+                      className={`py-1 rounded-lg text-[11px] font-black border transition-all ${posPaymentMethod === method ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white border-transparent shadow-xs' : 'bg-[#F3F6FA] text-[#5B6B80] border-[#E3E8EF] hover:bg-white'}`}>
                       {method}
                     </button>
                   ))}
@@ -3502,7 +3503,7 @@ export default function EcommerceAdminPanel() {
                 <button
                   onClick={handleCompletePosOrder}
                   disabled={posCart.length === 0}
-                  className={`w-full py-2.5 rounded-full font-black text-[12px] uppercase tracking-wider transition-all ${posCart.length > 0 ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white shadow-md hover:shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                  className={`w-full py-2.5 rounded-full font-black text-[12px] uppercase tracking-wider transition-all ${posCart.length > 0 ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white shadow-md hover:shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
                 >
                   Pay ₹{posTotal.toLocaleString()}
                 </button>
@@ -3515,26 +3516,26 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {activeTab === 'pos-history' && (
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm flex justify-between items-center">
+              <div className="bg-white p-6 rounded-[28px] border border-[#E3E8EF] shadow-sm flex justify-between items-center">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">POS In-Store Register History</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Audit trail of completed counter sales</p>
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">POS In-Store Register History</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">Audit trail of completed counter sales</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button className="px-4 py-2 bg-[#f5f5f7] border border-[#e5e5ea] hover:bg-[#e5e5ea] text-[#1d1d1f] font-extrabold text-[12px] rounded-full flex items-center gap-1.5 transition-all shadow-sm">
+                  <button className="px-4 py-2 bg-[#F3F6FA] border border-[#E3E8EF] hover:bg-[#E3E8EF] text-[#0E1A2B] font-extrabold text-[12px] rounded-full flex items-center gap-1.5 transition-all shadow-sm">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
                     Bulk Upload
                   </button>
-                  <span className="px-4 py-1.5 bg-[#fff2e8] text-[#ea580c] font-black text-[13px] rounded-full border border-orange-200">
+                  <span className="px-4 py-1.5 bg-[#EAF1FF] text-[#2F6BFF] font-black text-[13px] rounded-full border border-[#C9D9FF]">
                     {posHistory.length} Receipts Logged
                   </span>
                 </div>
               </div>
 
               {/* Transactions Table */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 shadow-sm overflow-hidden">
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-6 shadow-sm overflow-hidden">
                 <table className="w-full text-left text-[14px]">
-                  <thead className="text-[#86868b] border-b border-[#e5e5ea]">
+                  <thead className="text-[#6F7E92] border-b border-[#E3E8EF]">
                     <tr>
                       <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Receipt No.</th>
                       <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Date & Time</th>
@@ -3545,19 +3546,19 @@ export default function EcommerceAdminPanel() {
                       <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider text-right">Receipt</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e5e5ea]">
+                  <tbody className="divide-y divide-[#E3E8EF]">
                     {posHistory.map((tx) => (
-                      <tr key={tx.id} className="hover:bg-[#f5f5f7]/60 transition-colors">
-                        <td className="py-4 px-4 font-mono font-bold text-[#ea580c]">{tx.receiptNo}</td>
-                        <td className="py-4 px-4 text-[#6e6e73] font-semibold text-[13px]">{tx.date}</td>
-                        <td className="py-4 px-4 font-bold text-[#1d1d1f]">{tx.customer}</td>
-                        <td className="py-4 px-4 text-[13px] text-[#6e6e73] font-medium">{tx.cashier}</td>
+                      <tr key={tx.id} className="hover:bg-[#F3F6FA]/60 transition-colors">
+                        <td className="py-4 px-4 font-mono font-bold text-[#2F6BFF]">{tx.receiptNo}</td>
+                        <td className="py-4 px-4 text-[#5B6B80] font-semibold text-[13px]">{tx.date}</td>
+                        <td className="py-4 px-4 font-bold text-[#0E1A2B]">{tx.customer}</td>
+                        <td className="py-4 px-4 text-[13px] text-[#5B6B80] font-medium">{tx.cashier}</td>
                         <td className="py-4 px-4">
-                          <span className="px-3 py-1 bg-[#f5f5f7] border border-[#e5e5ea] text-[#1d1d1f] rounded-full text-[11px] font-black">
+                          <span className="px-3 py-1 bg-[#F3F6FA] border border-[#E3E8EF] text-[#0E1A2B] rounded-full text-[11px] font-black">
                             {tx.paymentMethod}
                           </span>
                         </td>
-                        <td className="py-4 px-4 font-black text-[#1d1d1f] text-[15px]">
+                        <td className="py-4 px-4 font-black text-[#0E1A2B] text-[15px]">
                           ₹{tx.total.toLocaleString()}
                         </td>
                         <td className="py-4 px-4 text-right">
@@ -3568,13 +3569,13 @@ export default function EcommerceAdminPanel() {
                                 setExchangeSelected([]);
                                 setIsExchangeModalOpen(true);
                               }}
-                              className="px-4 py-1.5 bg-white hover:bg-[#f5f5f7] text-[#1d1d1f] border border-[#e5e5ea] rounded-full text-[12px] font-bold transition-all shadow-sm"
+                              className="px-4 py-1.5 bg-white hover:bg-[#F3F6FA] text-[#0E1A2B] border border-[#E3E8EF] rounded-full text-[12px] font-bold transition-all shadow-sm"
                             >
                               Exchange
                             </button>
                             <button
                               onClick={() => setPosReceiptModal(tx)}
-                              className="px-4 py-1.5 bg-[#f5f5f7] hover:bg-[#fff2e8] text-[#ea580c] border border-[#e5e5ea] rounded-full text-[12px] font-extrabold transition-all"
+                              className="px-4 py-1.5 bg-[#F3F6FA] hover:bg-[#EAF1FF] text-[#2F6BFF] border border-[#E3E8EF] rounded-full text-[12px] font-extrabold transition-all"
                             >
                               Print Receipt
                             </button>
@@ -3594,14 +3595,14 @@ export default function EcommerceAdminPanel() {
           {activeTab === 'videos' && (
             <div className="space-y-6">
               {/* Header Toolbar */}
-              <div className="bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="bg-white p-6 rounded-[28px] border border-[#E3E8EF] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Product Video Marketing</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Upload product demos, unboxings & feature reviews</p>
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Product Video Marketing</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">Upload product demos, unboxings & feature reviews</p>
                 </div>
                 <button
                   onClick={() => setIsUploadVideoModalOpen(true)}
-                  className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
                   <PanelIcon name="video" size={16} />
                   <span>Upload New Video</span>
@@ -3613,17 +3614,17 @@ export default function EcommerceAdminPanel() {
                 {videos.map((vid) => (
                   <div
                     key={vid.id}
-                    className="bg-white border border-[#e5e5ea] rounded-[32px] overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
+                    className="bg-white border border-[#E3E8EF] rounded-[32px] overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
                   >
                     {/* Thumbnail & Video Preview simulation */}
-                    <div className="relative h-48 bg-[#1d1d1f] overflow-hidden">
+                    <div className="relative h-48 bg-[#0E1A2B] overflow-hidden">
                       <img
                         src={vid.thumbnail || products.find((p) => p.name === vid.productName)?.image || ''}
                         alt={vid.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                       />
                       <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                        <div className="w-12 h-12 rounded-full bg-white/90 text-[#ea580c] flex items-center justify-center font-black text-xl shadow-lg pl-1">
+                        <div className="w-12 h-12 rounded-full bg-white/90 text-[#2F6BFF] flex items-center justify-center font-black text-xl shadow-lg pl-1">
                           ▶
                         </div>
                       </div>
@@ -3634,11 +3635,11 @@ export default function EcommerceAdminPanel() {
 
                     {/* Meta info */}
                     <div className="p-6 space-y-3">
-                      <span className="px-3 py-1 bg-[#fff2e8] text-[#ea580c] rounded-full text-[11px] font-black uppercase tracking-wider border border-orange-200">
+                      <span className="px-3 py-1 bg-[#EAF1FF] text-[#2F6BFF] rounded-full text-[11px] font-black uppercase tracking-wider border border-[#C9D9FF]">
                         Linked: {vid.productName}
                       </span>
-                      <h4 className="font-bold text-[#1d1d1f] text-[15px] leading-snug">{vid.title}</h4>
-                      <div className="flex justify-between items-center text-[12px] text-[#86868b] font-semibold pt-2 border-t border-[#e5e5ea]">
+                      <h4 className="font-bold text-[#0E1A2B] text-[15px] leading-snug">{vid.title}</h4>
+                      <div className="flex justify-between items-center text-[12px] text-[#6F7E92] font-semibold pt-2 border-t border-[#E3E8EF]">
                         <span className="inline-flex items-center gap-1"><PanelIcon name="views" size={14} />{vid.views.toLocaleString()} views</span>
                         <span>{vid.dateAdded}</span>
                       </div>
@@ -3647,7 +3648,7 @@ export default function EcommerceAdminPanel() {
                     <div className="px-6 pb-5 pt-1 flex justify-end gap-3">
                       <button
                         onClick={() => setPlayingVideo(vid)}
-                        className="text-[12px] text-[#ea580c] font-black hover:underline"
+                        className="text-[12px] text-[#2F6BFF] font-black hover:underline"
                       >
                         Play Demo
                       </button>
@@ -3675,21 +3676,21 @@ export default function EcommerceAdminPanel() {
                   { title: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}`, change: `Website ₹${websiteRevenue.toLocaleString('en-IN')} · POS ₹${posRevenue.toLocaleString('en-IN')}`, color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg> },
                   { title: 'Total Orders', value: orders.length.toString(), change: `${orders.filter((o) => o.orderStatus === 'Delivered').length} delivered · ${orders.filter((o) => o.orderStatus === 'Cancelled').length} cancelled`, color: 'text-blue-600', bg: 'bg-blue-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg> },
                   { title: 'Products Listed', value: products.length.toString(), change: `${products.filter((p) => p.stock === 0).length} sold out · ${products.reduce((sum, p) => sum + p.stock, 0).toLocaleString('en-IN')} units`, color: 'text-purple-600', bg: 'bg-purple-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg> },
-                  { title: 'POS Transactions', value: posHistory.length.toString(), change: `₹${posRevenue.toLocaleString('en-IN')} in-store sales`, color: 'text-orange-600', bg: 'bg-orange-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg> },
+                  { title: 'POS Transactions', value: posHistory.length.toString(), change: `₹${posRevenue.toLocaleString('en-IN')} in-store sales`, color: 'text-[#2F6BFF]', bg: 'bg-[#EAF1FF]', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg> },
                 ].map((card, i) => (
-                  <div key={i} className="bg-white border border-[#e5e5ea] rounded-[28px] p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div key={i} className="bg-white border border-[#E3E8EF] rounded-[28px] p-6 shadow-sm hover:shadow-md transition-shadow">
                     <span className={`mb-4 w-11 h-11 rounded-2xl ${card.bg} flex items-center justify-center ${card.color}`}>{card.icon}</span>
-                    <p className="text-[11px] text-[#86868b] font-bold uppercase tracking-wider mb-1">{card.title}</p>
-                    <p className="text-2xl font-black text-[#1d1d1f] tracking-tight">{card.value}</p>
+                    <p className="text-[11px] text-[#6F7E92] font-bold uppercase tracking-wider mb-1">{card.title}</p>
+                    <p className="text-2xl font-black text-[#0E1A2B] tracking-tight">{card.value}</p>
                     <p className={`mt-1 text-[12px] font-bold ${card.color}`}>{card.change}</p>
                   </div>
                 ))}
               </div>
 
               {/* Sales by Category */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm">
-                <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] mb-1">Sales by Category</h3>
-                <p className="text-[12px] text-[#86868b] font-semibold mb-6">Website orders (not cancelled) and POS bills.</p>
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 shadow-sm">
+                <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B] mb-1">Sales by Category</h3>
+                <p className="text-[12px] text-[#6F7E92] font-semibold mb-6">Website orders (not cancelled) and POS bills.</p>
                 <div className="space-y-4">
                   {categories.map((cat) => {
                     const catRevenue = soldLines.filter((line) => categoryOfSale(line) === cat.name).reduce((sum, line) => sum + line.amount, 0);
@@ -3697,15 +3698,15 @@ export default function EcommerceAdminPanel() {
                     const percentage = allSales > 0 ? Math.round((catRevenue / allSales) * 100) : 0;
                     return (
                       <div key={cat.id} className="flex items-center gap-4">
-                        <div className="w-32 text-[13px] font-bold text-[#1d1d1f] truncate">{cat.name}</div>
-                        <div className="flex-1 bg-[#f5f5f7] rounded-full h-3 overflow-hidden">
+                        <div className="w-32 text-[13px] font-bold text-[#0E1A2B] truncate">{cat.name}</div>
+                        <div className="flex-1 bg-[#F3F6FA] rounded-full h-3 overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-[#ea580c] to-[#f97316] rounded-full transition-all duration-700"
+                            className="h-full bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] rounded-full transition-all duration-700"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
-                        <div className="w-16 text-right text-[13px] font-extrabold text-[#ea580c]">{percentage}%</div>
-                        <div className="w-28 text-right text-[12px] font-bold text-[#86868b]">₹{catRevenue.toLocaleString()}</div>
+                        <div className="w-16 text-right text-[13px] font-extrabold text-[#2F6BFF]">{percentage}%</div>
+                        <div className="w-28 text-right text-[12px] font-bold text-[#6F7E92]">₹{catRevenue.toLocaleString()}</div>
                       </div>
                     );
                   })}
@@ -3715,34 +3716,34 @@ export default function EcommerceAdminPanel() {
               {/* Inventory & Order Report Table */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Top Products */}
-                <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 shadow-sm">
-                  <h3 className="text-lg font-bold tracking-tight text-[#1d1d1f] mb-4">Top Products by Stock Value</h3>
+                <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-6 shadow-sm">
+                  <h3 className="text-lg font-bold tracking-tight text-[#0E1A2B] mb-4">Top Products by Stock Value</h3>
                   <div className="space-y-3">
                     {[...products]
                       .sort((a, b) => (b.price * b.stock) - (a.price * a.stock))
                       .slice(0, 5)
                       .map((p, i) => (
-                        <div key={p.id} className="flex items-center gap-3 p-3 bg-[#f5f5f7] rounded-2xl">
-                          <span className="w-7 h-7 rounded-full bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white flex items-center justify-center text-[11px] font-black">{i + 1}</span>
+                        <div key={p.id} className="flex items-center gap-3 p-3 bg-[#F3F6FA] rounded-2xl">
+                          <span className="w-7 h-7 rounded-full bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white flex items-center justify-center text-[11px] font-black">{i + 1}</span>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-bold text-[#1d1d1f] truncate">{p.name}</p>
-                            <p className="text-[11px] text-[#86868b] font-semibold">{p.stock} units × ₹{p.price.toLocaleString()}</p>
+                            <p className="text-[13px] font-bold text-[#0E1A2B] truncate">{p.name}</p>
+                            <p className="text-[11px] text-[#6F7E92] font-semibold">{p.stock} units × ₹{p.price.toLocaleString()}</p>
                           </div>
-                          <span className="text-[13px] font-black text-[#ea580c]">₹{(p.price * p.stock).toLocaleString()}</span>
+                          <span className="text-[13px] font-black text-[#2F6BFF]">₹{(p.price * p.stock).toLocaleString()}</span>
                         </div>
                       ))}
                   </div>
                 </div>
 
                 {/* Recent Orders Summary */}
-                <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 shadow-sm">
-                  <h3 className="text-lg font-bold tracking-tight text-[#1d1d1f] mb-4">Recent Orders</h3>
+                <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-6 shadow-sm">
+                  <h3 className="text-lg font-bold tracking-tight text-[#0E1A2B] mb-4">Recent Orders</h3>
                   <div className="space-y-3">
                     {orders.slice(0, 5).map((order) => (
-                      <div key={order.id} className="flex items-center justify-between p-3 bg-[#f5f5f7] rounded-2xl">
+                      <div key={order.id} className="flex items-center justify-between p-3 bg-[#F3F6FA] rounded-2xl">
                         <div className="flex-1 min-w-0">
-                          <p className="text-[13px] font-bold text-[#1d1d1f]">{order.customerName}</p>
-                          <p className="text-[11px] text-[#86868b] font-semibold">{order.date} • {order.paymentMethod}</p>
+                          <p className="text-[13px] font-bold text-[#0E1A2B]">{order.customerName}</p>
+                          <p className="text-[11px] text-[#6F7E92] font-semibold">{order.date} • {order.paymentMethod}</p>
                         </div>
                         <div className="flex items-center gap-3">
                           <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${order.orderStatus === 'Delivered' ? 'bg-emerald-100 text-emerald-700'
@@ -3750,7 +3751,7 @@ export default function EcommerceAdminPanel() {
                               : order.orderStatus === 'Processing' ? 'bg-amber-100 text-amber-700'
                                 : 'bg-gray-100 text-gray-700'
                             }`}>{order.orderStatus}</span>
-                          <span className="text-[13px] font-black text-[#1d1d1f]">₹{order.total.toLocaleString()}</span>
+                          <span className="text-[13px] font-black text-[#0E1A2B]">₹{order.total.toLocaleString()}</span>
                         </div>
                       </div>
                     ))}
@@ -3759,26 +3760,26 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Category Hierarchy Overview */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm">
-                <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] mb-6">Category Hierarchy Map</h3>
+              <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 shadow-sm">
+                <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B] mb-6">Category Hierarchy Map</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {categories.map((cat) => (
-                    <div key={cat.id} className="border border-[#e5e5ea] rounded-[24px] p-5 bg-[#fafafa]">
-                      <p className="text-[14px] font-black text-[#1d1d1f] mb-3 flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#ea580c] to-[#f97316]"></span>
+                    <div key={cat.id} className="border border-[#E3E8EF] rounded-[24px] p-5 bg-[#F8FAFC]">
+                      <p className="text-[14px] font-black text-[#0E1A2B] mb-3 flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF]"></span>
                         {cat.name}
                       </p>
                       <div className="pl-4 space-y-2">
                         {subCategories.filter(sc => sc.parentCategory === cat.name).map((sc) => (
                           <div key={sc.id}>
-                            <p className="text-[12px] font-bold text-[#6e6e73] flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#86868b]"></span>
+                            <p className="text-[12px] font-bold text-[#5B6B80] flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#6F7E92]"></span>
                               {sc.name}
                             </p>
                             <div className="pl-4 mt-1 space-y-1">
                               {subSubCategories.filter(ssc => ssc.parentCategory === cat.name && ssc.parentSubCategory === sc.name).map((ssc) => (
-                                <p key={ssc.id} className="text-[11px] font-semibold text-[#86868b] flex items-center gap-1.5">
-                                  <span className="w-1 h-1 rounded-full bg-[#d2d2d7]"></span>
+                                <p key={ssc.id} className="text-[11px] font-semibold text-[#6F7E92] flex items-center gap-1.5">
+                                  <span className="w-1 h-1 rounded-full bg-[#CFD8E3]"></span>
                                   {ssc.name}
                                 </p>
                               ))}
@@ -3798,16 +3799,16 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {activeTab === 'banners' && (
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="bg-white p-6 rounded-[28px] border border-[#E3E8EF] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Home Hero Banners</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Home Hero Banners</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">
                     {banners.filter((b) => b.isActive).length} of {banners.length} slides live on the storefront home page
                   </p>
                 </div>
                 <button
                   onClick={() => openBannerModal()}
-                  className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
                   <PanelIcon name="image" size={16} />
                   <span>Add New Banner</span>
@@ -3816,14 +3817,14 @@ export default function EcommerceAdminPanel() {
 
               <div className="space-y-5">
                 {banners.length === 0 && (
-                  <div className="bg-white border border-dashed border-[#d2d2d7] rounded-[32px] p-12 text-center text-[13px] font-semibold text-[#86868b]">
+                  <div className="bg-white border border-dashed border-[#CFD8E3] rounded-[32px] p-12 text-center text-[13px] font-semibold text-[#6F7E92]">
                     No banners yet. Add one to show a slider on the storefront home page.
                   </div>
                 )}
                 {banners.map((bn, idx) => (
-                  <div key={bn.id} className={`bg-white border border-[#e5e5ea] rounded-[32px] overflow-hidden shadow-sm ${bn.isActive ? '' : 'opacity-70'}`}>
+                  <div key={bn.id} className={`bg-white border border-[#E3E8EF] rounded-[32px] overflow-hidden shadow-sm ${bn.isActive ? '' : 'opacity-70'}`}>
                     {/* Slide preview */}
-                    <div className="relative h-44 md:h-56 bg-[#1d1d1f]">
+                    <div className="relative h-44 md:h-56 bg-[#0E1A2B]">
                       <img src={bn.imageUrl} alt={bn.title} className="absolute inset-0 w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-black/60" />
                       <div
@@ -3833,7 +3834,7 @@ export default function EcommerceAdminPanel() {
                         <h4 className="text-2xl md:text-4xl font-black tracking-tight">{bn.title}</h4>
                         {bn.subtitle && <p className="text-[13px] md:text-[15px] font-semibold mt-2 max-w-md opacity-90">{bn.subtitle}</p>}
                         {bn.ctaText && (
-                          <span className="mt-4 px-5 py-2 bg-white text-[#1d1d1f] rounded-full text-[12px] font-extrabold shadow-md">{bn.ctaText} →</span>
+                          <span className="mt-4 px-5 py-2 bg-white text-[#0E1A2B] rounded-full text-[12px] font-extrabold shadow-md">{bn.ctaText} →</span>
                         )}
                       </div>
                       <span className="absolute top-4 left-4 px-3 py-1 bg-black/60 text-white rounded-full text-[11px] font-black">Slide {idx + 1}</span>
@@ -3843,15 +3844,15 @@ export default function EcommerceAdminPanel() {
                     </div>
 
                     <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="text-[12px] text-[#86868b] font-semibold">
-                        Button links to <span className="font-mono font-bold text-[#1d1d1f]">{bn.ctaLink}</span>
+                      <div className="text-[12px] text-[#6F7E92] font-semibold">
+                        Button links to <span className="font-mono font-bold text-[#0E1A2B]">{bn.ctaLink}</span>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
                         <button
                           onClick={() => moveBanner(idx, -1)}
                           disabled={idx === 0}
                           aria-label="Move banner up"
-                          className="w-9 h-9 rounded-full bg-[#f5f5f7] border border-[#e5e5ea] hover:bg-[#e5e5ea] text-[13px] font-black disabled:opacity-30"
+                          className="w-9 h-9 rounded-full bg-[#F3F6FA] border border-[#E3E8EF] hover:bg-[#E3E8EF] text-[13px] font-black disabled:opacity-30"
                         >
                           ↑
                         </button>
@@ -3859,7 +3860,7 @@ export default function EcommerceAdminPanel() {
                           onClick={() => moveBanner(idx, 1)}
                           disabled={idx === banners.length - 1}
                           aria-label="Move banner down"
-                          className="w-9 h-9 rounded-full bg-[#f5f5f7] border border-[#e5e5ea] hover:bg-[#e5e5ea] text-[13px] font-black disabled:opacity-30"
+                          className="w-9 h-9 rounded-full bg-[#F3F6FA] border border-[#E3E8EF] hover:bg-[#E3E8EF] text-[13px] font-black disabled:opacity-30"
                         >
                           ↓
                         </button>
@@ -3871,7 +3872,7 @@ export default function EcommerceAdminPanel() {
                         </button>
                         <button
                           onClick={() => openBannerModal(bn)}
-                          className="px-4 py-1.5 bg-[#f5f5f7] hover:bg-[#fff2e8] text-[#ea580c] border border-[#e5e5ea] rounded-full text-[12px] font-extrabold transition-all"
+                          className="px-4 py-1.5 bg-[#F3F6FA] hover:bg-[#EAF1FF] text-[#2F6BFF] border border-[#E3E8EF] rounded-full text-[12px] font-extrabold transition-all"
                         >
                           Edit
                         </button>
@@ -3896,10 +3897,10 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {activeTab === 'instagram' && (
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="bg-white p-6 rounded-[28px] border border-[#E3E8EF] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Instagram Feed</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Posts shown in the &quot;Follow us on Instagram&quot; section of the storefront</p>
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Instagram Feed</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">Posts shown in the &quot;Follow us on Instagram&quot; section of the storefront</p>
                 </div>
                 <button
                   onClick={() => {
@@ -3908,7 +3909,7 @@ export default function EcommerceAdminPanel() {
                     setNewIgCaption('');
                     setIsInstagramModalOpen(true);
                   }}
-                  className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
                   <PanelIcon name="camera" size={16} />
                   <span>Add Instagram Post</span>
@@ -3916,20 +3917,20 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {instagramPosts.length === 0 ? (
-                <div className="bg-white border border-dashed border-[#d2d2d7] rounded-[32px] p-12 text-center text-[13px] font-semibold text-[#86868b]">
+                <div className="bg-white border border-dashed border-[#CFD8E3] rounded-[32px] p-12 text-center text-[13px] font-semibold text-[#6F7E92]">
                   No Instagram posts added yet.
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {instagramPosts.map((post) => (
-                    <div key={post.id} className="bg-white border border-[#e5e5ea] rounded-[32px] overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col">
-                      <div className="aspect-square bg-[#f5f5f7] overflow-hidden">
+                    <div key={post.id} className="bg-white border border-[#E3E8EF] rounded-[32px] overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col">
+                      <div className="aspect-square bg-[#F3F6FA] overflow-hidden">
                         <img src={post.imageUrl} alt={post.caption || 'Instagram post'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       </div>
                       <div className="p-5 flex-1 flex flex-col justify-between gap-4">
-                        <p className="text-[13px] font-semibold text-[#1d1d1f] leading-snug line-clamp-3">{post.caption || <span className="text-[#86868b]">No caption</span>}</p>
-                        <div className="flex justify-between items-center pt-3 border-t border-[#e5e5ea]">
-                          <a href={post.postUrl} target="_blank" rel="noopener noreferrer" className="text-[12px] text-[#ea580c] font-black hover:underline">
+                        <p className="text-[13px] font-semibold text-[#0E1A2B] leading-snug line-clamp-3">{post.caption || <span className="text-[#6F7E92]">No caption</span>}</p>
+                        <div className="flex justify-between items-center pt-3 border-t border-[#E3E8EF]">
+                          <a href={post.postUrl} target="_blank" rel="noopener noreferrer" className="text-[12px] text-[#2F6BFF] font-black hover:underline">
                             View Post ↗
                           </a>
                           <button
@@ -3953,39 +3954,39 @@ export default function EcommerceAdminPanel() {
           {activeTab === 'settings' && (
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               {signedInSubAdmin ? (
-                <div className="lg:col-span-5 bg-white border border-[#e5e5ea] rounded-[28px] p-7 shadow-sm">
+                <div className="lg:col-span-5 bg-white border border-[#E3E8EF] rounded-[28px] p-7 shadow-sm">
                   <h3 className="text-xl font-bold">Demo sub-admin access</h3>
-                  <p className="mt-2 text-sm text-[#6e6e73]">Only the super admin can manage demo accounts. Ask your admin to update your assigned modules.</p>
+                  <p className="mt-2 text-sm text-[#5B6B80]">Only the super admin can manage demo accounts. Ask your admin to update your assigned modules.</p>
                 </div>
               ) : (
-                <section className="lg:col-span-5 bg-white border border-[#e5e5ea] rounded-[28px] p-7 shadow-sm">
+                <section className="lg:col-span-5 bg-white border border-[#E3E8EF] rounded-[28px] p-7 shadow-sm">
                   <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div><h3 className="text-xl font-bold">Demo sub-admin access</h3><p className="mt-1 text-sm text-[#6e6e73]">Create sample staff logins and choose which admin modules each person can open. Demo only; credentials are stored in this browser.</p></div>
+                    <div><h3 className="text-xl font-bold">Demo sub-admin access</h3><p className="mt-1 text-sm text-[#5B6B80]">Create sample staff logins and choose which admin modules each person can open. Demo only; credentials are stored in this browser.</p></div>
                     <span className="px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-extrabold uppercase tracking-wide">Demo access</span>
                   </div>
                   <div className="mt-6 grid sm:grid-cols-3 gap-3">
-                    <input aria-label="Sub-admin name" placeholder="Staff name" value={subAdminDraft.name} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, name: e.target.value })} className="px-4 py-3 rounded-xl bg-[#f5f5f7] border border-[#e5e5ea] text-sm" />
-                    <input aria-label="Sub-admin email" type="email" placeholder="Email address" value={subAdminDraft.email} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, email: e.target.value })} className="px-4 py-3 rounded-xl bg-[#f5f5f7] border border-[#e5e5ea] text-sm" />
-                    <input aria-label="Sub-admin password" placeholder="Demo password" value={subAdminDraft.password} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, password: e.target.value })} className="px-4 py-3 rounded-xl bg-[#f5f5f7] border border-[#e5e5ea] text-sm" />
+                    <input aria-label="Sub-admin name" placeholder="Staff name" value={subAdminDraft.name} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, name: e.target.value })} className="px-4 py-3 rounded-xl bg-[#F3F6FA] border border-[#E3E8EF] text-sm" />
+                    <input aria-label="Sub-admin email" type="email" placeholder="Email address" value={subAdminDraft.email} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, email: e.target.value })} className="px-4 py-3 rounded-xl bg-[#F3F6FA] border border-[#E3E8EF] text-sm" />
+                    <input aria-label="Sub-admin password" placeholder="Demo password" value={subAdminDraft.password} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, password: e.target.value })} className="px-4 py-3 rounded-xl bg-[#F3F6FA] border border-[#E3E8EF] text-sm" />
                   </div>
                   <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm font-bold text-[#1d1d1f]">Pages this person can open <span className="ml-1 text-[#86868b] font-semibold">{subAdminDraft.permissions.length} of {SUBADMIN_MODULES.length}</span></p>
+                    <p className="text-sm font-bold text-[#0E1A2B]">Pages this person can open <span className="ml-1 text-[#6F7E92] font-semibold">{subAdminDraft.permissions.length} of {SUBADMIN_MODULES.length}</span></p>
                     <div className="flex gap-2">
-                      <button type="button" onClick={() => setSubAdminDraft({ ...subAdminDraft, permissions: SUBADMIN_MODULES.map((module) => module.id) })} className="px-3.5 py-1.5 rounded-full bg-[#fff2e8] text-[#ea580c] text-xs font-bold hover:bg-[#ffe4cc]">Select all</button>
-                      <button type="button" onClick={() => setSubAdminDraft({ ...subAdminDraft, permissions: [] })} className="px-3.5 py-1.5 rounded-full bg-[#f5f5f7] text-[#6e6e73] text-xs font-bold hover:bg-[#e5e5ea]">Clear</button>
+                      <button type="button" onClick={() => setSubAdminDraft({ ...subAdminDraft, permissions: SUBADMIN_MODULES.map((module) => module.id) })} className="px-3.5 py-1.5 rounded-full bg-[#EAF1FF] text-[#2F6BFF] text-xs font-bold hover:bg-[#DCE7FF]">Select all</button>
+                      <button type="button" onClick={() => setSubAdminDraft({ ...subAdminDraft, permissions: [] })} className="px-3.5 py-1.5 rounded-full bg-[#F3F6FA] text-[#5B6B80] text-xs font-bold hover:bg-[#E3E8EF]">Clear</button>
                     </div>
                   </div>
                   <div className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {SUBADMIN_GROUPS.map((group) => (
-                      <div key={group} className="rounded-2xl border border-[#e5e5ea] p-3">
-                        <p className="px-1 pb-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#86868b]">{group}</p>
+                      <div key={group} className="rounded-2xl border border-[#E3E8EF] p-3">
+                        <p className="px-1 pb-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#6F7E92]">{group}</p>
                         <div className="space-y-1.5">
-                          {SUBADMIN_MODULES.filter((module) => module.group === group).map((module) => <label key={module.id} className="flex items-center gap-2.5 rounded-xl bg-[#f8f8fa] px-3 py-2.5 text-sm font-semibold cursor-pointer"><input type="checkbox" checked={subAdminDraft.permissions.includes(module.id)} onChange={() => setSubAdminDraft({ ...subAdminDraft, permissions: toggleInList(subAdminDraft.permissions, module.id) as AdminTab[] })} className="accent-[#ea580c]" />{module.label}</label>)}
+                          {SUBADMIN_MODULES.filter((module) => module.group === group).map((module) => <label key={module.id} className="flex items-center gap-2.5 rounded-xl bg-[#F6F8FB] px-3 py-2.5 text-sm font-semibold cursor-pointer"><input type="checkbox" checked={subAdminDraft.permissions.includes(module.id)} onChange={() => setSubAdminDraft({ ...subAdminDraft, permissions: toggleInList(subAdminDraft.permissions, module.id) as AdminTab[] })} className="accent-[#2F6BFF]" />{module.label}</label>)}
                         </div>
                       </div>
                     ))}
                   </div>
-                  <p className="mt-3 text-xs text-[#86868b]">Admin Security (staff logins and the admin password) always stays with the super admin.</p>
+                  <p className="mt-3 text-xs text-[#6F7E92]">Admin Security (staff logins and the admin password) always stays with the super admin.</p>
                   {subAdminError && <p role="alert" className="mt-4 text-sm font-bold text-red-600">{subAdminError}</p>}
                   <button onClick={() => {
                     const email = subAdminDraft.email.trim().toLowerCase();
@@ -3996,53 +3997,54 @@ export default function EcommerceAdminPanel() {
                     setSubAdminDraft({ name: '', email: '', password: '', permissions: [] });
                     setEditingSubAdminId(null);
                     setSubAdminError('');
-                  }} className="mt-5 px-5 py-3 rounded-full bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white text-sm font-extrabold">{editingSubAdminId ? 'Save sub-admin access' : 'Add demo sub-admin'}</button>
+                  }} className="mt-5 px-5 py-3 rounded-full bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white text-sm font-extrabold">{editingSubAdminId ? 'Save sub-admin access' : 'Add demo sub-admin'}</button>
                   <div className="mt-6 space-y-3">
-                    {demoSubAdmins.map((account) => <div key={account.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e5e5ea] p-4">
-                      <div className="min-w-[200px]"><p className="font-bold">{account.name} <span className="ml-2 text-[11px] uppercase tracking-wide text-[#ea580c]">Sub-admin</span></p><p className="text-sm text-[#6e6e73]">{account.email} · Password: {account.password}</p><p className="mt-1 text-xs text-[#86868b]">{account.permissions.map((permission) => TAB_TITLES[permission]).join(' · ')}</p></div>
-                      <div className="flex gap-2"><button onClick={() => { setEditingSubAdminId(account.id); setSubAdminDraft({ name: account.name, email: account.email, password: account.password, permissions: account.permissions }); setSubAdminError(''); }} className="px-3 py-2 rounded-full bg-[#f5f5f7] text-xs font-bold">Edit access</button><button onClick={() => setDemoSubAdmins(demoSubAdmins.filter((item) => item.id !== account.id))} className="px-3 py-2 rounded-full bg-red-50 text-red-600 text-xs font-bold">Remove</button></div>
+                    {demoSubAdmins.map((account) => <div key={account.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#E3E8EF] p-4">
+                      <div className="min-w-[200px]"><p className="font-bold">{account.name} <span className="ml-2 text-[11px] uppercase tracking-wide text-[#2F6BFF]">Sub-admin</span></p><p className="text-sm text-[#5B6B80]">{account.email} · Password: {account.password}</p><p className="mt-1 text-xs text-[#6F7E92]">{account.permissions.map((permission) => TAB_TITLES[permission]).join(' · ')}</p></div>
+                      <div className="flex gap-2"><button onClick={() => { setEditingSubAdminId(account.id); setSubAdminDraft({ name: account.name, email: account.email, password: account.password, permissions: account.permissions }); setSubAdminError(''); }} className="px-3 py-2 rounded-full bg-[#F3F6FA] text-xs font-bold">Edit access</button><button onClick={() => setDemoSubAdmins(demoSubAdmins.filter((item) => item.id !== account.id))} className="px-3 py-2 rounded-full bg-red-50 text-red-600 text-xs font-bold">Remove</button></div>
                     </div>)}
-                    {!demoSubAdmins.length && <p className="text-sm text-[#86868b]">No sub-admin demo accounts yet.</p>}
+                    {!demoSubAdmins.length && <p className="text-sm text-[#6F7E92]">No sub-admin demo accounts yet.</p>}
                   </div>
                 </section>
               )}
+              {!signedInSubAdmin && <RazorpaySettings notify={notify} />}
               {/* Account Overview */}
-              <div className="lg:col-span-2 bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm space-y-5 h-fit">
+              <div className="lg:col-span-2 bg-white border border-[#E3E8EF] rounded-[36px] p-8 shadow-sm space-y-5 h-fit">
                 <div className="flex items-center gap-4">
-                  <span className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#ea580c] to-[#f97316] text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
+                  <span className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#2F6BFF] to-[#5A8BFF] text-white flex items-center justify-center shadow-lg shadow-[#2F6BFF]/20">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
                   </span>
                   <div>
-                    <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Active Account</h3>
-                    <p className="text-[12px] font-extrabold text-[#ea580c] uppercase tracking-wider">Super Admin</p>
+                    <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Active Account</h3>
+                    <p className="text-[12px] font-extrabold text-[#2F6BFF] uppercase tracking-wider">Super Admin</p>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="p-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl">
-                    <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b]">Admin Email</p>
-                    <p className="text-[14px] font-bold text-[#1d1d1f] break-all">{adminEmail}</p>
+                  <div className="p-4 bg-[#F3F6FA] border border-[#E3E8EF] rounded-2xl">
+                    <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92]">Admin Email</p>
+                    <p className="text-[14px] font-bold text-[#0E1A2B] break-all">{adminEmail}</p>
                   </div>
-                  <div className="p-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl flex items-center justify-between gap-3">
+                  <div className="p-4 bg-[#F3F6FA] border border-[#E3E8EF] rounded-2xl flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b]">Password</p>
-                      <p className="text-[14px] font-bold text-[#1d1d1f] tracking-widest">{visiblePasswords.includes('active') ? adminPassword : '•'.repeat(adminPassword.length)}</p>
+                      <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92]">Password</p>
+                      <p className="text-[14px] font-bold text-[#0E1A2B] tracking-widest">{visiblePasswords.includes('active') ? adminPassword : '•'.repeat(adminPassword.length)}</p>
                     </div>
                     <button
                       onClick={() => setVisiblePasswords(toggleInList(visiblePasswords, 'active'))}
                       aria-label={visiblePasswords.includes('active') ? 'Hide password' : 'Show password'}
-                      className={`shrink-0 w-9 h-9 rounded-full border flex items-center justify-center transition-colors ${visiblePasswords.includes('active') ? 'bg-[#fff2e8] border-[#ea580c]/40 text-[#ea580c]' : 'bg-white border-[#e5e5ea] text-[#86868b] hover:border-[#ea580c] hover:text-[#ea580c]'}`}
+                      className={`shrink-0 w-9 h-9 rounded-full border flex items-center justify-center transition-colors ${visiblePasswords.includes('active') ? 'bg-[#EAF1FF] border-[#2F6BFF]/40 text-[#2F6BFF]' : 'bg-white border-[#E3E8EF] text-[#6F7E92] hover:border-[#2F6BFF] hover:text-[#2F6BFF]'}`}
                     >
                       <PanelIcon name={visiblePasswords.includes('active') ? 'eye-off' : 'eye'} size={16} />
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl">
-                      <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b]">Role</p>
-                      <p className="text-[14px] font-bold text-[#1d1d1f]">Super Admin / Seller</p>
+                    <div className="p-4 bg-[#F3F6FA] border border-[#E3E8EF] rounded-2xl">
+                      <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92]">Role</p>
+                      <p className="text-[14px] font-bold text-[#0E1A2B]">Super Admin / Seller</p>
                     </div>
-                    <div className="p-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl">
-                      <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b]">Session Length</p>
-                      <p className="text-[14px] font-bold text-[#1d1d1f]">8 Hours</p>
+                    <div className="p-4 bg-[#F3F6FA] border border-[#E3E8EF] rounded-2xl">
+                      <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92]">Session Length</p>
+                      <p className="text-[14px] font-bold text-[#0E1A2B]">8 Hours</p>
                     </div>
                   </div>
                 </div>
@@ -4052,13 +4054,13 @@ export default function EcommerceAdminPanel() {
                     setLoginPassword('');
                     setIsLoggedIn(false);
                   }}
-                  className="w-full py-3 bg-white hover:bg-[#fff2e8] text-[#ea580c] font-bold rounded-full text-[13px] transition-all border border-[#e5e5ea] hover:border-[#ea580c]"
+                  className="w-full py-3 bg-white hover:bg-[#EAF1FF] text-[#2F6BFF] font-bold rounded-full text-[13px] transition-all border border-[#E3E8EF] hover:border-[#2F6BFF]"
                 >
                   Sign Out & Test Login
                 </button>
-                <div className="pt-5 border-t border-[#e5e5ea] space-y-2">
-                  <p className="text-[12px] font-extrabold uppercase tracking-wider text-[#86868b]">Demo Data</p>
-                  <p className="text-[12px] text-[#6e6e73] font-semibold">Products, orders, coupons and the rest are saved in this browser and shared with the website. Resetting puts back the original sample data everywhere.</p>
+                <div className="pt-5 border-t border-[#E3E8EF] space-y-2">
+                  <p className="text-[12px] font-extrabold uppercase tracking-wider text-[#6F7E92]">Demo Data</p>
+                  <p className="text-[12px] text-[#5B6B80] font-semibold">Products, orders, coupons and the rest are saved in this browser and shared with the website. Resetting puts back the original sample data everywhere.</p>
                   <button
                     onClick={() => {
                       if (!confirm('Reset all products, orders, customers, coupons, banners and settings to the original sample data?')) return;
@@ -4074,10 +4076,10 @@ export default function EcommerceAdminPanel() {
               </div>
 
               {/* Update Credentials */}
-              <div className="lg:col-span-3 bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm space-y-5">
+              <div className="lg:col-span-3 bg-white border border-[#E3E8EF] rounded-[36px] p-8 shadow-sm space-y-5">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Update Credentials</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Change the admin email, password, or both. Leave a field empty to keep it.</p>
+                  <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Update Credentials</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">Change the admin email, password, or both. Leave a field empty to keep it.</p>
                 </div>
                 <div className="space-y-4">
                   {[
@@ -4089,21 +4091,21 @@ export default function EcommerceAdminPanel() {
                     const shown = visiblePasswords.includes(field.label);
                     return (
                       <div key={field.label}>
-                        <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">{field.label}</label>
+                        <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#6F7E92] mb-2 pl-2">{field.label}</label>
                         <div className="relative">
                           <input
                             type={field.type === 'password' && shown ? 'text' : field.type}
                             value={field.value}
                             onChange={(e) => { field.set(e.target.value); setSecMessage(null); }}
                             placeholder={field.placeholder}
-                            className="w-full pl-6 pr-14 py-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold placeholder:text-[#c7c7cc]"
+                            className="w-full pl-6 pr-14 py-3.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] transition-all font-semibold placeholder:text-[#A9B4C2]"
                           />
                           {field.type === 'password' && (
                             <button
                               type="button"
                               onClick={() => setVisiblePasswords(toggleInList(visiblePasswords, field.label))}
                               aria-label={shown ? 'Hide password' : 'Show password'}
-                              className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-colors ${shown ? 'bg-[#fff2e8] text-[#ea580c]' : 'text-[#86868b] hover:bg-white hover:text-[#ea580c]'}`}
+                              className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-colors ${shown ? 'bg-[#EAF1FF] text-[#2F6BFF]' : 'text-[#6F7E92] hover:bg-white hover:text-[#2F6BFF]'}`}
                             >
                               <PanelIcon name={shown ? 'eye-off' : 'eye'} size={16} />
                             </button>
@@ -4120,7 +4122,7 @@ export default function EcommerceAdminPanel() {
                 )}
                 <button
                   onClick={handleUpdateCredentials}
-                  className="w-full py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[14px] rounded-full shadow-md hover:shadow-lg transition-all"
+                  className="w-full py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[14px] rounded-full shadow-md hover:shadow-lg transition-all"
                 >
                   Update Credentials
                 </button>
@@ -4144,26 +4146,26 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {isScannerModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-lg w-full shadow-2xl space-y-6 animate-in fade-in zoom-in-95">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-lg w-full shadow-2xl space-y-6 animate-in fade-in zoom-in-95">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-xl font-bold text-[#1d1d1f]">Barcode & Product Scanner</h3>
-                <p className="text-[12px] text-[#86868b] font-semibold">Camera Viewfinder Active</p>
+                <h3 className="text-xl font-bold text-[#0E1A2B]">Barcode & Product Scanner</h3>
+                <p className="text-[12px] text-[#6F7E92] font-semibold">Camera Viewfinder Active</p>
               </div>
               <button
                 onClick={() => setIsScannerModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+                className="w-8 h-8 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
               >
                 ✕
               </button>
             </div>
 
             {/* Simulated Viewfinder */}
-            <div className="h-56 bg-neutral-900 rounded-[28px] relative overflow-hidden flex flex-col items-center justify-center text-white border-2 border-dashed border-[#ea580c]/50 p-6">
+            <div className="h-56 bg-neutral-900 rounded-[28px] relative overflow-hidden flex flex-col items-center justify-center text-white border-2 border-dashed border-[#2F6BFF]/50 p-6">
               {isScanning ? (
                 <div className="flex flex-col items-center space-y-3">
-                  <div className="w-10 h-10 border-4 border-[#ea580c] border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-[13px] font-bold text-orange-400">Scanning Barcode...</span>
+                  <div className="w-10 h-10 border-4 border-[#2F6BFF] border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-[13px] font-bold text-[#8FB0FF]">Scanning Barcode...</span>
                   <div className="w-48 h-0.5 bg-red-500 shadow-[0_0_8px_red] animate-pulse"></div>
                 </div>
               ) : scannedProduct ? (
@@ -4183,14 +4185,14 @@ export default function EcommerceAdminPanel() {
 
             {/* Product Details Result */}
             {scannedProduct && !isScanning && (
-              <div className="p-4 bg-[#f5f5f7] rounded-2xl flex items-center justify-between border border-[#e5e5ea]">
+              <div className="p-4 bg-[#F3F6FA] rounded-2xl flex items-center justify-between border border-[#E3E8EF]">
                 <div>
-                  <span className="text-[11px] text-[#86868b] font-extrabold uppercase">Current Stock</span>
-                  <p className="text-lg font-black text-[#1d1d1f]">{scannedProduct.stock} Units</p>
+                  <span className="text-[11px] text-[#6F7E92] font-extrabold uppercase">Current Stock</span>
+                  <p className="text-lg font-black text-[#0E1A2B]">{scannedProduct.stock} Units</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[11px] text-[#86868b] font-extrabold uppercase">Unit Price</span>
-                  <p className="text-lg font-black text-[#ea580c]">₹{scannedProduct.price.toLocaleString()}</p>
+                  <span className="text-[11px] text-[#6F7E92] font-extrabold uppercase">Unit Price</span>
+                  <p className="text-lg font-black text-[#2F6BFF]">₹{scannedProduct.price.toLocaleString()}</p>
                 </div>
               </div>
             )}
@@ -4201,13 +4203,13 @@ export default function EcommerceAdminPanel() {
                   setIsScanning(true);
                   setTimeout(() => setIsScanning(false), 1200);
                 }}
-                className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md"
+                className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md"
               >
                 Scan Another Item
               </button>
               <button
                 onClick={() => setIsScannerModalOpen(false)}
-                className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#1d1d1f] font-extrabold text-[13px] rounded-full"
+                className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#0E1A2B] font-extrabold text-[13px] rounded-full"
               >
                 Done
               </button>
@@ -4221,17 +4223,17 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {isMultiProductModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-2xl w-full shadow-2xl space-y-6">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-2xl w-full shadow-2xl space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-xl font-bold text-[#1d1d1f]">Bulk Add Multiple Products</h3>
-                <p className="text-[12px] text-[#86868b] font-semibold">
+                <h3 className="text-xl font-bold text-[#0E1A2B]">Bulk Add Multiple Products</h3>
+                <p className="text-[12px] text-[#6F7E92] font-semibold">
                   Paste comma-separated rows: Name, SKU, Category, Price, Stock
                 </p>
               </div>
               <button
                 onClick={() => setIsMultiProductModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+                className="w-8 h-8 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
               >
                 ✕
               </button>
@@ -4242,19 +4244,19 @@ export default function EcommerceAdminPanel() {
               value={multiProductInput}
               onChange={(e) => setMultiProductInput(e.target.value)}
               placeholder={`Example:\nWireless Mouse Pro, WMS-01, Computing, 1999, 40\nSmart Fitness Band, FTB-99, Wearables, 2499, 20\nUSB-C Fast Charger 65W, CHG-65, Electronics, 1499, 100`}
-              className="w-full p-5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-[24px] font-mono text-[13px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] resize-none"
+              className="w-full p-5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-[24px] font-mono text-[13px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] resize-none"
             ></textarea>
 
             <div className="flex gap-4">
               <button
                 onClick={handleBulkAddSubmit}
-                className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg"
+                className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md hover:shadow-lg"
               >
                 Import & Add to Catalog
               </button>
               <button
                 onClick={() => setIsMultiProductModalOpen(false)}
-                className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full"
+                className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full"
               >
                 Cancel
               </button>
@@ -4268,18 +4270,18 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {stockEditProduct && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start gap-4">
               <div className="flex items-center gap-3.5">
-                <img src={stockEditProduct.image} alt={stockEditProduct.name} className="w-12 h-12 rounded-2xl object-cover border border-[#e5e5ea] bg-white" />
+                <img src={stockEditProduct.image} alt={stockEditProduct.name} className="w-12 h-12 rounded-2xl object-cover border border-[#E3E8EF] bg-white" />
                 <div>
-                  <h3 className="text-xl font-bold text-[#1d1d1f]">Stock by Size & Color</h3>
-                  <p className="text-[12px] text-[#86868b] font-semibold">{stockEditProduct.name} • {stockEditProduct.sku}</p>
+                  <h3 className="text-xl font-bold text-[#0E1A2B]">Stock by Size & Color</h3>
+                  <p className="text-[12px] text-[#6F7E92] font-semibold">{stockEditProduct.name} • {stockEditProduct.sku}</p>
                 </div>
               </div>
               <button
                 onClick={() => setStockEditProduct(null)}
-                className="w-8 h-8 shrink-0 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+                className="w-8 h-8 shrink-0 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
               >
                 ✕
               </button>
@@ -4293,11 +4295,11 @@ export default function EcommerceAdminPanel() {
               colorHex={colorHex}
             />
 
-            <p className="text-[12px] text-[#86868b] font-semibold">
+            <p className="text-[12px] text-[#6F7E92] font-semibold">
               To add or remove sizes and colors, use{' '}
               <button
                 onClick={() => { const prod = stockEditProduct; setStockEditProduct(null); openEditProduct(prod); }}
-                className="text-[#ea580c] font-bold hover:underline"
+                className="text-[#2F6BFF] font-bold hover:underline"
               >
                 Edit Product
               </button>.
@@ -4306,13 +4308,13 @@ export default function EcommerceAdminPanel() {
             <div className="flex gap-3">
               <button
                 onClick={handleSaveStock}
-                className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md"
+                className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md"
               >
                 Save Stock
               </button>
               <button
                 onClick={() => setStockEditProduct(null)}
-                className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full"
+                className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full"
               >
                 Cancel
               </button>
@@ -4326,12 +4328,12 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {isCouponModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-lg w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-lg w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-[#1d1d1f]">{editingCouponId ? 'Edit Coupon' : 'Generate New Coupon'}</h3>
+              <h3 className="text-xl font-bold text-[#0E1A2B]">{editingCouponId ? 'Edit Coupon' : 'Generate New Coupon'}</h3>
               <button
                 onClick={() => setIsCouponModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+                className="w-8 h-8 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
               >
                 ✕
               </button>
@@ -4339,7 +4341,7 @@ export default function EcommerceAdminPanel() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">
                   Coupon Code
                 </label>
                 <input
@@ -4347,12 +4349,12 @@ export default function EcommerceAdminPanel() {
                   placeholder="e.g. FLASH30"
                   value={newCouponCode}
                   onChange={(e) => { setNewCouponCode(e.target.value.toUpperCase().replace(/\s/g, '')); setCouponFormError(''); }}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-mono font-bold text-[#1d1d1f]"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-mono font-bold text-[#0E1A2B]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">
                   Description
                 </label>
                 <input
@@ -4360,38 +4362,38 @@ export default function EcommerceAdminPanel() {
                   placeholder="e.g. Diwali Sale — 30% off on audio"
                   value={newCouponDescription}
                   onChange={(e) => setNewCouponDescription(e.target.value)}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f]"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Type</label>
+                  <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Type</label>
                   <select
                     value={newCouponType}
                     onChange={(e) => setNewCouponType(e.target.value as Coupon['discountType'])}
-                    className="w-full px-4 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold"
+                    className="w-full px-4 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-bold"
                   >
                     <option value="Percentage">Percentage (%)</option>
                     <option value="Fixed">Fixed (₹)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Value</label>
+                  <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Value</label>
                   <input
                     type="number"
                     min="0"
                     placeholder={newCouponType === 'Percentage' ? 'e.g. 20' : 'e.g. 500'}
                     value={newCouponValue}
                     onChange={(e) => setNewCouponValue(e.target.value)}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-bold"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">
+                  <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">
                     Min Purchase (₹)
                   </label>
                   <input
@@ -4399,11 +4401,11 @@ export default function EcommerceAdminPanel() {
                     min="0"
                     value={newCouponMin}
                     onChange={(e) => setNewCouponMin(e.target.value)}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">
+                  <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">
                     Max Discount (₹)
                   </label>
                   <input
@@ -4413,38 +4415,38 @@ export default function EcommerceAdminPanel() {
                     disabled={newCouponType !== 'Percentage'}
                     value={newCouponType === 'Percentage' ? newCouponMaxDiscount : ''}
                     onChange={(e) => setNewCouponMaxDiscount(e.target.value)}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold disabled:opacity-50"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-bold disabled:opacity-50"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Valid From</label>
+                  <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Valid From</label>
                   <input
                     type="date"
                     value={newCouponFrom}
                     onChange={(e) => setNewCouponFrom(e.target.value)}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2 flex justify-between">
+                  <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2 flex justify-between">
                     <span>Valid Until</span>
-                    {newCouponDate && <button type="button" onClick={() => setNewCouponDate('')} className="text-[#ea580c] normal-case">Clear</button>}
+                    {newCouponDate && <button type="button" onClick={() => setNewCouponDate('')} className="text-[#2F6BFF] normal-case">Clear</button>}
                   </label>
                   <input
                     type="date"
                     value={newCouponDate}
                     onChange={(e) => setNewCouponDate(e.target.value)}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-bold"
                   />
-                  <p className="text-[11px] text-[#86868b] font-semibold mt-1 pl-2">Blank = never expires</p>
+                  <p className="text-[11px] text-[#6F7E92] font-semibold mt-1 pl-2">Blank = never expires</p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">
                   Usage Limit
                 </label>
                 <input
@@ -4453,34 +4455,34 @@ export default function EcommerceAdminPanel() {
                   placeholder="Blank = unlimited"
                   value={newCouponUsageLimit}
                   onChange={(e) => setNewCouponUsageLimit(e.target.value)}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-bold"
                 />
               </div>
 
-              <label className="flex items-center justify-between gap-3 px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full cursor-pointer">
-                <span className="text-[13px] font-bold text-[#1d1d1f]">Active (customers can use it)</span>
+              <label className="flex items-center justify-between gap-3 px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full cursor-pointer">
+                <span className="text-[13px] font-bold text-[#0E1A2B]">Active (customers can use it)</span>
                 <input
                   type="checkbox"
                   checked={newCouponActive}
                   onChange={(e) => setNewCouponActive(e.target.checked)}
-                  className="w-4 h-4 accent-[#ea580c]"
+                  className="w-4 h-4 accent-[#2F6BFF]"
                 />
               </label>
 
-              <label className="flex items-center justify-between gap-3 px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full cursor-pointer">
-                <span className="text-[13px] font-bold text-[#1d1d1f]">Show in store header marquee</span>
+              <label className="flex items-center justify-between gap-3 px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full cursor-pointer">
+                <span className="text-[13px] font-bold text-[#0E1A2B]">Show in store header marquee</span>
                 <input
                   type="checkbox"
                   checked={newCouponShowInHeader}
                   onChange={(e) => setNewCouponShowInHeader(e.target.checked)}
-                  className="w-4 h-4 accent-[#ea580c]"
+                  className="w-4 h-4 accent-[#2F6BFF]"
                 />
               </label>
             </div>
 
             {/* Validation Checklist */}
-            <div className="p-4 bg-[#fafafa] border border-[#e5e5ea] rounded-[20px]">
-              <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b] mb-2">Validation Checklist</p>
+            <div className="p-4 bg-[#F8FAFC] border border-[#E3E8EF] rounded-[20px]">
+              <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92] mb-2">Validation Checklist</p>
               <ul className="space-y-1 text-[12px] font-semibold">
                 {[
                   [/^[A-Z0-9_-]{3,20}$/.test(newCouponCode), 'Code is 3–20 characters: capital letters, numbers, - and _ only'],
@@ -4488,12 +4490,12 @@ export default function EcommerceAdminPanel() {
                   [parseFloat(newCouponValue) > 0 && (newCouponType === 'Fixed' || parseFloat(newCouponValue) <= 100), newCouponType === 'Percentage' ? 'Discount is between 1% and 100%' : 'Discount amount is above ₹0'],
                   [!newCouponDate || !newCouponFrom || newCouponFrom <= newCouponDate, 'Start date is on or before the end date'],
                 ].map(([ok, text]) => (
-                  <li key={String(text)} className={ok ? 'text-emerald-700' : 'text-[#86868b]'}>
+                  <li key={String(text)} className={ok ? 'text-emerald-700' : 'text-[#6F7E92]'}>
                     {ok ? '✓' : '○'} {text}
                   </li>
                 ))}
               </ul>
-              <p className="text-[11px] text-[#86868b] font-semibold mt-2">The discount applies automatically at checkout once a shopper enters the code.</p>
+              <p className="text-[11px] text-[#6F7E92] font-semibold mt-2">The discount applies automatically at checkout once a shopper enters the code.</p>
             </div>
 
             {couponFormError && (
@@ -4503,13 +4505,13 @@ export default function EcommerceAdminPanel() {
             <div className="flex gap-3">
               <button
                 onClick={handleSaveCoupon}
-                className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md"
+                className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md"
               >
                 {editingCouponId ? 'Save Changes' : 'Create Coupon'}
               </button>
               <button
                 onClick={() => setIsCouponModalOpen(false)}
-                className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full"
+                className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full"
               >
                 Cancel
               </button>
@@ -4523,26 +4525,26 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {posReceiptModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-sm w-full shadow-2xl space-y-6 text-center font-mono">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-sm w-full shadow-2xl space-y-6 text-center font-mono">
             <div className="space-y-1">
               <PanelIcon name="bag" size={22} />
-              <h3 className="text-lg font-black text-[#1d1d1f]">COMMERCE HUB</h3>
-              <p className="text-[11px] text-[#86868b]">Receipt: {posReceiptModal.receiptNo}</p>
-              <p className="text-[10px] text-[#86868b]">{posReceiptModal.date}</p>
+              <h3 className="text-lg font-black text-[#0E1A2B]">COMMERCE HUB</h3>
+              <p className="text-[11px] text-[#6F7E92]">Receipt: {posReceiptModal.receiptNo}</p>
+              <p className="text-[10px] text-[#6F7E92]">{posReceiptModal.date}</p>
             </div>
 
-            <div className="border-t border-b border-dashed border-[#e5e5ea] py-4 text-left text-[12px] space-y-2">
+            <div className="border-t border-b border-dashed border-[#E3E8EF] py-4 text-left text-[12px] space-y-2">
               <p>Customer: {posReceiptModal.customer}</p>
               {posReceiptModal.customerPhone && <p>Phone: {posReceiptModal.customerPhone}</p>}
               <p>Cashier: {posReceiptModal.cashier}</p>
               <p>Method: {posReceiptModal.paymentMethod}</p>
 
-              <div className="pt-2 border-t border-dashed border-[#e5e5ea] space-y-1">
+              <div className="pt-2 border-t border-dashed border-[#E3E8EF] space-y-1">
                 {posReceiptModal.items.map((it, idx) => (
                   <div key={idx} className="flex justify-between">
                     <span>
                       <span className="block font-bold">{it.name}</span>
-                      <span className="block text-[10px] text-[#86868b] font-medium tracking-wide">Qty: {it.qty}</span>
+                      <span className="block text-[10px] text-[#6F7E92] font-medium tracking-wide">Qty: {it.qty}</span>
                     </span>
                     <span className="font-bold">₹{(it.price * it.qty).toLocaleString()}</span>
                   </div>
@@ -4550,14 +4552,14 @@ export default function EcommerceAdminPanel() {
               </div>
             </div>
 
-            <div className="flex justify-between items-center text-lg font-black text-[#1d1d1f]">
+            <div className="flex justify-between items-center text-lg font-black text-[#0E1A2B]">
               <span>TOTAL PAID</span>
-              <span className="text-[#ea580c]">₹{posReceiptModal.total.toLocaleString()}</span>
+              <span className="text-[#2F6BFF]">₹{posReceiptModal.total.toLocaleString()}</span>
             </div>
 
             <button
               onClick={() => setPosReceiptModal(null)}
-              className="w-full py-3 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full font-bold text-[13px] shadow-md"
+              className="w-full py-3 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full font-bold text-[13px] shadow-md"
             >
               Close & Print
             </button>
@@ -4570,33 +4572,33 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {isExchangeModalOpen && exchangeTx && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-md w-full shadow-2xl space-y-6">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-md w-full shadow-2xl space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-xl font-bold text-[#1d1d1f]">Process Exchange</h3>
-                <p className="text-[12px] text-[#86868b] mt-1 font-mono font-semibold">{exchangeTx.receiptNo}</p>
+                <h3 className="text-xl font-bold text-[#0E1A2B]">Process Exchange</h3>
+                <p className="text-[12px] text-[#6F7E92] mt-1 font-mono font-semibold">{exchangeTx.receiptNo}</p>
               </div>
-              <button onClick={() => setIsExchangeModalOpen(false)} className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold">✕</button>
+              <button onClick={() => setIsExchangeModalOpen(false)} className="w-8 h-8 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold">✕</button>
             </div>
 
             <div className="space-y-3">
-              <p className="text-[13px] font-bold text-[#1d1d1f]">Select the items the customer is bringing back. They go back into stock on the website too.</p>
+              <p className="text-[13px] font-bold text-[#0E1A2B]">Select the items the customer is bringing back. They go back into stock on the website too.</p>
               {exchangeTx.items.map((it, idx) => {
                 const returned = exchangeTx.returnedItems?.includes(idx);
                 return (
-                <label key={idx} className={`flex items-center gap-3 p-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl transition-colors ${returned ? 'opacity-60' : 'cursor-pointer hover:border-[#ea580c]/50'}`}>
+                <label key={idx} className={`flex items-center gap-3 p-3.5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-2xl transition-colors ${returned ? 'opacity-60' : 'cursor-pointer hover:border-[#2F6BFF]/50'}`}>
                   <input
                     type="checkbox"
                     disabled={returned}
                     checked={returned || exchangeSelected.includes(idx)}
                     onChange={(e) => setExchangeSelected(e.target.checked ? [...exchangeSelected, idx] : exchangeSelected.filter((i) => i !== idx))}
-                    className="w-4 h-4 accent-[#ea580c] rounded border-[#e5e5ea]"
+                    className="w-4 h-4 accent-[#2F6BFF] rounded border-[#E3E8EF]"
                   />
                   <div className="flex-1">
-                    <span className="text-[13px] font-bold text-[#1d1d1f] block">{it.name}</span>
-                    <span className="text-[11px] text-[#86868b] font-semibold">Qty: {it.qty}{returned ? ' · already returned' : ''}</span>
+                    <span className="text-[13px] font-bold text-[#0E1A2B] block">{it.name}</span>
+                    <span className="text-[11px] text-[#6F7E92] font-semibold">Qty: {it.qty}{returned ? ' · already returned' : ''}</span>
                   </div>
-                  <span className="text-[13px] font-black text-[#ea580c]">₹{(it.price * it.qty).toLocaleString()}</span>
+                  <span className="text-[13px] font-black text-[#2F6BFF]">₹{(it.price * it.qty).toLocaleString()}</span>
                 </label>
                 );
               })}
@@ -4622,7 +4624,7 @@ export default function EcommerceAdminPanel() {
                   setIsExchangeModalOpen(false);
                   notify(`${picked.reduce((sum, it) => sum + it.qty, 0)} item(s) from ${exchangeTx.receiptNo} returned to stock`);
                 }}
-                className="w-full py-4 bg-[#1d1d1f] hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold text-[14px] rounded-full shadow-md transition-all active:scale-95 flex justify-center items-center gap-2"
+                className="w-full py-4 bg-[#0E1A2B] hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold text-[14px] rounded-full shadow-md transition-all active:scale-95 flex justify-center items-center gap-2"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
                 Return selected to stock
@@ -4637,12 +4639,12 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {isUploadVideoModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-lg w-full shadow-2xl space-y-6">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-lg w-full shadow-2xl space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-[#1d1d1f]">Upload Product Video</h3>
+              <h3 className="text-xl font-bold text-[#0E1A2B]">Upload Product Video</h3>
               <button
                 onClick={() => setIsUploadVideoModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+                className="w-8 h-8 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
               >
                 ✕
               </button>
@@ -4650,7 +4652,7 @@ export default function EcommerceAdminPanel() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">
                   Video Title
                 </label>
                 <input
@@ -4658,18 +4660,18 @@ export default function EcommerceAdminPanel() {
                   placeholder="e.g. Unboxing & Review"
                   value={newVidTitle}
                   onChange={(e) => setNewVidTitle(e.target.value)}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f]"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">
                   Linked Product
                 </label>
                 <select
                   value={newVidProduct}
                   onChange={(e) => setNewVidProduct(e.target.value)}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-bold"
                 >
                   {products.map((p) => (
                     <option key={p.id} value={p.name}>
@@ -4680,23 +4682,23 @@ export default function EcommerceAdminPanel() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">
                   Duration (MM:SS)
                 </label>
                 <input
                   type="text"
                   value={newVidDuration}
                   onChange={(e) => setNewVidDuration(e.target.value)}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-mono font-bold"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-mono font-bold"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Video URL</label>
-                <input type="url" value={newVidVideoUrl} onChange={(e) => setNewVidVideoUrl(e.target.value)} placeholder="https://… .mp4 file or YouTube link" className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold" />
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Video URL</label>
+                <input type="url" value={newVidVideoUrl} onChange={(e) => setNewVidVideoUrl(e.target.value)} placeholder="https://… .mp4 file or YouTube link" className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold" />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Cover image URL</label>
-                <input type="url" value={newVidThumbnail} onChange={(e) => setNewVidThumbnail(e.target.value)} placeholder="Leave empty to use the product photo" className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold" />
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Cover image URL</label>
+                <input type="url" value={newVidThumbnail} onChange={(e) => setNewVidThumbnail(e.target.value)} placeholder="Leave empty to use the product photo" className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold" />
               </div>
             </div>
 
@@ -4723,13 +4725,13 @@ export default function EcommerceAdminPanel() {
                   setNewVidThumbnail('');
                   notify('Video published — it now shows on the storefront');
                 }}
-                className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md"
+                className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md"
               >
                 Publish Video
               </button>
               <button
                 onClick={() => setIsUploadVideoModalOpen(false)}
-                className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full"
+                className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full"
               >
                 Cancel
               </button>
@@ -4758,16 +4760,16 @@ export default function EcommerceAdminPanel() {
               }
             `}</style>
             <div className="bg-white max-w-4xl w-full shadow-2xl relative overflow-hidden flex flex-col h-[90vh] rounded-[28px]">
-              <div className="flex flex-wrap justify-between items-center gap-3 p-4 bg-[#f5f5f7] border-b border-[#e5e5ea]">
+              <div className="flex flex-wrap justify-between items-center gap-3 p-4 bg-[#F3F6FA] border-b border-[#E3E8EF]">
                 <div className="flex items-center gap-3">
-                  <h3 className="font-bold text-[#1d1d1f]">Invoice {inv.orderNumber}</h3>
-                  <div className="flex bg-white border border-[#e5e5ea] rounded-full p-0.5" role="group" aria-label="Paper size">
+                  <h3 className="font-bold text-[#0E1A2B]">Invoice {inv.orderNumber}</h3>
+                  <div className="flex bg-white border border-[#E3E8EF] rounded-full p-0.5" role="group" aria-label="Paper size">
                     {(['A4', '4x6'] as const).map((size) => (
                       <button
                         key={size}
                         onClick={() => setInvoicePaper(size)}
                         aria-pressed={invoicePaper === size}
-                        className={`px-3.5 py-1 rounded-full text-[12px] font-extrabold transition-all ${invoicePaper === size ? 'bg-[#1d1d1f] text-white' : 'text-[#6e6e73]'}`}
+                        className={`px-3.5 py-1 rounded-full text-[12px] font-extrabold transition-all ${invoicePaper === size ? 'bg-[#0E1A2B] text-white' : 'text-[#5B6B80]'}`}
                       >
                         {size === 'A4' ? 'A4 Invoice' : '4×6 Label'}
                       </button>
@@ -4776,60 +4778,60 @@ export default function EcommerceAdminPanel() {
                 </div>
                 <button
                   onClick={() => setSelectedOrderForView(null)}
-                  className="w-8 h-8 rounded-full bg-white hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold shadow-sm"
+                  className="w-8 h-8 rounded-full bg-white hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold shadow-sm"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto bg-[#e5e5ea]/50 p-4 sm:p-8">
+              <div className="flex-1 overflow-y-auto bg-[#E3E8EF]/50 p-4 sm:p-8">
                 <div
                   id="invoice-print"
-                  className={`bg-white mx-auto shadow-sm text-[#1d1d1f] ${compact ? 'max-w-[384px] p-5 text-[11px]' : 'max-w-3xl p-8 sm:p-12 text-[13px]'}`}
+                  className={`bg-white mx-auto shadow-sm text-[#0E1A2B] ${compact ? 'max-w-[384px] p-5 text-[11px]' : 'max-w-3xl p-8 sm:p-12 text-[13px]'}`}
                 >
                   {/* Header */}
-                  <div className={`flex justify-between items-start gap-4 ${compact ? 'mb-4 pb-3 border-b-2 border-[#1d1d1f]' : 'mb-10'}`}>
+                  <div className={`flex justify-between items-start gap-4 ${compact ? 'mb-4 pb-3 border-b-2 border-[#0E1A2B]' : 'mb-10'}`}>
                     <div>
                       <h1 className={`${compact ? 'text-[20px]' : 'text-[40px]'} font-black tracking-tighter leading-none`}>{compact ? 'SHIP TO' : 'TAX INVOICE'}</h1>
                       <p className="font-bold mt-1.5">#{inv.orderNumber}</p>
-                      <p className="text-[#6e6e73]">{inv.date}</p>
+                      <p className="text-[#5B6B80]">{inv.date}</p>
                     </div>
                     <div className="text-right">
                       <h2 className={`${compact ? 'text-[13px]' : 'text-[19px]'} font-black`}>{STORE_INFO.name}</h2>
-                      {!compact && <p className="text-[#6e6e73] max-w-[240px] ml-auto leading-snug mt-1">{STORE_INFO.address}</p>}
-                      <p className="text-[#6e6e73] mt-0.5">GSTIN {STORE_INFO.gstin}</p>
+                      {!compact && <p className="text-[#5B6B80] max-w-[240px] ml-auto leading-snug mt-1">{STORE_INFO.address}</p>}
+                      <p className="text-[#5B6B80] mt-0.5">GSTIN {STORE_INFO.gstin}</p>
                     </div>
                   </div>
 
                   {/* Addresses */}
-                  <div className={`grid ${compact ? 'grid-cols-1 gap-3 mb-4' : 'grid-cols-3 gap-6 mb-10 pt-6 border-t border-[#e5e5ea]'}`}>
+                  <div className={`grid ${compact ? 'grid-cols-1 gap-3 mb-4' : 'grid-cols-3 gap-6 mb-10 pt-6 border-t border-[#E3E8EF]'}`}>
                     {!compact && (
                       <div>
-                        <h4 className="text-[10px] font-extrabold uppercase text-[#86868b] tracking-wider mb-1.5">Billed To</h4>
+                        <h4 className="text-[10px] font-extrabold uppercase text-[#6F7E92] tracking-wider mb-1.5">Billed To</h4>
                         <p className="font-black">{inv.customerName}</p>
                         <p>{inv.email}</p>
                         <p>{inv.phone}</p>
                       </div>
                     )}
                     <div>
-                      <h4 className="text-[10px] font-extrabold uppercase text-[#86868b] tracking-wider mb-1.5">{compact ? 'Deliver To' : 'Shipped To'}</h4>
+                      <h4 className="text-[10px] font-extrabold uppercase text-[#6F7E92] tracking-wider mb-1.5">{compact ? 'Deliver To' : 'Shipped To'}</h4>
                       <p className={`font-black ${compact ? 'text-[15px]' : ''}`}>{inv.customerName}</p>
                       <p className="leading-snug">{inv.shippingAddress}</p>
                       <p>{inv.city}{inv.state ? `, ${inv.state}` : ''} - <span className="font-bold">{inv.postalCode}</span></p>
                       <p className="font-semibold">Phone: {inv.phone}</p>
                     </div>
-                    <div className={compact ? 'flex justify-between border-y border-dashed border-[#c7c7cc] py-2' : 'text-right'}>
+                    <div className={compact ? 'flex justify-between border-y border-dashed border-[#A9B4C2] py-2' : 'text-right'}>
                       <div>
-                        <h4 className="text-[10px] font-extrabold uppercase text-[#86868b] tracking-wider mb-1.5">Payment</h4>
+                        <h4 className="text-[10px] font-extrabold uppercase text-[#6F7E92] tracking-wider mb-1.5">Payment</h4>
                         <p className="font-bold">{inv.paymentMethod}</p>
                         <p className={inv.paymentStatus === 'Paid' ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'}>
                           {inv.paymentMethod === 'Cash on Delivery' && inv.paymentStatus !== 'Paid' ? `COLLECT ₹${inv.total.toLocaleString('en-IN')}` : inv.paymentStatus.toUpperCase()}
                         </p>
-                        {inv.paymentId && <p className="font-mono text-[#6e6e73]">{inv.paymentId}</p>}
+                        {inv.paymentId && <p className="font-mono text-[#5B6B80]">{inv.paymentId}</p>}
                       </div>
                       {inv.shipment && (
                         <div className={compact ? 'text-right' : 'mt-3'}>
-                          <h4 className="text-[10px] font-extrabold uppercase text-[#86868b] tracking-wider mb-1">{inv.shipment.courier}</h4>
+                          <h4 className="text-[10px] font-extrabold uppercase text-[#6F7E92] tracking-wider mb-1">{inv.shipment.courier}</h4>
                           <p className="font-mono font-bold">AWB {inv.shipment.awb}</p>
                         </div>
                       )}
@@ -4839,7 +4841,7 @@ export default function EcommerceAdminPanel() {
                   {/* Items */}
                   <table className={`w-full ${compact ? 'mb-3' : 'mb-8'}`}>
                     <thead>
-                      <tr className="border-b-2 border-[#1d1d1f] text-[10px] font-extrabold uppercase tracking-wider">
+                      <tr className="border-b-2 border-[#0E1A2B] text-[10px] font-extrabold uppercase tracking-wider">
                         <th className="text-left py-2 pr-2">S.No</th>
                         <th className="text-left py-2">Item</th>
                         <th className="text-center py-2">Qty</th>
@@ -4849,14 +4851,14 @@ export default function EcommerceAdminPanel() {
                     </thead>
                     <tbody>
                       {inv.items.map((item, idx) => (
-                        <tr key={idx} className="border-b border-[#f0f0f2] align-top">
+                        <tr key={idx} className="border-b border-[#EDF1F6] align-top">
                           <td className="py-3 pr-2 font-bold">{idx + 1}</td>
                           <td className="py-3">
                             <div className="flex items-start gap-3">
-                              {!compact && <img src={item.image || productImageFor(item.sku, item.color)} alt="" className="w-11 h-11 rounded-lg object-cover border border-[#e5e5ea]" />}
+                              {!compact && <img src={item.image || productImageFor(item.sku, item.color)} alt="" className="w-11 h-11 rounded-lg object-cover border border-[#E3E8EF]" />}
                               <div>
                                 <p className="font-bold leading-snug">{item.name}</p>
-                                <p className="text-[#6e6e73]">SKU {item.sku} • {variantLabel(item.size, item.color)}</p>
+                                <p className="text-[#5B6B80]">SKU {item.sku} • {variantLabel(item.size, item.color)}</p>
                               </div>
                             </div>
                           </td>
@@ -4875,12 +4877,12 @@ export default function EcommerceAdminPanel() {
                       {inv.discount > 0 && <div className="flex justify-between text-emerald-700"><span>Promo {inv.promo}</span><span>− ₹{inv.discount.toLocaleString('en-IN')}</span></div>}
                       <div className="flex justify-between"><span>Delivery</span><span>{inv.delivery ? `₹${inv.delivery}` : 'Free'}</span></div>
                       {!compact && (
-                        <div className="flex justify-between text-[#6e6e73] italic">
+                        <div className="flex justify-between text-[#5B6B80] italic">
                           <span>Includes GST (18%)</span>
                           <span>₹{(inv.total - taxable).toFixed(2)}</span>
                         </div>
                       )}
-                      <div className="flex justify-between items-center border-t-2 border-[#1d1d1f] pt-2 mt-2">
+                      <div className="flex justify-between items-center border-t-2 border-[#0E1A2B] pt-2 mt-2">
                         <span className={`${compact ? 'text-[14px]' : 'text-[20px]'} font-black`}>Total</span>
                         <span className={`${compact ? 'text-[14px]' : 'text-[20px]'} font-black`}>₹{inv.total.toLocaleString('en-IN')}</span>
                       </div>
@@ -4889,20 +4891,20 @@ export default function EcommerceAdminPanel() {
 
                   {/* Footer */}
                   {compact ? (
-                    <p className="text-center text-[10px] text-[#6e6e73] border-t border-dashed border-[#c7c7cc] pt-2">
+                    <p className="text-center text-[10px] text-[#5B6B80] border-t border-dashed border-[#A9B4C2] pt-2">
                       From: {STORE_INFO.name}, {STORE_INFO.address} • {STORE_INFO.phone}
                     </p>
                   ) : (
-                    <div className="pt-6 border-t border-[#e5e5ea] grid grid-cols-2 gap-6 text-[11px] text-[#6e6e73] leading-relaxed">
+                    <div className="pt-6 border-t border-[#E3E8EF] grid grid-cols-2 gap-6 text-[11px] text-[#5B6B80] leading-relaxed">
                       <div>
-                        <p className="font-extrabold uppercase tracking-wider text-[#1d1d1f] mb-1">Returns & Warranty</p>
+                        <p className="font-extrabold uppercase tracking-wider text-[#0E1A2B] mb-1">Returns & Warranty</p>
                         <p>{STORE_INFO.returnPolicy}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-extrabold uppercase tracking-wider text-[#1d1d1f] mb-1">Questions?</p>
+                        <p className="font-extrabold uppercase tracking-wider text-[#0E1A2B] mb-1">Questions?</p>
                         <p>{STORE_INFO.email}</p>
                         <p>{STORE_INFO.phone}</p>
-                        <p className="mt-3 font-bold text-[#1d1d1f]">For {STORE_INFO.name}</p>
+                        <p className="mt-3 font-bold text-[#0E1A2B]">For {STORE_INFO.name}</p>
                         <p>Computer-generated invoice — no signature required.</p>
                       </div>
                     </div>
@@ -4910,17 +4912,17 @@ export default function EcommerceAdminPanel() {
                 </div>
               </div>
 
-              <div className="p-4 bg-[#f5f5f7] border-t border-[#e5e5ea] flex flex-wrap justify-end gap-3">
+              <div className="p-4 bg-[#F3F6FA] border-t border-[#E3E8EF] flex flex-wrap justify-end gap-3">
                 <button
-                  className="px-5 py-2.5 bg-white border border-[#e5e5ea] hover:bg-[#e5e5ea] text-[#1d1d1f] font-bold text-[13px] rounded-full transition-colors"
+                  className="px-5 py-2.5 bg-white border border-[#E3E8EF] hover:bg-[#E3E8EF] text-[#0E1A2B] font-bold text-[13px] rounded-full transition-colors"
                   onClick={() => emailCustomer(inv, 'Invoice')}
                 >
                   ✉️ Email to Customer
                 </button>
-                <button className="px-5 py-2.5 bg-white border border-[#e5e5ea] hover:bg-[#e5e5ea] text-[#1d1d1f] font-bold text-[13px] rounded-full transition-colors" onClick={() => setSelectedOrderForView(null)}>
+                <button className="px-5 py-2.5 bg-white border border-[#E3E8EF] hover:bg-[#E3E8EF] text-[#0E1A2B] font-bold text-[13px] rounded-full transition-colors" onClick={() => setSelectedOrderForView(null)}>
                   Close
                 </button>
-                <button className="px-6 py-2.5 bg-[#ea580c] hover:bg-[#f97316] text-white font-bold text-[13px] rounded-full transition-colors shadow-sm" onClick={() => window.print()}>
+                <button className="px-6 py-2.5 bg-[#2F6BFF] hover:bg-[#5A8BFF] text-white font-bold text-[13px] rounded-full transition-colors shadow-sm" onClick={() => window.print()}>
                   Print / Save PDF ({compact ? '4×6' : 'A4'})
                 </button>
               </div>
@@ -4937,21 +4939,21 @@ export default function EcommerceAdminPanel() {
         if (!ord) return null;
         const steps: OrderStatus[] = ['Pending', 'Processing', 'Shipped', 'Delivered'];
         const reached = steps.indexOf(ord.orderStatus);
-        const box = 'p-5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-[24px]';
-        const heading = 'text-[11px] font-extrabold uppercase tracking-wider text-[#86868b] mb-2';
+        const box = 'p-5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-[24px]';
+        const heading = 'text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92] mb-2';
         return (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 sm:p-8 max-w-3xl w-full shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
+            <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-6 sm:p-8 max-w-3xl w-full shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
               <div className="flex justify-between items-start gap-4">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-2xl font-black tracking-tight text-[#1d1d1f] font-mono">{ord.orderNumber}</h3>
+                    <h3 className="text-2xl font-black tracking-tight text-[#0E1A2B] font-mono">{ord.orderNumber}</h3>
                     <span className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border ${orderStatusStyle(ord.orderStatus)}`}>{ord.orderStatus}</span>
-                    <span className="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-[#f5f5f7] text-[#6e6e73] border border-[#e5e5ea]">{ord.source}</span>
+                    <span className="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-[#F3F6FA] text-[#5B6B80] border border-[#E3E8EF]">{ord.source}</span>
                   </div>
-                  <p className="text-[13px] text-[#86868b] font-semibold mt-1">Placed {new Date(ord.placedAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold mt-1">Placed {new Date(ord.placedAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</p>
                 </div>
-                <button onClick={() => setOrderDetailsId(null)} className="w-8 h-8 shrink-0 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold">✕</button>
+                <button onClick={() => setOrderDetailsId(null)} className="w-8 h-8 shrink-0 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold">✕</button>
               </div>
 
               {/* Progress */}
@@ -4961,8 +4963,8 @@ export default function EcommerceAdminPanel() {
                 <ol className="grid grid-cols-4 gap-2">
                   {steps.map((step, i) => (
                     <li key={step} className="text-center">
-                      <div className={`h-1.5 rounded-full ${i <= reached ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316]' : 'bg-[#e5e5ea]'}`} />
-                      <p className={`mt-2 text-[11px] font-extrabold uppercase tracking-wider ${i <= reached ? 'text-[#1d1d1f]' : 'text-[#c7c7cc]'}`}>{step}</p>
+                      <div className={`h-1.5 rounded-full ${i <= reached ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF]' : 'bg-[#E3E8EF]'}`} />
+                      <p className={`mt-2 text-[11px] font-extrabold uppercase tracking-wider ${i <= reached ? 'text-[#0E1A2B]' : 'text-[#A9B4C2]'}`}>{step}</p>
                     </li>
                   ))}
                 </ol>
@@ -4971,20 +4973,21 @@ export default function EcommerceAdminPanel() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className={box}>
                   <p className={heading}>Customer Details</p>
-                  <p className="font-bold text-[#1d1d1f] text-[15px]">{ord.customerName}</p>
-                  <p className="text-[13px] text-[#6e6e73] font-semibold flex items-center gap-2">{ord.email}<button onClick={() => copyText(ord.email, 'Email')} className="text-[#ea580c] text-[11px] font-black">Copy</button></p>
-                  <p className="text-[13px] text-[#6e6e73] font-semibold flex items-center gap-2">{ord.phone}<button onClick={() => copyText(ord.phone, 'Phone')} className="text-[#ea580c] text-[11px] font-black">Copy</button></p>
-                  <p className="text-[13px] text-[#1d1d1f] font-semibold mt-2 leading-snug">{ord.shippingAddress}, {ord.city}{ord.state ? `, ${ord.state}` : ''} - {ord.postalCode}</p>
+                  <p className="font-bold text-[#0E1A2B] text-[15px]">{ord.customerName}</p>
+                  <p className="text-[13px] text-[#5B6B80] font-semibold flex items-center gap-2">{ord.email}<button onClick={() => copyText(ord.email, 'Email')} className="text-[#2F6BFF] text-[11px] font-black">Copy</button></p>
+                  <p className="text-[13px] text-[#5B6B80] font-semibold flex items-center gap-2">{ord.phone}<button onClick={() => copyText(ord.phone, 'Phone')} className="text-[#2F6BFF] text-[11px] font-black">Copy</button></p>
+                  <p className="text-[13px] text-[#0E1A2B] font-semibold mt-2 leading-snug">{ord.shippingAddress}, {ord.city}{ord.state ? `, ${ord.state}` : ''} - {ord.postalCode}</p>
                 </div>
                 <div className={box}>
                   <p className={heading}>Payment</p>
-                  <p className="font-bold text-[#1d1d1f] text-[15px]">{ord.paymentMethod}</p>
+                  <p className="font-bold text-[#0E1A2B] text-[15px]">{ord.paymentMethod}</p>
                   <p className={`text-[13px] font-black uppercase ${ord.paymentStatus === 'Paid' ? 'text-emerald-600' : 'text-amber-600'}`}>● {ord.paymentStatus}</p>
-                  {ord.paymentId && <p className="text-[12px] font-mono text-[#6e6e73] mt-1">{ord.paymentId}</p>}
-                  <div className="mt-3 pt-3 border-t border-[#e5e5ea] text-[13px] font-semibold space-y-1">
-                    <div className="flex justify-between"><span className="text-[#6e6e73]">Subtotal</span><span>₹{ord.subtotal.toLocaleString('en-IN')}</span></div>
+                  {ord.paymentDetail && <p className="text-[13px] font-semibold text-[#3A4A5F] mt-1">{ord.paymentDetail}</p>}
+                  {ord.paymentId && <p className="text-[12px] font-mono text-[#5B6B80] mt-1">{ord.paymentId}{ord.gatewayOrderId ? ` · ${ord.gatewayOrderId}` : ''}</p>}
+                  <div className="mt-3 pt-3 border-t border-[#E3E8EF] text-[13px] font-semibold space-y-1">
+                    <div className="flex justify-between"><span className="text-[#5B6B80]">Subtotal</span><span>₹{ord.subtotal.toLocaleString('en-IN')}</span></div>
                     {ord.discount > 0 && <div className="flex justify-between text-emerald-700"><span>Promo {ord.promo}</span><span>− ₹{ord.discount.toLocaleString('en-IN')}</span></div>}
-                    <div className="flex justify-between"><span className="text-[#6e6e73]">Delivery</span><span>{ord.delivery ? `₹${ord.delivery}` : 'Free'}</span></div>
+                    <div className="flex justify-between"><span className="text-[#5B6B80]">Delivery</span><span>{ord.delivery ? `₹${ord.delivery}` : 'Free'}</span></div>
                     <div className="flex justify-between font-black text-[15px] pt-1"><span>Total</span><span>₹{ord.total.toLocaleString('en-IN')}</span></div>
                   </div>
                 </div>
@@ -4995,10 +4998,10 @@ export default function EcommerceAdminPanel() {
                 <div className="space-y-3">
                   {ord.items.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-3">
-                      <img src={item.image || productImageFor(item.sku, item.color)} alt="" className="w-12 h-12 rounded-xl object-cover border border-[#e5e5ea] bg-white" />
+                      <img src={item.image || productImageFor(item.sku, item.color)} alt="" className="w-12 h-12 rounded-xl object-cover border border-[#E3E8EF] bg-white" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-[14px] font-bold text-[#1d1d1f] truncate">{item.name}</p>
-                        <p className="text-[12px] text-[#6e6e73] font-semibold">
+                        <p className="text-[14px] font-bold text-[#0E1A2B] truncate">{item.name}</p>
+                        <p className="text-[12px] text-[#5B6B80] font-semibold">
                           {item.sku} • {item.size !== STANDARD ? `Size ${item.size}` : 'One size'}{item.color !== STANDARD ? ` • ${item.color}` : ''} • Qty {item.qty}
                         </p>
                       </div>
@@ -5013,20 +5016,20 @@ export default function EcommerceAdminPanel() {
                 <div className="flex flex-wrap justify-between items-center gap-3">
                   <p className={`${heading} !mb-0`}>Shipping · Shiprocket</p>
                   {ord.orderStatus !== 'Cancelled' && (
-                    <button onClick={() => setShiprocketOrderId(ord.id)} className="px-4 py-2 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[12px] font-extrabold shadow-sm inline-flex items-center gap-1.5">
+                    <button onClick={() => setShiprocketOrderId(ord.id)} className="px-4 py-2 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white rounded-full text-[12px] font-extrabold shadow-sm inline-flex items-center gap-1.5">
                       <PanelIcon name="truck" size={15} /> {ord.shipment && ord.shipment.status !== 'Cancelled' ? 'View shipment' : 'Create shipment'}
                     </button>
                   )}
                 </div>
                 {ord.shipment ? (
-                  <div className="mt-3 text-[13px] font-semibold text-[#1d1d1f] space-y-0.5">
-                    <p><span className="text-[#6e6e73]">Shiprocket status:</span> <span className={`font-black ${ord.shipment.status === 'Cancelled' ? 'text-red-600' : 'text-blue-700'}`}>{ord.shipment.remoteStatus ?? ord.shipment.status}</span></p>
-                    {ord.shipment.srOrderId && <p><span className="text-[#6e6e73]">Shiprocket order:</span> {ord.shipment.srOrderId} • <span className="text-[#6e6e73]">Shipment:</span> {ord.shipment.srShipmentId}</p>}
-                    <p><span className="text-[#6e6e73]">Courier:</span> {ord.shipment.awb ? <>{ord.shipment.courier} • <span className="font-mono">AWB {ord.shipment.awb}</span></> : 'Not assigned yet'}</p>
-                    <p><span className="text-[#6e6e73]">Parcel:</span> {ord.shipment.weightKg} kg • {ord.shipment.dimensions} • from {ord.shipment.pickup}</p>
+                  <div className="mt-3 text-[13px] font-semibold text-[#0E1A2B] space-y-0.5">
+                    <p><span className="text-[#5B6B80]">Shiprocket status:</span> <span className={`font-black ${ord.shipment.status === 'Cancelled' ? 'text-red-600' : 'text-blue-700'}`}>{ord.shipment.remoteStatus ?? ord.shipment.status}</span></p>
+                    {ord.shipment.srOrderId && <p><span className="text-[#5B6B80]">Shiprocket order:</span> {ord.shipment.srOrderId} • <span className="text-[#5B6B80]">Shipment:</span> {ord.shipment.srShipmentId}</p>}
+                    <p><span className="text-[#5B6B80]">Courier:</span> {ord.shipment.awb ? <>{ord.shipment.courier} • <span className="font-mono">AWB {ord.shipment.awb}</span></> : 'Not assigned yet'}</p>
+                    <p><span className="text-[#5B6B80]">Parcel:</span> {ord.shipment.weightKg} kg • {ord.shipment.dimensions} • from {ord.shipment.pickup}</p>
                   </div>
                 ) : (
-                  <p className="mt-2 text-[13px] text-[#86868b] font-semibold">No shipment yet. Create a Shiprocket order with the packed parcel details.</p>
+                  <p className="mt-2 text-[13px] text-[#6F7E92] font-semibold">No shipment yet. Create a Shiprocket order with the packed parcel details.</p>
                 )}
               </div>
 
@@ -5035,30 +5038,30 @@ export default function EcommerceAdminPanel() {
                 <div className="flex flex-wrap justify-between items-center gap-3">
                   <p className={`${heading} !mb-0`}>Customer Emails</p>
                   <div className="flex flex-wrap gap-2">
-                    <button onClick={() => emailCustomer(ord, 'Status update')} className="px-4 py-2 bg-white border border-[#e5e5ea] hover:border-[#ea580c] text-[#1d1d1f] rounded-full text-[12px] font-extrabold">
+                    <button onClick={() => emailCustomer(ord, 'Status update')} className="px-4 py-2 bg-white border border-[#E3E8EF] hover:border-[#2F6BFF] text-[#0E1A2B] rounded-full text-[12px] font-extrabold">
                       ✉️ Send Status Update
                     </button>
-                    <button onClick={() => emailCustomer(ord, 'Invoice')} className="px-4 py-2 bg-white border border-[#e5e5ea] hover:border-[#ea580c] text-[#1d1d1f] rounded-full text-[12px] font-extrabold">
+                    <button onClick={() => emailCustomer(ord, 'Invoice')} className="px-4 py-2 bg-white border border-[#E3E8EF] hover:border-[#2F6BFF] text-[#0E1A2B] rounded-full text-[12px] font-extrabold">
                     <PanelIcon name="receipt" size={15} /> Send Invoice
                     </button>
                   </div>
                 </div>
                 {ord.emails.length ? (
-                  <ul className="mt-3 space-y-1 text-[12px] font-semibold text-[#6e6e73]">
+                  <ul className="mt-3 space-y-1 text-[12px] font-semibold text-[#5B6B80]">
                     {[...ord.emails].reverse().map((mail, i) => (
                       <li key={i}>✓ {mail.kind} sent to {ord.email} • {new Date(mail.at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-2 text-[13px] text-[#86868b] font-semibold">No emails sent for this order yet.</p>
+                  <p className="mt-2 text-[13px] text-[#6F7E92] font-semibold">No emails sent for this order yet.</p>
                 )}
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <button onClick={() => openInvoice(ord, 'A4')} className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md">
+                <button onClick={() => openInvoice(ord, 'A4')} className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md">
                   Open Full Invoice
                 </button>
-                <button onClick={() => openInvoice(ord, '4x6')} className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#1d1d1f] font-bold text-[13px] rounded-full">
+                <button onClick={() => openInvoice(ord, '4x6')} className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#0E1A2B] font-bold text-[13px] rounded-full">
                   Print 4×6 Label
                 </button>
               </div>
@@ -5094,38 +5097,38 @@ export default function EcommerceAdminPanel() {
         const stats = customerStats(customerHistoryEmail);
         return (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-start gap-4">
                 <div>
-                  <h3 className="text-xl font-bold text-[#1d1d1f]">{cus?.name ?? customerHistoryEmail}</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">{customerHistoryEmail}{cus?.phone ? ` • ${cus.phone}` : ''}</p>
-                  <p className="text-[13px] font-bold text-[#1d1d1f] mt-1">{stats.orderCount} orders • ₹{stats.totalSpent.toLocaleString('en-IN')} spent</p>
+                  <h3 className="text-xl font-bold text-[#0E1A2B]">{cus?.name ?? customerHistoryEmail}</h3>
+                  <p className="text-[13px] text-[#6F7E92] font-semibold">{customerHistoryEmail}{cus?.phone ? ` • ${cus.phone}` : ''}</p>
+                  <p className="text-[13px] font-bold text-[#0E1A2B] mt-1">{stats.orderCount} orders • ₹{stats.totalSpent.toLocaleString('en-IN')} spent</p>
                 </div>
-                <button onClick={() => setCustomerHistoryEmail(null)} className="w-8 h-8 shrink-0 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold">✕</button>
+                <button onClick={() => setCustomerHistoryEmail(null)} className="w-8 h-8 shrink-0 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold">✕</button>
               </div>
               <div className="space-y-3">
                 {history.map((ord) => (
-                  <div key={ord.id} className="p-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-[24px] flex flex-wrap items-center gap-4">
+                  <div key={ord.id} className="p-4 bg-[#F3F6FA] border border-[#E3E8EF] rounded-[24px] flex flex-wrap items-center gap-4">
                     <div className="flex -space-x-3">
                       {ord.items.slice(0, 3).map((item, i) => (
                         <img key={i} src={item.image || productImageFor(item.sku, item.color)} alt="" className="w-10 h-10 rounded-full object-cover border-2 border-white" />
                       ))}
                     </div>
                     <div className="flex-1 min-w-[160px]">
-                      <p className="font-mono font-bold text-[#ea580c] text-[13px]">{ord.orderNumber}</p>
-                      <p className="text-[12px] text-[#6e6e73] font-semibold">{ord.date} • {ord.itemsCount} item(s) • ₹{ord.total.toLocaleString('en-IN')}</p>
+                      <p className="font-mono font-bold text-[#2F6BFF] text-[13px]">{ord.orderNumber}</p>
+                      <p className="text-[12px] text-[#5B6B80] font-semibold">{ord.date} • {ord.itemsCount} item(s) • ₹{ord.total.toLocaleString('en-IN')}</p>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border ${orderStatusStyle(ord.orderStatus)}`}>{ord.orderStatus}</span>
                     <div className="flex gap-2">
                       <button
                         onClick={() => { setCustomerHistoryEmail(null); setOrderDetailsId(ord.id); }}
-                        className="px-3 py-1.5 bg-white border border-[#e5e5ea] rounded-full text-[12px] font-extrabold text-[#1d1d1f] hover:border-[#ea580c]"
+                        className="px-3 py-1.5 bg-white border border-[#E3E8EF] rounded-full text-[12px] font-extrabold text-[#0E1A2B] hover:border-[#2F6BFF]"
                       >
                         Details
                       </button>
                       <button
                         onClick={() => openInvoice(ord, '4x6')}
-                        className="px-3 py-1.5 bg-white border border-[#e5e5ea] rounded-full text-[12px] font-extrabold text-[#ea580c] hover:border-[#ea580c] whitespace-nowrap"
+                        className="px-3 py-1.5 bg-white border border-[#E3E8EF] rounded-full text-[12px] font-extrabold text-[#2F6BFF] hover:border-[#2F6BFF] whitespace-nowrap"
                       >
                         Print 4×6 Invoice
                       </button>
@@ -5140,7 +5143,7 @@ export default function EcommerceAdminPanel() {
                   setCustomerHistoryEmail(null);
                   setActiveTab('orders');
                 }}
-                className="w-full py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#1d1d1f] font-bold text-[13px] rounded-full"
+                className="w-full py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#0E1A2B] font-bold text-[13px] rounded-full"
               >
                 Filter the Orders page to this customer →
               </button>
@@ -5154,12 +5157,12 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {isCustomerModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-md w-full shadow-2xl space-y-6">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-md w-full shadow-2xl space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-[#1d1d1f]">Add Customer</h3>
+              <h3 className="text-xl font-bold text-[#0E1A2B]">Add Customer</h3>
               <button
                 onClick={() => setIsCustomerModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+                className="w-8 h-8 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
               >
                 ✕
               </button>
@@ -5172,13 +5175,13 @@ export default function EcommerceAdminPanel() {
                 { label: 'Phone Number', type: 'tel', value: newCustomerPhone, set: setNewCustomerPhone, placeholder: '+91 98765 43210' },
               ].map((field) => (
                 <div key={field.label}>
-                  <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">{field.label}</label>
+                  <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">{field.label}</label>
                   <input
                     type={field.type}
                     value={field.value}
                     onChange={(e) => { field.set(e.target.value); setCustomerFormError(''); }}
                     placeholder={field.placeholder}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF]"
                   />
                 </div>
               ))}
@@ -5191,13 +5194,13 @@ export default function EcommerceAdminPanel() {
             <div className="flex gap-3">
               <button
                 onClick={handleAddCustomer}
-                className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md"
+                className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md"
               >
                 Add Customer
               </button>
               <button
                 onClick={() => setIsCustomerModalOpen(false)}
-                className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full"
+                className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full"
               >
                 Cancel
               </button>
@@ -5211,12 +5214,12 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {isBannerModalOpen && bannerDraft && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-[#1d1d1f]">{bannerDraft.id ? 'Edit Banner' : 'Add New Hero Banner'}</h3>
+              <h3 className="text-xl font-bold text-[#0E1A2B]">{bannerDraft.id ? 'Edit Banner' : 'Add New Hero Banner'}</h3>
               <button
                 onClick={() => setIsBannerModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+                className="w-8 h-8 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
               >
                 ✕
               </button>
@@ -5225,8 +5228,8 @@ export default function EcommerceAdminPanel() {
             {/* Live previews: desktop and phone */}
             <div className="grid grid-cols-[1fr_96px] sm:grid-cols-[1fr_120px] gap-3 items-end">
             <div>
-            <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#86868b] mb-1 pl-1">Desktop — 1600 × 500 px</p>
-            <div className="relative h-40 rounded-[24px] overflow-hidden bg-[#1d1d1f]">
+            <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#6F7E92] mb-1 pl-1">Desktop — 1600 × 500 px</p>
+            <div className="relative h-40 rounded-[24px] overflow-hidden bg-[#0E1A2B]">
               {bannerDraft.imageUrl ? (
                 <img src={bannerDraft.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
               ) : (
@@ -5239,13 +5242,13 @@ export default function EcommerceAdminPanel() {
               >
                 <h4 className="text-2xl font-black tracking-tight">{bannerDraft.title || 'Banner title'}</h4>
                 {bannerDraft.subtitle && <p className="text-[13px] font-semibold mt-1 opacity-90">{bannerDraft.subtitle}</p>}
-                {bannerDraft.ctaText && <span className="mt-3 px-4 py-1.5 bg-white text-[#1d1d1f] rounded-full text-[11px] font-extrabold">{bannerDraft.ctaText} →</span>}
+                {bannerDraft.ctaText && <span className="mt-3 px-4 py-1.5 bg-white text-[#0E1A2B] rounded-full text-[11px] font-extrabold">{bannerDraft.ctaText} →</span>}
               </div>
             </div>
             </div>
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#86868b] mb-1 text-center">Mobile</p>
-              <div className="relative aspect-[4/5] rounded-[18px] overflow-hidden bg-[#1d1d1f] border-[3px] border-[#1d1d1f]">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#6F7E92] mb-1 text-center">Mobile</p>
+              <div className="relative aspect-[4/5] rounded-[18px] overflow-hidden bg-[#0E1A2B] border-[3px] border-[#0E1A2B]">
                 {(bannerDraft.mobileImageUrl || bannerDraft.imageUrl) && (
                   <img src={bannerDraft.mobileImageUrl || bannerDraft.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
                 )}
@@ -5257,50 +5260,50 @@ export default function EcommerceAdminPanel() {
             </div>
             </div>
             {!bannerDraft.mobileImageUrl && (
-              <p className="text-[11px] text-[#86868b] font-semibold -mt-3">Mobile uses the landscape image when no mobile photo is uploaded.</p>
+              <p className="text-[11px] text-[#6F7E92] font-semibold -mt-3">Mobile uses the landscape image when no mobile photo is uploaded.</p>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Title *</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Title *</label>
                 <input
                   type="text"
                   placeholder="e.g. Hear Every Detail"
                   value={bannerDraft.title}
                   onChange={(e) => setBannerDraft({ ...bannerDraft, title: e.target.value })}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f]"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B]"
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Subtitle</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Subtitle</label>
                 <input
                   type="text"
                   placeholder="e.g. Noise-cancelling headphones — now ₹14,999"
                   value={bannerDraft.subtitle}
                   onChange={(e) => setBannerDraft({ ...bannerDraft, subtitle: e.target.value })}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f]"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B]"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Button Text</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Button Text</label>
                 <input
                   type="text"
                   value={bannerDraft.ctaText}
                   onChange={(e) => setBannerDraft({ ...bannerDraft, ctaText: e.target.value })}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f]"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B]"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Button Link</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Button Link</label>
                 <input
                   type="text"
                   value={bannerDraft.ctaLink}
                   onChange={(e) => setBannerDraft({ ...bannerDraft, ctaLink: e.target.value })}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-mono font-semibold text-[#1d1d1f]"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-mono font-semibold text-[#0E1A2B]"
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Desktop Image * <span className="normal-case font-semibold">(landscape, 1600 × 500 px recommended)</span></label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Desktop Image * <span className="normal-case font-semibold">(landscape, 1600 × 500 px recommended)</span></label>
                 <ImageListField
                   images={bannerDraft.imageUrl ? [bannerDraft.imageUrl] : []}
                   onChange={(images) => setBannerDraft({ ...bannerDraft, imageUrl: images[images.length - 1] ?? '' })}
@@ -5309,7 +5312,7 @@ export default function EcommerceAdminPanel() {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Mobile Image <span className="normal-case font-semibold">(optional portrait, 800 × 1000 px)</span></label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Mobile Image <span className="normal-case font-semibold">(optional portrait, 800 × 1000 px)</span></label>
                 <ImageListField
                   images={bannerDraft.mobileImageUrl ? [bannerDraft.mobileImageUrl] : []}
                   onChange={(images) => setBannerDraft({ ...bannerDraft, mobileImageUrl: images[images.length - 1] ?? '' })}
@@ -5318,7 +5321,7 @@ export default function EcommerceAdminPanel() {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Text Position</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Text Position</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['left', 'center', 'right'] as const).map((align) => (
                     <button
@@ -5326,8 +5329,8 @@ export default function EcommerceAdminPanel() {
                       type="button"
                       onClick={() => setBannerDraft({ ...bannerDraft, textAlign: align })}
                       className={`py-2.5 rounded-full text-[12px] font-black border capitalize transition-all ${bannerDraft.textAlign === align
-                        ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white border-transparent'
-                        : 'bg-[#f5f5f7] text-[#6e6e73] border-[#e5e5ea] hover:bg-white'
+                        ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white border-transparent'
+                        : 'bg-[#F3F6FA] text-[#5B6B80] border-[#E3E8EF] hover:bg-white'
                         }`}
                     >
                       {align}
@@ -5336,13 +5339,13 @@ export default function EcommerceAdminPanel() {
                 </div>
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Text Color</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Text Color</label>
                 <div className="flex items-center gap-2">
                   {[
                     { label: 'Pure White', hex: '#ffffff' },
-                    { label: 'Midnight', hex: '#1d1d1f' },
+                    { label: 'Midnight', hex: '#0E1A2B' },
                     { label: 'Brand Orange', hex: '#ea580c' },
-                    { label: 'Soft Grey', hex: '#e5e5ea' },
+                    { label: 'Soft Grey', hex: '#E3E8EF' },
                   ].map((preset) => (
                     <button
                       key={preset.hex}
@@ -5350,7 +5353,7 @@ export default function EcommerceAdminPanel() {
                       title={preset.label}
                       aria-label={preset.label}
                       onClick={() => setBannerDraft({ ...bannerDraft, textColor: preset.hex })}
-                      className={`w-9 h-9 rounded-full border-2 transition-all ${bannerDraft.textColor === preset.hex ? 'border-[#ea580c] scale-110' : 'border-[#e5e5ea]'}`}
+                      className={`w-9 h-9 rounded-full border-2 transition-all ${bannerDraft.textColor === preset.hex ? 'border-[#2F6BFF] scale-110' : 'border-[#E3E8EF]'}`}
                       style={{ backgroundColor: preset.hex }}
                     />
                   ))}
@@ -5359,17 +5362,17 @@ export default function EcommerceAdminPanel() {
                     aria-label="Custom text color"
                     value={bannerDraft.textColor}
                     onChange={(e) => setBannerDraft({ ...bannerDraft, textColor: e.target.value })}
-                    className="w-9 h-9 rounded-full border border-[#e5e5ea] cursor-pointer p-0.5"
+                    className="w-9 h-9 rounded-full border border-[#E3E8EF] cursor-pointer p-0.5"
                   />
                 </div>
               </div>
-              <label className="sm:col-span-2 flex items-center justify-between gap-3 px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full cursor-pointer">
-                <span className="text-[13px] font-bold text-[#1d1d1f]">Show this slide on the storefront</span>
+              <label className="sm:col-span-2 flex items-center justify-between gap-3 px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full cursor-pointer">
+                <span className="text-[13px] font-bold text-[#0E1A2B]">Show this slide on the storefront</span>
                 <input
                   type="checkbox"
                   checked={bannerDraft.isActive}
                   onChange={(e) => setBannerDraft({ ...bannerDraft, isActive: e.target.checked })}
-                  className="w-4 h-4 accent-[#ea580c]"
+                  className="w-4 h-4 accent-[#2F6BFF]"
                 />
               </label>
             </div>
@@ -5378,13 +5381,13 @@ export default function EcommerceAdminPanel() {
               <button
                 onClick={handleSaveBanner}
                 disabled={!bannerDraft.title.trim() || !bannerDraft.imageUrl}
-                className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {bannerDraft.id ? 'Save Changes' : 'Add Banner'}
               </button>
               <button
                 onClick={() => setIsBannerModalOpen(false)}
-                className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full"
+                className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full"
               >
                 Cancel
               </button>
@@ -5398,12 +5401,12 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {isInstagramModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-md w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-md w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-[#1d1d1f]">Add Instagram Post</h3>
+              <h3 className="text-xl font-bold text-[#0E1A2B]">Add Instagram Post</h3>
               <button
                 onClick={() => setIsInstagramModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+                className="w-8 h-8 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
               >
                 ✕
               </button>
@@ -5411,17 +5414,17 @@ export default function EcommerceAdminPanel() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Instagram Post Link *</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Instagram Post Link *</label>
                 <input
                   type="url"
                   placeholder="https://instagram.com/p/..."
                   value={newIgUrl}
                   onChange={(e) => setNewIgUrl(e.target.value)}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f]"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B]"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Post Image *</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Post Image *</label>
                 <ImageListField
                   images={newIgImage ? [newIgImage] : []}
                   onChange={(images) => setNewIgImage(images[images.length - 1] ?? '')}
@@ -5430,13 +5433,13 @@ export default function EcommerceAdminPanel() {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Caption</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Caption</label>
                 <textarea
                   rows={3}
                   placeholder="e.g. Desk setup goals ⌨️ #MechanicalKeyboard"
                   value={newIgCaption}
                   onChange={(e) => setNewIgCaption(e.target.value)}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-[20px] text-[13px] font-semibold text-[#1d1d1f] resize-none"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-[20px] text-[13px] font-semibold text-[#0E1A2B] resize-none"
                 />
               </div>
             </div>
@@ -5449,13 +5452,13 @@ export default function EcommerceAdminPanel() {
                   setIsInstagramModalOpen(false);
                 }}
                 disabled={!newIgUrl.trim() || !newIgImage}
-                className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add Post
               </button>
               <button
                 onClick={() => setIsInstagramModalOpen(false)}
-                className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full"
+                className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full"
               >
                 Cancel
               </button>
@@ -5469,12 +5472,12 @@ export default function EcommerceAdminPanel() {
       {/* ========================================================================= */}
       {categoryDraft && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-lg w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 max-w-lg w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-[#1d1d1f]">{categoryDraft.id ? 'Edit Category' : 'Add New Category'}</h3>
+              <h3 className="text-xl font-bold text-[#0E1A2B]">{categoryDraft.id ? 'Edit Category' : 'Add New Category'}</h3>
               <button
                 onClick={() => setCategoryDraft(null)}
-                className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+                className="w-8 h-8 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
               >
                 ✕
               </button>
@@ -5483,37 +5486,37 @@ export default function EcommerceAdminPanel() {
             <div className="space-y-4">
               <div className="grid grid-cols-[1fr_88px] gap-3">
                 <div>
-                  <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Category Name *</label>
+                  <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Category Name *</label>
                   <input
                     type="text"
                     placeholder="e.g. Footwear & Shoes"
                     value={categoryDraft.name}
                     onChange={(e) => { setCategoryDraft({ ...categoryDraft, name: e.target.value }); setCategoryFormError(''); }}
-                    className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                    className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Icon</label>
+                  <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Icon</label>
                   <input
                     type="text"
                     value={categoryDraft.icon}
                     onChange={(e) => setCategoryDraft({ ...categoryDraft, icon: e.target.value })}
-                    className="w-full px-3 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[15px] text-center focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                    className="w-full px-3 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[15px] text-center focus:outline-none focus:bg-white focus:border-[#2F6BFF]"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Short Description</label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Short Description</label>
                 <input
                   type="text"
                   placeholder="e.g. Sneakers, sandals and formal shoes"
                   value={categoryDraft.blurb}
                   onChange={(e) => setCategoryDraft({ ...categoryDraft, blurb: e.target.value })}
-                  className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                  className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF]"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Category Photo <span className="normal-case font-semibold">(shown on the storefront)</span></label>
+                <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Category Photo <span className="normal-case font-semibold">(shown on the storefront)</span></label>
                 <ImageListField
                   images={categoryDraft.image ? [categoryDraft.image] : []}
                   onChange={(images) => setCategoryDraft({ ...categoryDraft, image: images[images.length - 1] ?? '' })}
@@ -5521,13 +5524,13 @@ export default function EcommerceAdminPanel() {
                   showCover={false}
                 />
               </div>
-              <label className="flex items-center justify-between gap-3 px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full cursor-pointer">
-                <span className="text-[13px] font-bold text-[#1d1d1f]">Show on the storefront</span>
+              <label className="flex items-center justify-between gap-3 px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full cursor-pointer">
+                <span className="text-[13px] font-bold text-[#0E1A2B]">Show on the storefront</span>
                 <input
                   type="checkbox"
                   checked={categoryDraft.status === 'Active'}
                   onChange={(e) => setCategoryDraft({ ...categoryDraft, status: e.target.checked ? 'Active' : 'Inactive' })}
-                  className="w-4 h-4 accent-[#ea580c]"
+                  className="w-4 h-4 accent-[#2F6BFF]"
                 />
               </label>
             </div>
@@ -5539,13 +5542,13 @@ export default function EcommerceAdminPanel() {
             <div className="flex gap-3">
               <button
                 onClick={handleSaveCategory}
-                className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md"
+                className="flex-1 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md"
               >
                 {categoryDraft.id ? 'Save Changes' : 'Add Category'}
               </button>
               <button
                 onClick={() => setCategoryDraft(null)}
-                className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full"
+                className="px-6 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#5B6B80] font-bold text-[13px] rounded-full"
               >
                 Cancel
               </button>
@@ -5557,10 +5560,10 @@ export default function EcommerceAdminPanel() {
       {/* POS NEW CUSTOMER MODAL */}
       {isNewCustomerModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="pos-new-customer-title">
-          <div className="bg-white border border-[#e5e5ea] rounded-[28px] p-7 max-w-sm w-full shadow-2xl">
+          <div className="bg-white border border-[#E3E8EF] rounded-[28px] p-7 max-w-sm w-full shadow-2xl">
             <div className="flex items-start justify-between gap-4 mb-5">
-              <div><h3 id="pos-new-customer-title" className="text-xl font-bold text-[#1d1d1f]">New Registration</h3><p className="mt-1 text-[12px] text-[#86868b]">Customer name and phone are required.</p></div>
-              <button type="button" onClick={() => { setIsNewCustomerModalOpen(false); setNewCustomerFormError(''); }} aria-label="Close new customer registration" className="w-9 h-9 shrink-0 rounded-full border border-[#e5e5ea] text-[#6e6e73] hover:bg-[#f5f5f7] flex items-center justify-center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
+              <div><h3 id="pos-new-customer-title" className="text-xl font-bold text-[#0E1A2B]">New Registration</h3><p className="mt-1 text-[12px] text-[#6F7E92]">Customer name and phone are required.</p></div>
+              <button type="button" onClick={() => { setIsNewCustomerModalOpen(false); setNewCustomerFormError(''); }} aria-label="Close new customer registration" className="w-9 h-9 shrink-0 rounded-full border border-[#E3E8EF] text-[#5B6B80] hover:bg-[#F3F6FA] flex items-center justify-center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
             </div>
             <input
               type="text"
@@ -5568,12 +5571,12 @@ export default function EcommerceAdminPanel() {
               value={newCustomerFormName}
               onChange={(e) => setNewCustomerFormName(e.target.value)}
               required
-              className="w-full px-5 py-3 mb-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c]"
+              className="w-full px-5 py-3 mb-4 bg-[#F3F6FA] border border-[#E3E8EF] rounded-xl text-[14px] text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF]"
             />
-            <input type="tel" inputMode="numeric" autoComplete="tel" placeholder="Phone Number *" value={newCustomerFormPhone} onChange={(e) => setNewCustomerFormPhone(e.target.value)} required className="w-full px-5 py-3 mb-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c]" />
+            <input type="tel" inputMode="numeric" autoComplete="tel" placeholder="Phone Number *" value={newCustomerFormPhone} onChange={(e) => setNewCustomerFormPhone(e.target.value)} required className="w-full px-5 py-3 mb-4 bg-[#F3F6FA] border border-[#E3E8EF] rounded-xl text-[14px] text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF]" />
             {newCustomerFormError && <p role="alert" className="mb-4 text-[12px] font-bold text-red-600">{newCustomerFormError}</p>}
             <div className="flex gap-3">
-              <button onClick={() => { setIsNewCustomerModalOpen(false); setNewCustomerFormError(''); }} className="flex-1 py-3.5 bg-white border border-[#e5e5ea] text-[#6e6e73] font-bold text-[13px] rounded-full">Cancel</button>
+              <button onClick={() => { setIsNewCustomerModalOpen(false); setNewCustomerFormError(''); }} className="flex-1 py-3.5 bg-white border border-[#E3E8EF] text-[#5B6B80] font-bold text-[13px] rounded-full">Cancel</button>
               <button
                 onClick={() => {
                   const name = newCustomerFormName.trim();
@@ -5589,7 +5592,7 @@ export default function EcommerceAdminPanel() {
                   setNewCustomerFormPhone('');
                   setNewCustomerFormError('');
                 }}
-                className="flex-1 py-3.5 bg-[#1d1d1f] hover:bg-black text-white font-extrabold text-[13px] rounded-full shadow-md"
+                className="flex-1 py-3.5 bg-[#0E1A2B] hover:bg-black text-white font-extrabold text-[13px] rounded-full shadow-md"
               >Register & Select</button>
             </div>
           </div>
@@ -5627,10 +5630,10 @@ export default function EcommerceAdminPanel() {
         };
         return (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="pos-lookup-title" onKeyDown={(e) => e.key === 'Escape' && close()}>
-            <div className="bg-white border border-[#e5e5ea] rounded-[28px] p-6 sm:p-7 max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
+            <div className="bg-white border border-[#E3E8EF] rounded-[28px] p-6 sm:p-7 max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
               <div className="flex items-start justify-between gap-4 mb-4">
-                <div><h3 id="pos-lookup-title" className="text-xl font-bold text-[#1d1d1f]">Find customer</h3><p className="mt-1 text-[12px] text-[#86868b]">Search by name, phone number or email.</p></div>
-                <button type="button" onClick={close} aria-label="Close customer lookup" className="w-9 h-9 shrink-0 rounded-full border border-[#e5e5ea] text-[#6e6e73] hover:bg-[#f5f5f7] flex items-center justify-center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
+                <div><h3 id="pos-lookup-title" className="text-xl font-bold text-[#0E1A2B]">Find customer</h3><p className="mt-1 text-[12px] text-[#6F7E92]">Search by name, phone number or email.</p></div>
+                <button type="button" onClick={close} aria-label="Close customer lookup" className="w-9 h-9 shrink-0 rounded-full border border-[#E3E8EF] text-[#5B6B80] hover:bg-[#F3F6FA] flex items-center justify-center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
               </div>
               <input
                 type="search"
@@ -5640,24 +5643,24 @@ export default function EcommerceAdminPanel() {
                 onKeyDown={(e) => { if (e.key === 'Enter' && matches.length === 1) pick(matches[0]); }}
                 placeholder="e.g. Meera or 98450"
                 aria-label="Search customers"
-                className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20"
+                className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-xl text-[14px] text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF] focus:ring-2 focus:ring-[#2F6BFF]/20"
               />
-              <p className="mt-3 mb-2 text-[11px] font-extrabold uppercase tracking-widest text-[#86868b]">{matches.length} {matches.length === 1 ? 'match' : 'matches'}</p>
+              <p className="mt-3 mb-2 text-[11px] font-extrabold uppercase tracking-widest text-[#6F7E92]">{matches.length} {matches.length === 1 ? 'match' : 'matches'}</p>
               <div className="overflow-y-auto -mx-1 px-1 space-y-1.5 min-h-0">
                 {matches.map((c) => (
-                  <button key={c.key} type="button" onClick={() => pick(c)} className="w-full text-left p-3 rounded-2xl border border-[#e5e5ea] hover:border-[#ea580c] hover:bg-[#fff2e8] transition-colors flex items-center gap-3">
-                    <span className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-[#ea580c] to-[#f97316] text-white text-[13px] font-black flex items-center justify-center">{c.name.trim().charAt(0).toUpperCase() || '?'}</span>
+                  <button key={c.key} type="button" onClick={() => pick(c)} className="w-full text-left p-3 rounded-2xl border border-[#E3E8EF] hover:border-[#2F6BFF] hover:bg-[#EAF1FF] transition-colors flex items-center gap-3">
+                    <span className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-[#2F6BFF] to-[#5A8BFF] text-white text-[13px] font-black flex items-center justify-center">{c.name.trim().charAt(0).toUpperCase() || '?'}</span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[14px] font-bold text-[#1d1d1f] truncate">{c.name}</span>
-                      <span className="block text-[12px] text-[#6e6e73] truncate">{c.phone || 'No phone saved'}{c.email ? ` · ${c.email}` : ''}</span>
-                      <span className="block text-[11px] text-[#86868b] truncate">{c.note}</span>
+                      <span className="block text-[14px] font-bold text-[#0E1A2B] truncate">{c.name}</span>
+                      <span className="block text-[12px] text-[#5B6B80] truncate">{c.phone || 'No phone saved'}{c.email ? ` · ${c.email}` : ''}</span>
+                      <span className="block text-[11px] text-[#6F7E92] truncate">{c.note}</span>
                     </span>
-                    <span className="text-[12px] font-bold text-[#ea580c] shrink-0">Select</span>
+                    <span className="text-[12px] font-bold text-[#2F6BFF] shrink-0">Select</span>
                   </button>
                 ))}
                 {matches.length === 0 && (
-                  <div className="py-8 text-center border border-dashed border-[#e5e5ea] rounded-2xl">
-                    <p className="text-[13px] font-semibold text-[#6e6e73]">No customer found for “{customerLookupQuery.trim()}”.</p>
+                  <div className="py-8 text-center border border-dashed border-[#E3E8EF] rounded-2xl">
+                    <p className="text-[13px] font-semibold text-[#5B6B80]">No customer found for “{customerLookupQuery.trim()}”.</p>
                     <button
                       type="button"
                       onClick={() => {
@@ -5668,7 +5671,7 @@ export default function EcommerceAdminPanel() {
                         close();
                         setIsNewCustomerModalOpen(true);
                       }}
-                      className="mt-3 px-5 py-2 rounded-full bg-[#1d1d1f] text-white text-[12px] font-bold"
+                      className="mt-3 px-5 py-2 rounded-full bg-[#0E1A2B] text-white text-[12px] font-bold"
                     >+ Register new customer</button>
                   </div>
                 )}
@@ -5683,12 +5686,12 @@ export default function EcommerceAdminPanel() {
           <div className="bg-white rounded-[36px] p-8 w-full max-w-md shadow-2xl relative overflow-hidden">
             <button
               onClick={() => setIsGenerateBarcodeModalOpen(false)}
-              className="absolute top-6 right-6 p-2 bg-[#f5f5f7] hover:bg-[#e5e5ea] rounded-full transition-colors text-[#1d1d1f]"
+              className="absolute top-6 right-6 p-2 bg-[#F3F6FA] hover:bg-[#E3E8EF] rounded-full transition-colors text-[#0E1A2B]"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
             </button>
-            <h2 className="text-2xl font-black text-[#1d1d1f] tracking-tight mb-2">Barcode Scanner</h2>
-            <p className="text-[14px] text-[#6e6e73] font-semibold mb-6">Scanning product <span className="text-[#1d1d1f] font-bold">{activeBarcodeProduct.name}</span>...</p>
+            <h2 className="text-2xl font-black text-[#0E1A2B] tracking-tight mb-2">Barcode Scanner</h2>
+            <p className="text-[14px] text-[#5B6B80] font-semibold mb-6">Scanning product <span className="text-[#0E1A2B] font-bold">{activeBarcodeProduct.name}</span>...</p>
 
             <div className="flex flex-col items-center justify-center py-8">
               {barcodeGenStatus === 'idle' ? (
@@ -5697,25 +5700,25 @@ export default function EcommerceAdminPanel() {
                     setBarcodeGenStatus('generating');
                     setTimeout(() => setBarcodeGenStatus('success'), 1500);
                   }}
-                  className="px-8 py-4 bg-[#ea580c] hover:bg-[#f97316] text-white rounded-full font-black text-[15px] shadow-lg shadow-orange-500/30 transition-all active:scale-95 flex items-center gap-2"
+                  className="px-8 py-4 bg-[#2F6BFF] hover:bg-[#5A8BFF] text-white rounded-full font-black text-[15px] shadow-lg shadow-[#2F6BFF]/30 transition-all active:scale-95 flex items-center gap-2"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5h2v14H3z M7 5h1v14H7z M11 5h2v14h-2z M15 5h1v14h-1z M19 5h2v14h-2z" /></svg>
                   Scan & Generate Code
                 </button>
               ) : barcodeGenStatus === 'generating' ? (
                 <div className="flex flex-col items-center space-y-4">
-                  <div className="w-16 h-16 border-4 border-[#ea580c]/20 border-t-[#ea580c] rounded-full animate-spin"></div>
-                  <p className="text-[13px] font-bold text-[#ea580c] animate-pulse">Scanning database...</p>
+                  <div className="w-16 h-16 border-4 border-[#2F6BFF]/20 border-t-[#2F6BFF] rounded-full animate-spin"></div>
+                  <p className="text-[13px] font-bold text-[#2F6BFF] animate-pulse">Scanning database...</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center space-y-4 w-full">
                   <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-2">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                   </div>
-                  <div className="text-center w-full bg-[#f5f5f7] p-6 rounded-3xl border border-[#e5e5ea]">
-                    <p className="text-[11px] font-extrabold text-[#86868b] uppercase tracking-wider mb-2">Generated QR Code</p>
+                  <div className="text-center w-full bg-[#F3F6FA] p-6 rounded-3xl border border-[#E3E8EF]">
+                    <p className="text-[11px] font-extrabold text-[#6F7E92] uppercase tracking-wider mb-2">Generated QR Code</p>
                     <ProductQrCode value={activeBarcodeProduct.barcode} className="w-44 h-44 mx-auto mb-3 rounded-xl" />
-                    <p className="text-2xl font-mono font-black tracking-[0.25em] text-[#1d1d1f]">{activeBarcodeProduct.barcode}</p>
+                    <p className="text-2xl font-mono font-black tracking-[0.25em] text-[#0E1A2B]">{activeBarcodeProduct.barcode}</p>
                   </div>
                 </div>
               )}
@@ -5747,37 +5750,37 @@ export default function EcommerceAdminPanel() {
         };
         return (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 print:hidden">
-            <div className="bg-white rounded-[24px] p-5 sm:p-7 w-full max-w-2xl shadow-2xl relative max-h-[94vh] overflow-y-auto text-[#1d1d1f]">
+            <div className="bg-white rounded-[24px] p-5 sm:p-7 w-full max-w-2xl shadow-2xl relative max-h-[94vh] overflow-y-auto text-[#0E1A2B]">
               <button
                 onClick={() => setIsPrintBarcodeModalOpen(false)}
                 aria-label="Close"
-                className="absolute top-5 right-5 p-2 bg-[#f5f5f7] hover:bg-[#e5e5ea] rounded-full transition-colors text-[#1d1d1f]"
+                className="absolute top-5 right-5 p-2 bg-[#F3F6FA] hover:bg-[#E3E8EF] rounded-full transition-colors text-[#0E1A2B]"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>
-              <p className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-[#86868b]">Product label</p>
+              <p className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-[#6F7E92]">Product label</p>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1">Barcode labels</h2>
-              <p className="text-[14px] text-[#6e6e73] font-semibold mb-5 pr-10">{prod.name}</p>
+              <p className="text-[14px] text-[#5B6B80] font-semibold mb-5 pr-10">{prod.name}</p>
 
-              <div className="bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl p-4 sm:p-6 flex flex-col items-center gap-3">
-                <BarcodeLabel widthMm={w} heightMm={h} data={labelData} className="max-w-full h-auto shadow-md ring-1 ring-[#d2d2d7] rounded-sm" style={{ width: w * previewScale }} />
-                <p className="text-[12px] font-bold text-[#6e6e73]">Actual size: {w} × {h} mm · preview scaled to fit</p>
+              <div className="bg-[#F3F6FA] border border-[#E3E8EF] rounded-2xl p-4 sm:p-6 flex flex-col items-center gap-3">
+                <BarcodeLabel widthMm={w} heightMm={h} data={labelData} className="max-w-full h-auto shadow-md ring-1 ring-[#CFD8E3] rounded-sm" style={{ width: w * previewScale }} />
+                <p className="text-[12px] font-bold text-[#5B6B80]">Actual size: {w} × {h} mm · preview scaled to fit</p>
               </div>
 
               <div className="mt-5">
-                <p className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Label size</p>
+                <p className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#6F7E92]">Label size</p>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {presets.map((p) => (
-                    <button key={`${p.w}x${p.h}`} type="button" onClick={() => pickSize(p)} className={`px-4 py-2 rounded-full border text-sm font-bold ${p.w === w && p.h === h ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white border-transparent' : 'bg-white text-[#1d1d1f] border-[#e5e5ea] hover:border-[#ea580c]'}`}>{p.w} × {p.h} mm</button>
+                    <button key={`${p.w}x${p.h}`} type="button" onClick={() => pickSize(p)} className={`px-4 py-2 rounded-full border text-sm font-bold ${p.w === w && p.h === h ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white border-transparent' : 'bg-white text-[#0E1A2B] border-[#E3E8EF] hover:border-[#2F6BFF]'}`}>{p.w} × {p.h} mm</button>
                   ))}
-                  <span className={`px-4 py-2 rounded-full border text-sm font-bold ${isPreset ? 'border-[#e5e5ea] text-[#86868b]' : 'bg-[#fff2e8] text-[#ea580c] border-[#ea580c]'}`}>Custom</span>
+                  <span className={`px-4 py-2 rounded-full border text-sm font-bold ${isPreset ? 'border-[#E3E8EF] text-[#6F7E92]' : 'bg-[#EAF1FF] text-[#2F6BFF] border-[#2F6BFF]'}`}>Custom</span>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mt-3">
-                  <label className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Width (mm)<input type="number" min={20} max={150} value={barcodeDimInput.w} onChange={(e) => typeSize('w', e.target.value)} onBlur={() => pickSize(barcodeLabelDims)} className="mt-2 block w-full px-3 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-sm font-bold text-[#1d1d1f] outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20" /></label>
-                  <label className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Height (mm)<input type="number" min={20} max={150} value={barcodeDimInput.h} onChange={(e) => typeSize('h', e.target.value)} onBlur={() => pickSize(barcodeLabelDims)} className="mt-2 block w-full px-3 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-sm font-bold text-[#1d1d1f] outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20" /></label>
-                  <label className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Labels<input type="number" min={1} max={500} value={barcodeLabelCount} onChange={(e) => setBarcodeLabelCount(Math.max(1, Math.min(500, Number(e.target.value) || 1)))} className="mt-2 block w-full px-3 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-sm font-bold text-[#1d1d1f] outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20" /></label>
+                  <label className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#6F7E92]">Width (mm)<input type="number" min={20} max={150} value={barcodeDimInput.w} onChange={(e) => typeSize('w', e.target.value)} onBlur={() => pickSize(barcodeLabelDims)} className="mt-2 block w-full px-3 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-xl text-sm font-bold text-[#0E1A2B] outline-none focus:border-[#2F6BFF] focus:ring-2 focus:ring-[#2F6BFF]/20" /></label>
+                  <label className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#6F7E92]">Height (mm)<input type="number" min={20} max={150} value={barcodeDimInput.h} onChange={(e) => typeSize('h', e.target.value)} onBlur={() => pickSize(barcodeLabelDims)} className="mt-2 block w-full px-3 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-xl text-sm font-bold text-[#0E1A2B] outline-none focus:border-[#2F6BFF] focus:ring-2 focus:ring-[#2F6BFF]/20" /></label>
+                  <label className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#6F7E92]">Labels<input type="number" min={1} max={500} value={barcodeLabelCount} onChange={(e) => setBarcodeLabelCount(Math.max(1, Math.min(500, Number(e.target.value) || 1)))} className="mt-2 block w-full px-3 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-xl text-sm font-bold text-[#0E1A2B] outline-none focus:border-[#2F6BFF] focus:ring-2 focus:ring-[#2F6BFF]/20" /></label>
                 </div>
-                <div className="flex flex-wrap gap-2 mt-3">{[1, 10, 50, 100].map((qty) => <button key={qty} type="button" onClick={() => setBarcodeLabelCount(qty)} className={`px-4 py-1.5 rounded-full border text-sm font-bold ${barcodeLabelCount === qty ? 'bg-[#1d1d1f] text-white border-[#1d1d1f]' : 'bg-white text-[#1d1d1f] border-[#e5e5ea]'}`}>{qty}</button>)}</div>
+                <div className="flex flex-wrap gap-2 mt-3">{[1, 10, 50, 100].map((qty) => <button key={qty} type="button" onClick={() => setBarcodeLabelCount(qty)} className={`px-4 py-1.5 rounded-full border text-sm font-bold ${barcodeLabelCount === qty ? 'bg-[#0E1A2B] text-white border-[#0E1A2B]' : 'bg-white text-[#0E1A2B] border-[#E3E8EF]'}`}>{qty}</button>)}</div>
               </div>
 
               <div className="flex flex-col sm:flex-row justify-between gap-3 mt-6">
@@ -5787,13 +5790,13 @@ export default function EcommerceAdminPanel() {
                     downloadLabelsPdf(w, h, labelData, barcodeLabelCount);
                     notify(`Downloaded ${barcodeLabelCount} ${barcodeLabelCount === 1 ? 'label' : 'labels'} (${w} × ${h} mm PDF)`);
                   }}
-                  className="px-5 py-3 rounded-full border border-[#ea580c] text-[#ea580c] font-bold inline-flex gap-2 items-center justify-center hover:bg-[#fff2e8]"
+                  className="px-5 py-3 rounded-full border border-[#2F6BFF] text-[#2F6BFF] font-bold inline-flex gap-2 items-center justify-center hover:bg-[#EAF1FF]"
                 >
                   <PanelIcon name="file" />Download PDF ({barcodeLabelCount})
                 </button>
-                <button type="button" onClick={() => window.print()} className="px-6 py-3 rounded-full bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold inline-flex gap-2 items-center justify-center shadow-md"><PanelIcon name="receipt" />Print {barcodeLabelCount} {barcodeLabelCount === 1 ? 'label' : 'labels'}</button>
+                <button type="button" onClick={() => window.print()} className="px-6 py-3 rounded-full bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold inline-flex gap-2 items-center justify-center shadow-md"><PanelIcon name="receipt" />Print {barcodeLabelCount} {barcodeLabelCount === 1 ? 'label' : 'labels'}</button>
               </div>
-              <p className="text-center text-[12px] text-[#86868b] mt-4">Download saves a PDF with one {w} × {h} mm page per label. When printing, choose your label printer and print at 100% / actual size.</p>
+              <p className="text-center text-[12px] text-[#6F7E92] mt-4">Download saves a PDF with one {w} × {h} mm page per label. When printing, choose your label printer and print at 100% / actual size.</p>
             </div>
             {createPortal(
               <div id="barcode-print-sheet">
@@ -5812,7 +5815,7 @@ export default function EcommerceAdminPanel() {
 
       {/* Admin toast */}
       {adminToast && (
-        <div role="status" className="fixed z-[60] bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 bg-[#1d1d1f] text-white rounded-full text-[13px] font-bold shadow-2xl print:hidden">
+        <div role="status" className="fixed z-[60] bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 bg-[#0E1A2B] text-white rounded-full text-[13px] font-bold shadow-2xl print:hidden">
           {adminToast.text}
         </div>
       )}

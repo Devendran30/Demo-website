@@ -193,16 +193,16 @@ export function CameraScanner({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 sm:p-8 max-w-lg w-full max-h-[calc(100dvh-2rem)] overflow-y-auto shadow-2xl space-y-4">
+      <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-6 sm:p-8 max-w-lg w-full max-h-[calc(100dvh-2rem)] overflow-y-auto shadow-2xl space-y-4">
         <div className="flex justify-between items-center">
           <div>
-            <h3 className="text-xl font-bold text-[#1d1d1f]">Scan QR Code</h3>
-            <p className="text-[12px] text-[#86868b] font-semibold">Scanned items go straight onto the current bill</p>
+            <h3 className="text-xl font-bold text-[#0E1A2B]">Scan QR Code</h3>
+            <p className="text-[12px] text-[#6F7E92] font-semibold">Scanned items go straight onto the current bill</p>
           </div>
           <button
             onClick={onClose}
             aria-label="Close scanner"
-            className="w-8 h-8 flex-shrink-0 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold"
+            className="w-8 h-8 flex-shrink-0 rounded-full bg-[#F3F6FA] hover:bg-[#E3E8EF] flex items-center justify-center text-sm font-bold"
           >
             ✕
           </button>
@@ -215,7 +215,7 @@ export function CameraScanner({
             <div
               ref={guide}
               aria-hidden="true"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[80%] aspect-square rounded-2xl border-2 border-[#f97316] shadow-[0_0_0_999px_rgba(0,0,0,0.5)] flex items-center justify-center"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[80%] aspect-square rounded-2xl border-2 border-[#5A8BFF] shadow-[0_0_0_999px_rgba(0,0,0,0.5)] flex items-center justify-center"
             >
               <div className="w-[88%] h-0.5 bg-red-500 shadow-[0_0_8px_red] animate-pulse"></div>
             </div>
@@ -232,35 +232,35 @@ export function CameraScanner({
 
         <p
           aria-live="polite"
-          className={`px-4 py-2.5 rounded-2xl text-[13px] font-bold break-words ${last ? (last.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600') : 'bg-[#f5f5f7] text-[#6e6e73]'}`}
+          className={`px-4 py-2.5 rounded-2xl text-[13px] font-bold break-words ${last ? (last.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600') : 'bg-[#F3F6FA] text-[#5B6B80]'}`}
         >
           {readingPhoto ? 'Reading the photo...' : last ? last.message : 'Hold the QR code inside the box, about 10-20 cm away.'}
         </p>
 
         {/* Scanned Product Details */}
         {last?.product && (
-          <div className="p-3 bg-[#f5f5f7] rounded-2xl flex items-center gap-3 border border-[#e5e5ea]">
+          <div className="p-3 bg-[#F3F6FA] rounded-2xl flex items-center gap-3 border border-[#E3E8EF]">
             <img
               src={last.product.image}
               alt={last.product.name}
-              className="w-14 h-14 rounded-xl object-cover border border-[#e5e5ea] bg-white flex-shrink-0"
+              className="w-14 h-14 rounded-xl object-cover border border-[#E3E8EF] bg-white flex-shrink-0"
             />
             <div className="min-w-0 flex-1">
-              <p className="font-bold text-[#1d1d1f] text-[13px] leading-snug line-clamp-2">{last.product.name}</p>
-              <p className="font-mono text-[11px] text-[#86868b] font-semibold truncate">{last.product.code}</p>
+              <p className="font-bold text-[#0E1A2B] text-[13px] leading-snug line-clamp-2">{last.product.name}</p>
+              <p className="font-mono text-[11px] text-[#6F7E92] font-semibold truncate">{last.product.code}</p>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-[15px] font-black text-[#ea580c]">₹{last.product.price.toLocaleString()}</p>
-              <p className="text-[11px] text-[#86868b] font-semibold">Stock: {last.product.stock}</p>
+              <p className="text-[15px] font-black text-[#2F6BFF]">₹{last.product.price.toLocaleString()}</p>
+              <p className="text-[11px] text-[#6F7E92] font-semibold">Stock: {last.product.stock}</p>
             </div>
           </div>
         )}
 
         {added.length > 0 && (
-          <div className="px-4 py-3 border border-[#e5e5ea] rounded-2xl space-y-1">
-            <p className="text-[11px] font-extrabold uppercase tracking-widest text-[#86868b]">Added to bill</p>
+          <div className="px-4 py-3 border border-[#E3E8EF] rounded-2xl space-y-1">
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-[#6F7E92]">Added to bill</p>
             {added.map((a) => (
-              <p key={a.item} className="text-[13px] font-semibold text-[#1d1d1f]">
+              <p key={a.item} className="text-[13px] font-semibold text-[#0E1A2B]">
                 {a.item} × {a.count}
               </p>
             ))}
@@ -268,7 +268,7 @@ export function CameraScanner({
         )}
 
         <div className="flex flex-wrap gap-3">
-          <label className={`flex-1 min-w-fit text-center px-4 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#1d1d1f] font-extrabold text-[13px] rounded-full cursor-pointer ${readingPhoto ? 'opacity-50' : ''}`}>
+          <label className={`flex-1 min-w-fit text-center px-4 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#0E1A2B] font-extrabold text-[13px] rounded-full cursor-pointer ${readingPhoto ? 'opacity-50' : ''}`}>
             Take / Upload Photo
             <input
               ref={photo}
@@ -286,14 +286,14 @@ export function CameraScanner({
           {canSwitch && (
             <button
               onClick={switchCamera}
-              className="flex-1 min-w-fit px-4 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#1d1d1f] font-extrabold text-[13px] rounded-full"
+              className="flex-1 min-w-fit px-4 py-3.5 bg-white border border-[#E3E8EF] hover:bg-[#F3F6FA] text-[#0E1A2B] font-extrabold text-[13px] rounded-full"
             >
               Switch Camera
             </button>
           )}
           <button
             onClick={onClose}
-            className="flex-1 min-w-fit px-6 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md"
+            className="flex-1 min-w-fit px-6 py-3.5 bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-extrabold text-[13px] rounded-full shadow-md"
           >
             Done
           </button>

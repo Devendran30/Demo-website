@@ -124,52 +124,52 @@ export function ShiprocketDialog({
     );
   };
 
-  const inputClass = 'w-full rounded-xl border border-[#e5e5ea] bg-[#f5f5f7] px-3 py-3 text-base sm:text-[14px] font-semibold text-[#1d1d1f] outline-none focus:bg-white focus:border-[#ea580c] focus:ring-4 focus:ring-[#ea580c]/10 transition-all disabled:opacity-60';
+  const inputClass = 'w-full rounded-xl border border-[#E3E8EF] bg-[#F3F6FA] px-3 py-3 text-base sm:text-[14px] font-semibold text-[#0E1A2B] outline-none focus:bg-white focus:border-[#2F6BFF] focus:ring-4 focus:ring-[#2F6BFF]/10 transition-all disabled:opacity-60';
   const pickup = PICKUP_LOCATIONS.find((location) => location.name === pickupLocation);
 
   return (
     <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) onClose(); }}>
       <div role="dialog" aria-modal="true" aria-labelledby="shipping-title" className="w-full max-w-xl max-h-[90dvh] overflow-y-auto rounded-[28px] bg-white shadow-2xl">
-        <div className="flex items-center justify-between gap-4 bg-[#1d1d1f] text-white p-5 sticky top-0 z-10">
+        <div className="flex items-center justify-between gap-4 bg-[#0E1A2B] text-white p-5 sticky top-0 z-10">
           <div>
             <h2 id="shipping-title" className="text-xl font-bold tracking-tight flex items-center gap-2">
-              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5A8BFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
               Shiprocket shipment
             </h2>
-            <p className="text-xs font-semibold text-[#f97316] mt-1">{order.orderNumber} · {order.customerName}</p>
+            <p className="text-xs font-semibold text-[#5A8BFF] mt-1">{order.orderNumber} · {order.customerName}</p>
           </div>
           <button type="button" aria-label="Close shipment form" disabled={busy} onClick={onClose} className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-sm font-bold disabled:opacity-50">✕</button>
         </div>
 
         <div className="px-5 pt-4 space-y-3">
-          <button type="button" disabled={busy} onClick={refresh} className="w-full rounded-xl border border-[#ea580c] text-[#ea580c] hover:bg-[#fff2e8] px-4 py-3 text-[13px] font-bold transition-colors disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={refresh} className="w-full rounded-xl border border-[#2F6BFF] text-[#2F6BFF] hover:bg-[#EAF1FF] px-4 py-3 text-[13px] font-bold transition-colors disabled:opacity-50">
             {busy ? 'Checking Shiprocket…' : 'Refresh Shiprocket status'}
           </button>
           {error && <p role="alert" className="text-[13px] font-semibold text-red-600">{error}</p>}
         </div>
 
         {showSummary && shipping ? (
-          <div className="p-5 space-y-4 text-[14px] text-[#1d1d1f]">
+          <div className="p-5 space-y-4 text-[14px] text-[#0E1A2B]">
             <p className="font-bold">{shipping.srOrderId ? 'Order linked to Shiprocket' : 'Shipment booked'}</p>
-            <p>Shiprocket status: <strong className="text-[#ea580c]">{remoteStatusOf(shipping)}</strong></p>
+            <p>Shiprocket status: <strong className="text-[#2F6BFF]">{remoteStatusOf(shipping)}</strong></p>
             {shipping.srOrderId && (
               <p>Shiprocket order: <strong>{shipping.srOrderId}</strong><br />Shipment: <strong>{shipping.srShipmentId}</strong></p>
             )}
             <p>
               {shipping.awb
                 ? <>Courier: <strong>{shipping.courier}</strong> · AWB <strong className="font-mono">{shipping.awb}</strong></>
-                : <span className="text-[#86868b]">Courier and AWB not assigned yet.</span>}
+                : <span className="text-[#6F7E92]">Courier and AWB not assigned yet.</span>}
             </p>
-            <p className="text-[#86868b]">{shipping.weightKg} kg · {shipping.dimensions}<br />Pickup: {shipping.pickup}</p>
-            <p className="text-[#86868b]">
+            <p className="text-[#6F7E92]">{shipping.weightKg} kg · {shipping.dimensions}<br />Pickup: {shipping.pickup}</p>
+            <p className="text-[#6F7E92]">
               {shipping.status === 'Delivered'
                 ? 'Shiprocket confirmed delivery. The order has been marked Delivered.'
                 : 'Choose a courier, generate your shipping label and schedule pickup in Shiprocket. Creating this order does not mark it as shipped — use Refresh to pull the latest status.'}
             </p>
             <div className="flex flex-wrap items-center gap-4">
-              <a href="https://app.shiprocket.in/seller/orders" target="_blank" rel="noreferrer" className="inline-block rounded-xl bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white px-5 py-3 text-[13px] font-bold shadow-sm">Open Shiprocket</a>
+              <a href="https://app.shiprocket.in/seller/orders" target="_blank" rel="noreferrer" className="inline-block rounded-xl bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white px-5 py-3 text-[13px] font-bold shadow-sm">Open Shiprocket</a>
               {shipping.status !== 'Delivered' && (
-                <button type="button" disabled={busy} onClick={simulateCancel} className="text-[12px] font-semibold text-[#86868b] hover:text-red-600 underline underline-offset-2">
+                <button type="button" disabled={busy} onClick={simulateCancel} className="text-[12px] font-semibold text-[#6F7E92] hover:text-red-600 underline underline-offset-2">
                   Demo: cancel this shipment in Shiprocket
                 </button>
               )}
@@ -184,27 +184,27 @@ export function ShiprocketDialog({
                 <p className="mt-2">Confirm the parcel details below to create a replacement. The website order number and payment stay unchanged.</p>
               </div>
             )}
-            <div className="bg-[#f9f9fb] rounded-xl border border-[#e5e5ea] p-4 text-[13px]">
-              <p className="font-bold text-[#1d1d1f]">Delivery address</p>
-              <p className="text-[#86868b] font-semibold mt-1">{order.shippingAddress}, {order.city} · {order.postalCode}</p>
+            <div className="bg-[#F6F8FB] rounded-xl border border-[#E3E8EF] p-4 text-[13px]">
+              <p className="font-bold text-[#0E1A2B]">Delivery address</p>
+              <p className="text-[#6F7E92] font-semibold mt-1">{order.shippingAddress}, {order.city} · {order.postalCode}</p>
             </div>
-            <label className="block text-[13px] font-bold text-[#1d1d1f]">
+            <label className="block text-[13px] font-bold text-[#0E1A2B]">
               Delivery state
               <input required value={deliveryState} onChange={(event) => setDeliveryState(event.target.value)} className={`${inputClass} mt-2`} placeholder="Customer's state, e.g. Karnataka" />
             </label>
-            <label className="block text-[13px] font-bold text-[#1d1d1f]">
+            <label className="block text-[13px] font-bold text-[#0E1A2B]">
               Pickup location
               <select required disabled={loading || busy} value={pickupLocation} onChange={(event) => setPickupLocation(event.target.value)} className={`${inputClass} mt-2 cursor-pointer`}>
                 <option value="">{loading ? 'Loading registered pickups…' : 'Select your pickup location'}</option>
                 {PICKUP_LOCATIONS.map((location) => <option key={location.name} value={location.name}>{location.name}</option>)}
               </select>
             </label>
-            {pickup && <p className="-mt-3 text-[12px] font-semibold text-[#86868b]">{pickup.address}</p>}
+            {pickup && <p className="-mt-3 text-[12px] font-semibold text-[#6F7E92]">{pickup.address}</p>}
             <fieldset>
-              <legend className="text-[17px] font-bold tracking-tight text-[#1d1d1f] mb-3">Packed parcel measurements</legend>
+              <legend className="text-[17px] font-bold tracking-tight text-[#0E1A2B] mb-3">Packed parcel measurements</legend>
               <div className="grid grid-cols-2 gap-4">
                 {([['weight', 'Weight (kg)'], ['length', 'Length (cm)'], ['width', 'Width (cm)'], ['height', 'Height (cm)']] as const).map(([key, label]) => (
-                  <label key={key} className="text-[13px] font-bold text-[#1d1d1f]">
+                  <label key={key} className="text-[13px] font-bold text-[#0E1A2B]">
                     {label}
                     <input
                       type="number"
@@ -221,9 +221,9 @@ export function ShiprocketDialog({
                   </label>
                 ))}
               </div>
-              <p className="text-[12px] font-semibold text-[#86868b] mt-3">Measure the sealed parcel, including its packaging.</p>
+              <p className="text-[12px] font-semibold text-[#6F7E92] mt-3">Measure the sealed parcel, including its packaging.</p>
             </fieldset>
-            <button disabled={loading || busy || !canShip || order.orderStatus === 'Cancelled'} className="w-full rounded-xl bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white p-3.5 text-[14px] font-bold shadow-md disabled:opacity-50">
+            <button disabled={loading || busy || !canShip || order.orderStatus === 'Cancelled'} className="w-full rounded-xl bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white p-3.5 text-[14px] font-bold shadow-md disabled:opacity-50">
               {busy ? 'Creating shipment…' : needsReplacement ? 'Create replacement shipment' : 'Create Shiprocket order'}
             </button>
             {!canShip && <p className="text-[12px] font-semibold text-red-600">Payment must be confirmed before creating a shipment. Use “Check pending payments” first.</p>}

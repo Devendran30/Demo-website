@@ -192,6 +192,10 @@ export interface Order {
   items: OrderLine[];
   paymentMethod: 'Credit Card' | 'UPI' | 'Net Banking' | 'Cash on Delivery';
   paymentId?: string;
+  /** What the shopper paid with, e.g. "UPI · meera@okaxis" or "Visa •••• 1111". */
+  paymentDetail?: string;
+  /** The Razorpay order the payment was made against (test mode). */
+  gatewayOrderId?: string;
   paymentStatus: 'Paid' | 'Pending' | 'Failed';
   orderStatus: OrderStatus;
   source: 'Website' | 'Admin';
@@ -423,15 +427,23 @@ function adjustStock(products: Product[], lines: { productId: string; size: stri
 export interface WebsiteOrderInput {
   lines: { product: Product; size: string; color: string; qty: number }[];
   promo: string;
-  payment: 'UPI' | 'Card' | 'Cash on Delivery';
+  payment: 'UPI' | 'Card' | 'Net Banking' | 'Cash on Delivery';
   address: { name: string; phone: string; email: string; line: string; city: string; state: string; pin: string };
+  /** The successful Razorpay (test mode) payment, for prepaid orders. */
+  receipt?: PaymentReceipt;
+}
+
+export interface PaymentReceipt {
+  paymentId: string;
+  gatewayOrderId: string;
+  detail: string;
 }
 
 /**
  * Places a storefront order the way a real checkout would: checks and takes the exact size and color
  * from stock, counts the coupon as used, adds or updates the customer, and files the order for the admin.
  */
-export function placeWebsiteOrder({ lines, promo, payment, address }: WebsiteOrderInput): Order {
+export function placeWebsiteOrder({ lines, promo, payment, address, receipt }: WebsiteOrderInput): Order {
   const products = productsStore.get();
   for (const line of lines) {
     const current = products.find((p) => p.id === line.product.id);
@@ -473,7 +485,9 @@ export function placeWebsiteOrder({ lines, promo, payment, address }: WebsiteOrd
       image: productPhotos(product, color)[0],
     })),
     paymentMethod: payment === 'Card' ? 'Credit Card' : payment,
-    paymentId: payment === 'Cash on Delivery' ? undefined : fakePaymentId(),
+    paymentId: payment === 'Cash on Delivery' ? undefined : receipt?.paymentId ?? fakePaymentId(),
+    paymentDetail: receipt?.detail,
+    gatewayOrderId: receipt?.gatewayOrderId,
     paymentStatus: payment === 'Cash on Delivery' ? 'Pending' : 'Paid',
     orderStatus: 'Pending',
     source: 'Website',
@@ -966,9 +980,32 @@ export const adminAccountStore = createStore<AdminAccount>(
   (v) => typeof v === 'object' && v !== null && typeof (v as AdminAccount).email === 'string' && typeof (v as AdminAccount).password === 'string'
 );
 
+// Razorpay in test mode: the keys and payment methods set in Admin Security, used by the store's checkout.
+export interface PaymentGateway {
+  keyId: string;
+  keySecret: string;
+  merchantName: string;
+  methods: { upi: boolean; card: boolean; netbanking: boolean; cod: boolean };
+  verifiedAt: string;
+}
+export const DEFAULT_PAYMENT_GATEWAY: PaymentGateway = {
+  keyId: 'rzp_test_Rk7vH2pQm9XwLd',
+  keySecret: 'Qm4tYv8LxR2bNw6KpZc9sH1e',
+  merchantName: 'Demo Website',
+  methods: { upi: true, card: true, netbanking: true, cod: true },
+  verifiedAt: '',
+};
+export const paymentGatewayStore = createStore<PaymentGateway>(
+  KEY('paymentGateway'),
+  DEFAULT_PAYMENT_GATEWAY,
+  (v) => typeof v === 'object' && v !== null && typeof (v as PaymentGateway).keyId === 'string' && typeof (v as PaymentGateway).methods === 'object'
+);
+/** Razorpay-style ids such as `order_Nq4…`, made in the browser for the test-mode checkout. */
+export const fakeGatewayOrderId = () => `order_${randomId(14)}`;
+
 const SHARED_STORES = [
   productsStore, categoriesStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, colorOptionsStore,
-  tagOptionsStore, couponsStore, ordersStore, customersStore, bannersStore, instagramStore, adminAccountStore, shopperAccountsStore, videosStore,
+  tagOptionsStore, couponsStore, ordersStore, customersStore, bannersStore, instagramStore, adminAccountStore, shopperAccountsStore, videosStore, paymentGatewayStore,
 ];
 
 /** Puts every shared list back to the sample data, for both the admin and the website. */

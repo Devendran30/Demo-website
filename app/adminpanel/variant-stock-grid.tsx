@@ -21,19 +21,19 @@ export function VariantStockGrid({
   return (
     <div className="space-y-4">
       {variantSizes(sizes).map((size) => (
-        <fieldset key={size} className="bg-[#f5f5f7] border border-[#e5e5ea] rounded-[24px] p-5">
-          <legend className="px-3 py-1 bg-white border border-[#e5e5ea] rounded-full text-[12px] font-extrabold text-[#1d1d1f] shadow-sm">
+        <fieldset key={size} className="bg-[#F3F6FA] border border-[#E3E8EF] rounded-[24px] p-5">
+          <legend className="px-3 py-1 bg-white border border-[#E3E8EF] rounded-full text-[12px] font-extrabold text-[#0E1A2B] shadow-sm">
             {size === STANDARD ? 'One Size' : size}
-            <span className="ml-2 text-[#ea580c]">{sizeTotal(variantStock, size)} units</span>
+            <span className="ml-2 text-[#2F6BFF]">{sizeTotal(variantStock, size)} units</span>
           </legend>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
             {variantColors(colors).map((color) => (
               <label key={color} className="block">
-                <span className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-[#86868b] mb-1.5 pl-2">
+                <span className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-[#6F7E92] mb-1.5 pl-2">
                   {color !== STANDARD && (
                     <span
                       className="w-3 h-3 rounded-full border border-black/10 shrink-0"
-                      style={{ backgroundColor: colorHex[color] ?? '#d2d2d7' }}
+                      style={{ backgroundColor: colorHex[color] ?? '#CFD8E3' }}
                     />
                   )}
                   <span className="truncate">{color === STANDARD ? 'Stock Quantity' : color}</span>
@@ -50,16 +50,16 @@ export function VariantStockGrid({
                     if (!Number.isSafeInteger(qty) || qty < 0) return;
                     onChange({ ...values, [size]: { ...values[size], [color]: qty } });
                   }}
-                  className="w-full px-5 py-3 bg-white border border-[#e5e5ea] rounded-full text-[14px] font-bold text-[#1d1d1f] focus:outline-none focus:border-[#ea580c] transition-all"
+                  className="w-full px-5 py-3 bg-white border border-[#E3E8EF] rounded-full text-[14px] font-bold text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF] transition-all"
                 />
               </label>
             ))}
           </div>
         </fieldset>
       ))}
-      <div className="flex justify-between items-center px-5 py-3 bg-[#fff2e8] border border-orange-200 rounded-full">
-        <span className="text-[12px] font-extrabold uppercase tracking-wider text-[#ea580c]">Total Stock</span>
-        <span className="text-[15px] font-black text-[#1d1d1f]">{stock} units</span>
+      <div className="flex justify-between items-center px-5 py-3 bg-[#EAF1FF] border border-[#C9D9FF] rounded-full">
+        <span className="text-[12px] font-extrabold uppercase tracking-wider text-[#2F6BFF]">Total Stock</span>
+        <span className="text-[15px] font-black text-[#0E1A2B]">{stock} units</span>
       </div>
     </div>
   );
