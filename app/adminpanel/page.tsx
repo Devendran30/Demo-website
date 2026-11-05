@@ -96,17 +96,27 @@ type AdminTab =
 type DemoSubAdmin = { id: string; name: string; email: string; password: string; permissions: AdminTab[] };
 // Staff logins and product videos are saved in the browser like the rest of the demo data (same keys as before).
 const subAdminsStore = createStore<DemoSubAdmin[]>('demo.admin.subAdmins', [], Array.isArray);
-const SUBADMIN_MODULES: { id: AdminTab; label: string }[] = [
-  { id: 'add-product', label: 'Add and edit products' },
-  { id: 'product-list', label: 'Product list' },
-  { id: 'inventory', label: 'Inventory' },
-  { id: 'orders', label: 'Orders' },
-  { id: 'customers', label: 'Customers' },
-  { id: 'banners', label: 'Store banners' },
-  { id: 'instagram', label: 'Instagram feed' },
-  { id: 'videos', label: 'Videos' },
-  { id: 'reports', label: 'Reports' },
+// Every admin page except Admin Security, which stays with the super admin.
+const SUBADMIN_MODULES: { id: AdminTab; label: string; group: string }[] = [
+  { id: 'dashboard', label: 'Dashboard', group: 'Overview' },
+  { id: 'reports', label: 'Reports', group: 'Overview' },
+  { id: 'add-product', label: 'Add and edit products', group: 'Products' },
+  { id: 'product-list', label: 'Product list', group: 'Products' },
+  { id: 'inventory', label: 'Inventory', group: 'Products' },
+  { id: 'attributes', label: 'Sizes, colours & tags', group: 'Products' },
+  { id: 'category', label: 'Category', group: 'Categories' },
+  { id: 'sub-category', label: 'Sub category', group: 'Categories' },
+  { id: 'sub-sub-category', label: 'Sub sub categories', group: 'Categories' },
+  { id: 'orders', label: 'Orders', group: 'Sales' },
+  { id: 'customers', label: 'Customers', group: 'Sales' },
+  { id: 'coupons', label: 'Coupons', group: 'Sales' },
+  { id: 'pos-terminal', label: 'POS live register', group: 'POS Terminal' },
+  { id: 'pos-history', label: 'POS history', group: 'POS Terminal' },
+  { id: 'banners', label: 'Hero banners', group: 'Storefront' },
+  { id: 'instagram', label: 'Instagram feed', group: 'Storefront' },
+  { id: 'videos', label: 'Videos', group: 'Storefront' },
 ];
+const SUBADMIN_GROUPS = [...new Set(SUBADMIN_MODULES.map((module) => module.group))];
 
 const TAB_TITLES: Record<AdminTab, string> = {
   dashboard: 'Commerce Overview',
@@ -1276,7 +1286,7 @@ export default function EcommerceAdminPanel() {
             </button>}
 
             {/* Products Dropdown */}
-            {(!signedInSubAdmin || ['add-product', 'product-list', 'inventory'].some((tab) => signedInSubAdmin.permissions.includes(tab as AdminTab))) && <div className="space-y-1">
+            {(['add-product', 'product-list', 'inventory', 'attributes'] as AdminTab[]).some(canSeeAdminTab) && <div className="space-y-1">
               <button
                 onClick={() => setIsProductsDropdownOpen(!isProductsDropdownOpen)}
                 className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
@@ -1328,7 +1338,7 @@ export default function EcommerceAdminPanel() {
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'inventory' ? 'bg-white/20 text-white' : 'bg-red-500/15 text-red-300'}`}>{products.filter((p) => p.status !== 'In Stock').length}</span>
                     )}
                   </button>}
-                  {!signedInSubAdmin && <button
+                  {canSeeAdminTab('attributes') && <button
                     onClick={() => { setActiveTab('attributes'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === 'attributes'
                       ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
@@ -1343,7 +1353,7 @@ export default function EcommerceAdminPanel() {
             </div>}
 
             {/* Categories Dropdown */}
-            {!signedInSubAdmin && <div className="space-y-1">
+            {(['category', 'sub-category', 'sub-sub-category'] as AdminTab[]).some(canSeeAdminTab) && <div className="space-y-1">
               <button
                 onClick={() => setIsCategoriesDropdownOpen(!isCategoriesDropdownOpen)}
                 className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
@@ -1361,7 +1371,7 @@ export default function EcommerceAdminPanel() {
                     { id: 'category', label: 'Category', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg> },
                     { id: 'sub-category', label: 'Sub Category', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" /><path d="M2 10h20" /></svg> },
                     { id: 'sub-sub-category', label: 'Sub Sub Categories', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg> },
-                  ] satisfies { id: AdminTab; label: string; icon: React.ReactNode }[]).map((item) => (
+                  ] satisfies { id: AdminTab; label: string; icon: React.ReactNode }[]).filter((item) => canSeeAdminTab(item.id)).map((item) => (
                     <button
                       key={item.id}
                       onClick={() => { setActiveTab(item.id); setIsMobileSidebarOpen(false); }}
@@ -1379,7 +1389,7 @@ export default function EcommerceAdminPanel() {
             </div>}
 
             {/* Coupons */}
-            {!signedInSubAdmin && <button
+            {canSeeAdminTab('coupons') && <button
               onClick={() => { setActiveTab('coupons'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'coupons'
                 ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
@@ -1424,7 +1434,7 @@ export default function EcommerceAdminPanel() {
             </button>}
 
             {/* POS Dropdown */}
-            {!signedInSubAdmin && <div className="space-y-1">
+            {(['pos-terminal', 'pos-history'] as AdminTab[]).some(canSeeAdminTab) && <div className="space-y-1">
               <button
                 onClick={() => setIsPosDropdownOpen(!isPosDropdownOpen)}
                 className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
@@ -1438,7 +1448,7 @@ export default function EcommerceAdminPanel() {
 
               {isPosDropdownOpen && (
                 <div className="pl-6 space-y-1 pt-1 border-l-2 border-white/[0.08] ml-5">
-                  <button
+                  {canSeeAdminTab('pos-terminal') && <button
                     onClick={() => { setActiveTab('pos-terminal'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === 'pos-terminal'
                       ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
@@ -1447,8 +1457,8 @@ export default function EcommerceAdminPanel() {
                   >
                     <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg></span>
                     <span>Live Register</span>
-                  </button>
-                  <button
+                  </button>}
+                  {canSeeAdminTab('pos-history') && <button
                     onClick={() => { setActiveTab('pos-history'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center justify-between ${activeTab === 'pos-history'
                       ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
@@ -1460,13 +1470,13 @@ export default function EcommerceAdminPanel() {
                       <span>POS History</span>
                     </div>
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'pos-history' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#d6cfc9]'}`}>{posHistory.length}</span>
-                  </button>
+                  </button>}
                 </div>
               )}
             </div>}
 
             {/* Storefront Dropdown */}
-            {(!signedInSubAdmin || canSeeAdminTab('banners') || canSeeAdminTab('instagram')) && <div className="space-y-1">
+            {(['banners', 'instagram'] as AdminTab[]).some(canSeeAdminTab) && <div className="space-y-1">
               <button
                 onClick={() => setIsStorefrontDropdownOpen(!isStorefrontDropdownOpen)}
                 className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
@@ -3958,9 +3968,24 @@ export default function EcommerceAdminPanel() {
                     <input aria-label="Sub-admin email" type="email" placeholder="Email address" value={subAdminDraft.email} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, email: e.target.value })} className="px-4 py-3 rounded-xl bg-[#f5f5f7] border border-[#e5e5ea] text-sm" />
                     <input aria-label="Sub-admin password" placeholder="Demo password" value={subAdminDraft.password} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, password: e.target.value })} className="px-4 py-3 rounded-xl bg-[#f5f5f7] border border-[#e5e5ea] text-sm" />
                   </div>
-                  <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {SUBADMIN_MODULES.map((module) => <label key={module.id} className="flex items-center gap-2.5 rounded-xl bg-[#f8f8fa] px-3 py-2.5 text-sm font-semibold"><input type="checkbox" checked={subAdminDraft.permissions.includes(module.id)} onChange={() => setSubAdminDraft({ ...subAdminDraft, permissions: toggleInList(subAdminDraft.permissions, module.id) as AdminTab[] })} className="accent-[#ea580c]" />{module.label}</label>)}
+                  <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm font-bold text-[#1d1d1f]">Pages this person can open <span className="ml-1 text-[#86868b] font-semibold">{subAdminDraft.permissions.length} of {SUBADMIN_MODULES.length}</span></p>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setSubAdminDraft({ ...subAdminDraft, permissions: SUBADMIN_MODULES.map((module) => module.id) })} className="px-3.5 py-1.5 rounded-full bg-[#fff2e8] text-[#ea580c] text-xs font-bold hover:bg-[#ffe4cc]">Select all</button>
+                      <button type="button" onClick={() => setSubAdminDraft({ ...subAdminDraft, permissions: [] })} className="px-3.5 py-1.5 rounded-full bg-[#f5f5f7] text-[#6e6e73] text-xs font-bold hover:bg-[#e5e5ea]">Clear</button>
+                    </div>
                   </div>
+                  <div className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {SUBADMIN_GROUPS.map((group) => (
+                      <div key={group} className="rounded-2xl border border-[#e5e5ea] p-3">
+                        <p className="px-1 pb-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#86868b]">{group}</p>
+                        <div className="space-y-1.5">
+                          {SUBADMIN_MODULES.filter((module) => module.group === group).map((module) => <label key={module.id} className="flex items-center gap-2.5 rounded-xl bg-[#f8f8fa] px-3 py-2.5 text-sm font-semibold cursor-pointer"><input type="checkbox" checked={subAdminDraft.permissions.includes(module.id)} onChange={() => setSubAdminDraft({ ...subAdminDraft, permissions: toggleInList(subAdminDraft.permissions, module.id) as AdminTab[] })} className="accent-[#ea580c]" />{module.label}</label>)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-3 text-xs text-[#86868b]">Admin Security (staff logins and the admin password) always stays with the super admin.</p>
                   {subAdminError && <p role="alert" className="mt-4 text-sm font-bold text-red-600">{subAdminError}</p>}
                   <button onClick={() => {
                     const email = subAdminDraft.email.trim().toLowerCase();
@@ -4005,7 +4030,7 @@ export default function EcommerceAdminPanel() {
                     <button
                       onClick={() => setVisiblePasswords(toggleInList(visiblePasswords, 'active'))}
                       aria-label={visiblePasswords.includes('active') ? 'Hide password' : 'Show password'}
-                      className="w-9 h-9 rounded-full bg-white border border-[#e5e5ea] hover:border-[#ea580c] text-[15px]"
+                      className={`shrink-0 w-9 h-9 rounded-full border flex items-center justify-center transition-colors ${visiblePasswords.includes('active') ? 'bg-[#fff2e8] border-[#ea580c]/40 text-[#ea580c]' : 'bg-white border-[#e5e5ea] text-[#86868b] hover:border-[#ea580c] hover:text-[#ea580c]'}`}
                     >
                       <PanelIcon name={visiblePasswords.includes('active') ? 'eye-off' : 'eye'} size={16} />
                     </button>
@@ -4078,7 +4103,7 @@ export default function EcommerceAdminPanel() {
                               type="button"
                               onClick={() => setVisiblePasswords(toggleInList(visiblePasswords, field.label))}
                               aria-label={shown ? 'Hide password' : 'Show password'}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full hover:bg-white text-[15px]"
+                              className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-colors ${shown ? 'bg-[#fff2e8] text-[#ea580c]' : 'text-[#86868b] hover:bg-white hover:text-[#ea580c]'}`}
                             >
                               <PanelIcon name={shown ? 'eye-off' : 'eye'} size={16} />
                             </button>

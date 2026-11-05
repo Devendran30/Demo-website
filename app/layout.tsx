@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Rakvih School Demo | Student Portal",
   description: "Advanced student portal management system for Prashanthi Vidyalaya",
+  // A blank tab icon, so browsers don't fall back to a cached default one. The store sets its own.
+  icons: {
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E",
+  },
 };
 
 export default function RootLayout({

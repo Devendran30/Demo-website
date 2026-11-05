@@ -33,3 +33,9 @@ body {
   .barcode-print-label { display: block; break-after: page; page-break-after: always; }
   .barcode-print-label:last-child { break-after: auto; page-break-after: auto; }
 }
+
+/* Our own show/hide buttons replace Edge's built-in password eye. */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
