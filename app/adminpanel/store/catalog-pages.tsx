@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { ProductBarcode } from '../product-barcode';
+import { VideoPlayerModal } from '../video-player';
 import {
-  bannersStore, instagramStore, subCategoriesStore, sizeOptionsStore,
+  bannersStore, instagramStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, videosStore, recordVideoView,
   stockForVariant, productPhotos, percentOff, photoUrl, sizeTotal, colorTotal,
   FREE_DELIVERY_FROM,
-  type Product, type HeroBanner,
+  type Product, type HeroBanner, type EcommerceVideo,
 } from '../demo-data';
 import {
   T, Icon, Photo, Stars, Button, TextLink, SectionHeading, PageTitle, Price, ProductCard, ProductGrid, EmptyState, QtyStepper, Reveal,
@@ -28,8 +30,8 @@ interface HeroSlide {
 }
 
 /**
- * Split hero: words on the left, the photo framed on the right at its natural shape (no heavy crop or zoom).
- * Text slides in from the left and the frame from the right; slides crossfade every 7 seconds.
+ * Full-bleed hero: the banner photo fills the whole section edge to edge, with the words laid over it.
+ * A dark wash keeps the text readable (from the left on desktop, from the bottom on phones); slides crossfade every 7 seconds.
  */
 function Hero({ slides }: { slides: HeroSlide[] }) {
   const { products, colorHex } = useCatalog();
@@ -57,28 +59,46 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
       aria-label="Featured collections"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="on-dark relative -mt-[72px] lg:-mt-[84px] overflow-hidden bg-[#0B1524] text-white"
+      className="on-dark relative -mt-[72px] lg:-mt-[84px] overflow-hidden bg-[#0B1524] text-white min-h-[min(100svh,760px)] sm:min-h-[min(100svh,820px)] lg:min-h-[min(100svh,880px)] flex"
     >
-      {/* Atmosphere: soft light and a faint grid */}
-      <span aria-hidden="true" className="pointer-events-none absolute -top-40 -left-32 w-[640px] h-[640px] rounded-full bg-[#2F6BFF]/25 blur-[140px] drift" />
-      <span aria-hidden="true" className="pointer-events-none absolute -bottom-48 right-[-10%] w-[600px] h-[520px] rounded-full bg-[#9AA7B8]/15 blur-[130px]" />
-      <span aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:linear-gradient(rgba(255,255,255,0.6)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.6)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
+      {/* Background photos, edge to edge */}
+      <div aria-hidden="true" className="absolute inset-0">
+        {slides.map((s, i) => (
+          <picture key={s.id}>
+            {s.mobileImage && <source media="(max-width: 767px)" srcSet={photoUrl(s.mobileImage, 1000)} />}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photoUrl(s.image, 2000)}
+              alt=""
+              loading={i === 0 ? 'eager' : 'lazy'}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${i === current ? 'opacity-100 kenburns' : 'opacity-0'}`}
+            />
+          </picture>
+        ))}
+      </div>
 
-      <div className={`${T.shell} relative grid lg:grid-cols-[1fr_1.08fr] gap-10 lg:gap-16 items-center pt-[108px] lg:pt-[132px] pb-12 lg:pb-16 lg:min-h-[min(100svh,860px)]`}>
+      {/* Washes so the words always read: from the bottom on phones, from the left on wider screens */}
+      <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#0B1524] from-15% via-[#0B1524]/55 via-50% to-[#0B1524]/0 sm:hidden" />
+      <span aria-hidden="true" className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#0B1524]/95 via-[#0B1524]/65 to-[#0B1524]/5" />
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0B1524]/70 to-transparent" />
+      <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-32 hidden sm:block bg-gradient-to-t from-[#0B1524]/70 to-transparent" />
+      <span aria-hidden="true" className="pointer-events-none absolute -top-40 -left-32 w-[640px] h-[640px] rounded-full bg-[#2F6BFF]/20 blur-[140px] drift" />
+
+      <div className={`${T.shell} relative w-full flex items-end sm:items-center pt-[120px] lg:pt-[140px] pb-10 sm:pb-16 lg:pb-20`}>
         {/* Words */}
-        <div key={slide.id} className="relative z-10 order-2 lg:order-1">
-          <p className="hero-left inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.07] border border-white/15 text-[12.5px] font-semibold" style={{ animationDelay: '0ms' }}>
+        <div key={slide.id} className="relative z-10 max-w-[640px]">
+          <p className="hero-left inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[12.5px] font-semibold" style={{ animationDelay: '0ms' }}>
             <span className="w-1.5 h-1.5 rounded-full bg-[#5A8BFF] shadow-[0_0_12px_#5A8BFF]" /> New season · {pad(current + 1)} of {pad(slides.length)}
           </p>
-          <h1 className={`hero-left mt-6 ${T.display} text-[44px] sm:text-[64px] xl:text-[76px] leading-[1.02]`} style={{ animationDelay: '90ms', color: slide.textColor }}>
+          <h1 className={`hero-left mt-5 sm:mt-6 ${T.display} text-[40px] sm:text-[64px] xl:text-[80px] leading-[1.02] [text-shadow:0_4px_30px_rgba(0,0,0,0.35)]`} style={{ animationDelay: '90ms', color: slide.textColor }}>
             {slide.title}
           </h1>
-          {slide.subtitle && <p className="hero-left mt-6 text-[17px] sm:text-[18.5px] leading-relaxed text-white/70 max-w-lg" style={{ animationDelay: '180ms' }}>{slide.subtitle}</p>}
-          <div className="hero-left mt-9 flex flex-wrap gap-3" style={{ animationDelay: '270ms' }}>
+          {slide.subtitle && <p className="hero-left mt-5 sm:mt-6 text-[16px] sm:text-[18.5px] leading-relaxed text-white/80 max-w-lg" style={{ animationDelay: '180ms' }}>{slide.subtitle}</p>}
+          <div className="hero-left mt-7 sm:mt-9 flex flex-wrap gap-3" style={{ animationDelay: '270ms' }}>
             {slide.ctaText && <Button href={slide.ctaLink || '#/shop'} variant="accent">{slide.ctaText} <Icon name="arrow" size={16} /></Button>}
             <Button href="#/shop" variant="ghost">View all products</Button>
           </div>
-          <div className="hero-left mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" style={{ animationDelay: '360ms' }}>
+          <div className="hero-left mt-8 sm:mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" style={{ animationDelay: '360ms' }}>
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2.5">
                 {products.slice(0, 4).map((p) => (
@@ -87,77 +107,58 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
               </div>
               <div className="leading-tight">
                 <p className="text-[14px] font-bold"><span className="text-[#F5B000]">★</span> {avgRating.toFixed(1)} rating</p>
-                <p className="text-[12px] text-white/55">{reviews.toLocaleString('en-IN')} happy reviews</p>
+                <p className="text-[12px] text-white/60">{reviews.toLocaleString('en-IN')} happy reviews</p>
               </div>
             </div>
-            <span className="hidden sm:block w-px h-9 bg-white/15" />
-            <p className="text-[13px] text-white/70 flex items-center gap-2"><Icon name="truck" size={18} /> Free delivery over ₹4,999</p>
+            <span className="hidden sm:block w-px h-9 bg-white/20" />
+            <p className="hidden sm:flex text-[13px] text-white/75 items-center gap-2"><Icon name="truck" size={18} /> Free delivery over ₹4,999</p>
           </div>
 
           {/* Slide controls */}
           {slides.length > 1 && (
-            <div className="hero-left mt-10 flex items-center gap-5" style={{ animationDelay: '450ms' }}>
+            <div className="hero-left mt-8 sm:mt-10 flex items-center gap-5" style={{ animationDelay: '450ms' }}>
               <div className="flex items-center gap-2" role="tablist" aria-label="Choose slide">
                 {slides.map((s, i) => (
                   <button key={s.id} role="tab" aria-selected={i === current} aria-label={`Show slide ${i + 1}: ${s.title}`} onClick={() => setIndex(i)} className="py-3">
-                    <span className={`block h-[3px] rounded-full overflow-hidden transition-all duration-500 ${i === current ? 'w-14 bg-white/20' : 'w-6 bg-white/20 hover:bg-white/40'}`}>
+                    <span className={`block h-[3px] rounded-full overflow-hidden transition-all duration-500 ${i === current ? 'w-14 bg-white/25' : 'w-6 bg-white/25 hover:bg-white/45'}`}>
                       {i === current && <span key={`${index}-${paused}`} className={`block h-full bg-gradient-to-r from-[#5A8BFF] to-white ${paused ? 'w-full' : 'progress-7'}`} />}
                     </span>
                   </button>
                 ))}
               </div>
               <div className="flex gap-2">
-                <button onClick={() => go(-1)} aria-label="Previous slide" className="w-10 h-10 rounded-full border border-white/20 hover:bg-white hover:text-[#0E1A2B] flex items-center justify-center transition-colors"><Icon name="back" size={16} /></button>
-                <button onClick={() => go(1)} aria-label="Next slide" className="w-10 h-10 rounded-full border border-white/20 hover:bg-white hover:text-[#0E1A2B] flex items-center justify-center transition-colors"><Icon name="arrow" size={16} /></button>
+                <button onClick={() => go(-1)} aria-label="Previous slide" className="w-10 h-10 rounded-full border border-white/25 bg-white/5 backdrop-blur-md hover:bg-white hover:text-[#0E1A2B] flex items-center justify-center transition-colors"><Icon name="back" size={16} /></button>
+                <button onClick={() => go(1)} aria-label="Next slide" className="w-10 h-10 rounded-full border border-white/25 bg-white/5 backdrop-blur-md hover:bg-white hover:text-[#0E1A2B] flex items-center justify-center transition-colors"><Icon name="arrow" size={16} /></button>
               </div>
             </div>
           )}
         </div>
 
-        {/* Framed photo */}
-        <div className="relative order-1 lg:order-2 hero-right">
-          <div className="relative aspect-[4/3] xl:aspect-[5/4] rounded-[28px] sm:rounded-[36px] overflow-hidden bg-[#16263D] ring-1 ring-white/10 shadow-[0_60px_120px_-40px_rgba(0,0,0,0.85)]">
-            {slides.map((s, i) => (
-              <picture key={s.id}>
-                {s.mobileImage && <source media="(max-width: 767px)" srcSet={photoUrl(s.mobileImage, 900)} />}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photoUrl(s.image, 1600)}
-                  alt={i === current ? s.title : ''}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${i === current ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.04]'}`}
-                />
-              </picture>
-            ))}
-            <span className="absolute inset-0 bg-gradient-to-t from-[#0B1524]/40 via-transparent to-transparent" />
-          </div>
-
-          {/* Floating glass cards */}
-          {pick && (
-            <a
-              href={`#/product/${pick.id}`}
-              key={`pick-${current}`}
-              className="hero-pop float absolute -bottom-6 left-3 sm:-left-8 flex items-center gap-3.5 p-2.5 pr-5 rounded-[22px] bg-white/[0.12] backdrop-blur-2xl border border-white/20 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] hover:bg-white/20 transition-colors"
-              style={{ animationDelay: '500ms' }}
-            >
-              <Photo src={pick.image} alt="" width={160} className="w-14 h-14 sm:w-16 sm:h-16 rounded-[16px] object-cover" />
-              <span className="min-w-0">
-                <span className="block text-[11px] uppercase tracking-[0.14em] font-bold text-[#8FB0FF]">Featured</span>
-                <span className="block text-[14px] font-bold truncate max-w-[170px]">{pick.name}</span>
-                <span className="flex items-center gap-2 text-[13px] text-white/75">
-                  {inr(pick.price)}
-                  {pick.colors.slice(0, 3).map((c) => <span key={c} className="w-2.5 h-2.5 rounded-full ring-1 ring-white/40" style={{ backgroundColor: colorHex[c] }} />)}
-                </span>
+        {/* Floating glass cards, desktop only so phones keep the photo clear */}
+        {pick && (
+          <a
+            href={`#/product/${pick.id}`}
+            key={`pick-${current}`}
+            className="hero-pop hidden lg:flex absolute bottom-20 right-6 xl:right-10 items-center gap-3.5 p-2.5 pr-5 rounded-[22px] bg-white/[0.12] backdrop-blur-2xl border border-white/20 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] hover:bg-white/20 transition-colors"
+            style={{ animationDelay: '500ms' }}
+          >
+            <Photo src={pick.image} alt="" width={160} className="w-16 h-16 rounded-[16px] object-cover" />
+            <span className="min-w-0">
+              <span className="block text-[11px] uppercase tracking-[0.14em] font-bold text-[#8FB0FF]">Featured</span>
+              <span className="block text-[14px] font-bold truncate max-w-[190px]">{pick.name}</span>
+              <span className="flex items-center gap-2 text-[13px] text-white/75">
+                {inr(pick.price)}
+                {pick.colors.slice(0, 3).map((c) => <span key={c} className="w-2.5 h-2.5 rounded-full ring-1 ring-white/40" style={{ backgroundColor: colorHex[c] }} />)}
               </span>
-            </a>
-          )}
-          <div className="hero-pop float hidden sm:flex absolute -top-5 right-4 lg:-right-6 items-center gap-3 px-4 py-3 rounded-[18px] bg-white text-[#0E1A2B] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)]" style={{ animationDelay: '700ms' }}>
-            <span className="w-9 h-9 rounded-full bg-[#2F6BFF]/10 text-[#2F6BFF] flex items-center justify-center"><Icon name="shield" size={18} /></span>
-            <span className="leading-tight">
-              <span className="block text-[13px] font-extrabold">1-year warranty</span>
-              <span className="block text-[11.5px] text-[#6F7E92]">on every product</span>
             </span>
-          </div>
+          </a>
+        )}
+        <div className="hero-pop hidden lg:flex absolute top-[124px] right-6 xl:right-10 items-center gap-3 px-4 py-3 rounded-[18px] bg-white text-[#0E1A2B] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)]" style={{ animationDelay: '700ms' }}>
+          <span className="w-9 h-9 rounded-full bg-[#2F6BFF]/10 text-[#2F6BFF] flex items-center justify-center"><Icon name="shield" size={18} /></span>
+          <span className="leading-tight">
+            <span className="block text-[13px] font-extrabold">1-year warranty</span>
+            <span className="block text-[11.5px] text-[#6F7E92]">on every product</span>
+          </span>
         </div>
       </div>
     </section>
@@ -298,6 +299,70 @@ function Carousel({ products, colorHex, categoryOf }: { products: Product[] } & 
 }
 
 /** Widens the last tiles so the category grid never ends with empty cells (2 columns on phones, 4 on desktop). */
+/** Product videos from Admin → Videos. Each play is counted, and the player links to the product. */
+function VideoShelf({ videos, heading }: { videos: EcommerceVideo[]; heading: ReactNode }) {
+  const { products } = useCatalog();
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const playing = videos.find((v) => v.id === playingId);
+  const productOf = (video: EcommerceVideo) => products.find((p) => p.name === video.productName);
+  const playingProduct = playing && productOf(playing);
+
+  return (
+    <>
+      {heading}
+      <div className={`grid gap-4 sm:gap-5 ${videos.length === 1 ? 'max-w-xl' : 'sm:grid-cols-2 lg:grid-cols-3'}`}>
+        {videos.map((video, i) => {
+          const product = productOf(video);
+          return (
+            <Reveal key={video.id} delay={i * 110} className="h-full">
+              <article className="group h-full flex flex-col rounded-[26px] bg-white border border-[#E3E8EF] overflow-hidden hover:-translate-y-1 hover:shadow-[0_30px_60px_-40px_rgba(14,26,43,0.5)] transition-all duration-500">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPlayingId(video.id);
+                    recordVideoView(video.id);
+                  }}
+                  aria-label={`Play video: ${video.title}`}
+                  className="relative block w-full aspect-video bg-[#0B1524] overflow-hidden"
+                >
+                  <Photo src={video.thumbnail || product?.image || ''} alt="" width={800} className="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-[1.06]" />
+                  <span className="absolute inset-0 bg-gradient-to-t from-[#0B1524]/70 via-transparent to-transparent" />
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <span className="w-16 h-16 rounded-full bg-white/90 backdrop-blur-md text-[#2F6BFF] flex items-center justify-center shadow-[0_16px_32px_-12px_rgba(0,0,0,0.6)] transition-transform duration-500 group-hover:scale-110">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="ml-1"><path d="M7 4.5v15l12.5-7.5L7 4.5Z" /></svg>
+                    </span>
+                  </span>
+                  {video.duration && <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-black/65 text-white text-[12px] font-bold tabular-nums">{video.duration}</span>}
+                </button>
+                <div className="flex-1 flex flex-col p-5 sm:p-6">
+                  <p className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#6F7E92] truncate">{product?.name ?? video.productName}</p>
+                  <h3 className="mt-2 text-[17px] font-bold tracking-[-0.02em] leading-snug">{video.title}</h3>
+                  <div className="mt-auto pt-4 flex items-center justify-between gap-3 text-[13px] text-[#6F7E92]">
+                    <span className="inline-flex items-center gap-1.5"><Icon name="eye" size={15} />{video.views.toLocaleString('en-IN')} views</span>
+                    {product && <a href={`#/product/${product.id}`} className="font-semibold text-[#2F6BFF] hover:underline">Shop now →</a>}
+                  </div>
+                </div>
+              </article>
+            </Reveal>
+          );
+        })}
+      </div>
+      {playing && (
+        <VideoPlayerModal video={playing} onClose={() => setPlayingId(null)}>
+          {playingProduct ? (
+            <>
+              <span className="text-[14px] text-white/80">{playingProduct.name} · <strong className="text-white">{inr(playingProduct.price)}</strong></span>
+              <a href={`#/product/${playingProduct.id}`} onClick={() => setPlayingId(null)} className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-[#2F6BFF] hover:bg-[#2459DB] text-white text-[14px] font-semibold">Shop this product <Icon name="arrow" size={16} /></a>
+            </>
+          ) : (
+            <span className="text-[13px] text-white/60">{playing.views.toLocaleString('en-IN')} views</span>
+          )}
+        </VideoPlayerModal>
+      )}
+    </>
+  );
+}
+
 function lastTileSpan(index: number, count: number) {
   if (index === 0) return '';
   const rest = count - 1;
@@ -318,6 +383,7 @@ export function HomePage() {
   const { products, categories, colorHex, categoryOf, productById } = useCatalog();
   const banners = useStore(bannersStore).filter((b) => b.isActive && b.imageUrl);
   const posts = useStore(instagramStore);
+  const videos = useStore(videosStore);
   const inStock = products.filter((p) => p.stock > 0);
   const [tab, setTab] = useState<'featured' | 'bestsellers' | 'gifts'>('featured');
   const tabs = {
@@ -474,6 +540,13 @@ export function HomePage() {
 
         {deal && <DealOfTheDay product={deal} />}
 
+        {/* Product videos (Admin → Videos) */}
+        {videos.length > 0 && (
+          <section className="pt-12 sm:pt-16">
+            <VideoShelf videos={videos.slice(0, 6)} heading={<Reveal><SectionHeading eyebrow="Watch before you buy" title={<>See it <em>in action</em></>} text="Unboxings, sound tests and close-ups of the pieces we stock." /></Reveal>} />
+          </section>
+        )}
+
         {/* Editorial */}
         {editorial.length === 2 && (
           <section className="pt-12 sm:pt-16 grid md:grid-cols-2 gap-4">
@@ -627,9 +700,11 @@ const SORTS: Record<string, { label: string; compare: (a: Product, b: Product) =
 export function ShopPage({ params }: { params: URLSearchParams }) {
   const { products, categories, colorHex, categoryOf, categoryBySlug } = useCatalog();
   const subCategories = useStore(subCategoriesStore);
+  const subSubCategories = useStore(subSubCategoriesStore);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const category = categoryBySlug(params.get('cat') ?? '');
   const sub = params.get('sub') ?? '';
+  const style = params.get('style') ?? '';
   const query = (params.get('q') ?? '').trim().toLowerCase();
   const band = PRICE_BANDS[params.get('price') ?? ''];
   const color = params.get('color') ?? '';
@@ -644,6 +719,7 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
   const results = inCategory
     .filter((p) => {
       if (sub && p.subCategory !== sub) return false;
+      if (style && p.subSubCategory !== style) return false;
       if (band && (p.price < band.min || p.price > band.max)) return false;
       if (color && !(p.colors.includes(color) && colorTotal(p.variantStock, color) >= (inStockOnly ? 1 : 0))) return false;
       if (size && !(p.sizes.includes(size) && sizeTotal(p.variantStock, size) >= (inStockOnly ? 1 : 0))) return false;
@@ -658,8 +734,10 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
 
   const colorsHere = [...new Set(inCategory.flatMap((p) => p.colors))];
   const sizesHere = [...new Set(inCategory.flatMap((p) => p.sizes))];
-  const subsHere = category ? subCategories.filter((sc) => sc.parentCategory === category.name && inCategory.some((p) => p.subCategory === sc.name)) : [];
-  const hasFilters = Boolean(category || sub || query || band || color || size || inStockOnly);
+  const subsHere = category ? subCategories.filter((sc) => sc.status === 'Active' && sc.parentCategory === category.name && inCategory.some((p) => p.subCategory === sc.name)) : [];
+  // Third-level categories (Admin → Sub-sub categories) narrow a chosen type further.
+  const stylesHere = sub ? subSubCategories.filter((ssc) => ssc.status === 'Active' && ssc.parentSubCategory === sub && inCategory.some((p) => p.subCategory === sub && p.subSubCategory === ssc.name)) : [];
+  const hasFilters = Boolean(category || sub || style || query || band || color || size || inStockOnly);
 
   const filterHeading = 'text-[13px] font-bold text-[#0E1A2B] mb-4';
   const option = (active: boolean) => `flex w-full items-center justify-between py-1.5 text-[14px] text-left transition-colors ${active ? 'text-[#0E1A2B] font-medium' : 'text-[#5B6B80] hover:text-[#0E1A2B]'}`;
@@ -668,11 +746,11 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
     <div className="space-y-10">
       <div>
         <p className={filterHeading}>Category</p>
-        <button onClick={() => update({ cat: '', sub: '', color: '', size: '' })} aria-pressed={!category} className={option(!category)}>
+        <button onClick={() => update({ cat: '', sub: '', style: '', color: '', size: '' })} aria-pressed={!category} className={option(!category)}>
           <span>All pieces</span><span className="text-[12px] text-[#8A97A8]">{products.length}</span>
         </button>
         {categories.map((c) => (
-          <button key={c.id} onClick={() => update({ cat: c.slug, sub: '', color: '', size: '' })} aria-pressed={category?.id === c.id} className={option(category?.id === c.id)}>
+          <button key={c.id} onClick={() => update({ cat: c.slug, sub: '', style: '', color: '', size: '' })} aria-pressed={category?.id === c.id} className={option(category?.id === c.id)}>
             <span className="flex items-center gap-2">{category?.id === c.id && <span className="w-1 h-1 rounded-full bg-[#2F6BFF]" />}{c.name}</span>
             <span className="text-[12px] text-[#8A97A8]">{products.filter((p) => p.category === c.name).length}</span>
           </button>
@@ -683,8 +761,20 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
           <p className={filterHeading}>Type</p>
           <div className="flex flex-wrap gap-2">
             {subsHere.map((sc) => (
-              <button key={sc.id} onClick={() => update({ sub: sub === sc.name ? '' : sc.name })} aria-pressed={sub === sc.name} className={`px-4 h-9 rounded-full border text-[12.5px] transition-colors ${sub === sc.name ? 'border-[#0E1A2B] bg-[#0E1A2B] text-[#F6F8FB]' : 'border-[#CFD8E3] hover:border-[#0E1A2B]'}`}>
+              <button key={sc.id} onClick={() => update({ sub: sub === sc.name ? '' : sc.name, style: '' })} aria-pressed={sub === sc.name} className={`px-4 h-9 rounded-full border text-[12.5px] transition-colors ${sub === sc.name ? 'border-[#0E1A2B] bg-[#0E1A2B] text-[#F6F8FB]' : 'border-[#CFD8E3] hover:border-[#0E1A2B]'}`}>
                 {sc.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {stylesHere.length > 0 && (
+        <div>
+          <p className={filterHeading}>Style</p>
+          <div className="flex flex-wrap gap-2">
+            {stylesHere.map((ssc) => (
+              <button key={ssc.id} onClick={() => update({ style: style === ssc.name ? '' : ssc.name })} aria-pressed={style === ssc.name} className={`px-4 h-9 rounded-full border text-[12.5px] transition-colors ${style === ssc.name ? 'border-[#0E1A2B] bg-[#0E1A2B] text-[#F6F8FB]' : 'border-[#CFD8E3] hover:border-[#0E1A2B]'}`}>
+                {ssc.name}
               </button>
             ))}
           </div>
@@ -796,6 +886,7 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
 export function ProductPage({ product }: { product: Product }) {
   const { products, colorHex, categoryOf } = useCatalog();
   const sizeOptions = useStore(sizeOptionsStore);
+  const productVideos = useStore(videosStore).filter((v) => v.productName === product.name);
   const bag = useStore(bagStore);
   const wishlist = useStore(wishlistStore);
   const start = firstAvailable(product);
@@ -992,8 +1083,25 @@ export function ProductPage({ product }: { product: Product }) {
               </div>
             ))}
           </div>
+
+          {/* Barcode from SKU */}
+          {(product.sku || product.barcode) && (
+            <div className="mt-6 pt-5 border-t border-[#E3E8EF]">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-[#8A97A8] mb-2 font-bold">Product Barcode</p>
+              <div className="bg-white border border-[#E3E8EF] rounded-2xl px-4 py-3 inline-block shadow-2xs">
+                <ProductBarcode value={product.sku || product.barcode} className="w-48 h-14" />
+                <p className="text-center text-[11px] font-mono text-[#6F7E92] mt-1 tracking-widest font-bold">{product.sku || product.barcode}</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {productVideos.length > 0 && (
+        <section className="pt-12 sm:pt-16">
+          <VideoShelf videos={productVideos} heading={<SectionHeading eyebrow="Product videos" title={<>See it <em>in action</em></>} />} />
+        </section>
+      )}
 
       {related.length > 0 && (
         <section className="pt-12 sm:pt-16">

@@ -243,7 +243,7 @@ function SiteHeader({ page, params }: { page: string; params: URLSearchParams })
                 <div key={c.id}>
                   <a href={shopHref({ cat: c.slug })} onClick={closeAll} className={`${T.display} text-[19px] leading-none hover:text-[#2F6BFF] transition-colors`}>{c.name}</a>
                   <ul className="mt-3.5 space-y-2">
-                    {subCategories.filter((sc) => sc.parentCategory === c.name && products.some((p) => p.subCategory === sc.name)).map((sc) => (
+                    {subCategories.filter((sc) => sc.status === 'Active' && sc.parentCategory === c.name && products.some((p) => p.subCategory === sc.name)).map((sc) => (
                       <li key={sc.id}><a href={shopHref({ cat: c.slug, sub: sc.name })} onClick={closeAll} className="text-[13.5px] text-[#5B6B80] hover:text-[#0E1A2B]">{sc.name}</a></li>
                     ))}
                   </ul>
@@ -480,7 +480,7 @@ function AccountMenu({ overlay }: { overlay: boolean }) {
                     </div>
                   ))}
                 </div>
-                {tracking.shipment && <p className="mt-2 text-[11.5px] text-[#6F7E92]">{tracking.shipment.courier} · AWB {tracking.shipment.awb}</p>}
+                {tracking.shipment?.awb && tracking.shipment.status !== 'Cancelled' && <p className="mt-2 text-[11.5px] text-[#6F7E92]">{tracking.shipment.courier} · AWB {tracking.shipment.awb}</p>}
               </a>
             ) : (
               <div className="p-4 rounded-[18px] bg-[#F6F8FB] text-center">
@@ -554,7 +554,7 @@ function SiteFooter() {
         </div>
         <div className="mt-10 pt-5 border-t border-white/10 flex flex-col sm:flex-row justify-between gap-3 text-[12px] text-[#6F7E92]">
           <p>© {YEAR} {STORE_INFO.name}. A demo store: products and prices are samples, and no real payments are processed.</p>
-          <p>UPI · Cards · Cash on delivery</p>
+          <p>Designed and Powered by <a href="https://www.rakvih.in" target="_blank" rel="noopener noreferrer" className="font-bold text-[#FACC15] hover:text-[#FDE047] hover:underline underline-offset-2">Rakvih</a></p>
         </div>
       </div>
     </footer>

@@ -162,8 +162,13 @@ export interface Shipment {
   pickup: string;
   weightKg: number;
   dimensions: string;
-  status: 'Created' | 'In Transit' | 'Delivered';
+  status: 'Created' | 'In Transit' | 'Delivered' | 'Cancelled';
   createdAt: string;
+  /** Shiprocket's own ids and status text (e.g. "PICKUP SCHEDULED"); courier and AWB stay empty until it assigns them. */
+  srOrderId?: number;
+  srShipmentId?: number;
+  remoteStatus?: string;
+  deliveryState?: string;
 }
 
 export interface Order {
@@ -515,6 +520,39 @@ export function restockOrder(order: Order) {
   productsStore.set(adjustStock(productsStore.get(), order.items, 1));
 }
 
+export type StockLine = { productId: string; size: string; color: string; qty: number };
+
+/**
+ * Takes an in-store (POS) sale off the shelf, from whichever sizes and colors still have stock,
+ * so the website shows the same numbers. Throws without changing anything if there isn't enough.
+ */
+export function sellInStore(items: { productId: string; qty: number }[]): StockLine[] {
+  const products = productsStore.get();
+  const lines: StockLine[] = [];
+  for (const { productId, qty } of items) {
+    const product = products.find((p) => p.id === productId);
+    if (!product) throw new Error('A product in this bill no longer exists.');
+    let left = qty;
+    for (const [size, byColor] of Object.entries(product.variantStock)) {
+      for (const [color, have] of Object.entries(byColor)) {
+        const take = Math.min(left, have);
+        if (take > 0) {
+          lines.push({ productId, size, color, qty: take });
+          left -= take;
+        }
+      }
+    }
+    if (left > 0) throw new Error(`Only ${qty - left} of ${product.name} left in stock.`);
+  }
+  productsStore.set(adjustStock(products, lines, -1));
+  return lines;
+}
+
+/** Puts returned items back on the shelf (POS returns and exchanges). */
+export function returnToStock(lines: StockLine[]) {
+  productsStore.set(adjustStock(productsStore.get(), lines, 1));
+}
+
 // =============================================================================
 // Sample Data
 // =============================================================================
@@ -800,9 +838,9 @@ const SEED_ORDERS: Order[] = [
   order({ id: 'ord-106', orderNumber: 'ORD-98216', customerName: 'Kavya Reddy', email: 'kavya.r@example.com', phone: '+91 99860 11223', shippingAddress: 'Flat 302, Prestige Lakeside, Whitefield', city: 'Bengaluru', state: 'Karnataka', postalCode: '560066', date: '2026-11-03', time: '19:42', items: [line(BUDS, STANDARD, 'Arctic White')], paymentMethod: 'Credit Card', paymentStatus: 'Pending', orderStatus: 'Pending', source: 'Website' }),
   order({ id: 'ord-105', orderNumber: 'ORD-98215', customerName: 'Meera Iyer', email: 'meera.iyer@example.com', phone: '+91 98450 12345', shippingAddress: '22, 3rd Cross, Indiranagar 1st Stage', city: 'Bengaluru', state: 'Karnataka', postalCode: '560038', date: '2026-11-02', time: '11:05', items: [line(KEYBOARD, 'Full Size', 'Space Grey')], paymentMethod: 'UPI', paymentId: 'pay_QX81mK2vLr7T', paymentStatus: 'Paid', orderStatus: 'Pending', source: 'Website' }),
   order({ id: 'ord-101', orderNumber: 'ORD-98214', customerName: 'Aarav Mehta', email: 'aarav.m@example.com', phone: '+91 99001 23456', shippingAddress: '14, Palm Grove Apartments, Bandra West', city: 'Mumbai', state: 'Maharashtra', postalCode: '400050', date: '2026-11-01', time: '16:20', items: [line(HEADPHONES, STANDARD, 'Midnight Black')], paymentMethod: 'UPI', paymentId: 'pay_QX7a9Hc3Np2D', paymentStatus: 'Paid', orderStatus: 'Processing', source: 'Website' }),
-  order({ id: 'ord-102', orderNumber: 'ORD-98213', customerName: 'Priya Sundaram', email: 'priya.s@example.com', phone: '+91 94440 56789', shippingAddress: '8, Lakshmi Street, T. Nagar', city: 'Chennai', state: 'Tamil Nadu', postalCode: '600017', date: '2026-10-31', time: '10:12', items: [line(HEADPHONES, STANDARD, 'Silver Mist'), line(KEYBOARD, 'TKL', 'Arctic White')], paymentMethod: 'Credit Card', paymentId: 'pay_QX5tY4bWm8Kc', paymentStatus: 'Paid', orderStatus: 'Shipped', source: 'Website', shipment: { courier: 'Delhivery', awb: '1490223655213', pickup: 'Bengaluru Warehouse', weightKg: 1.4, dimensions: '30 × 25 × 12 cm', status: 'In Transit', createdAt: '2026-11-01T09:30:00+05:30' } }),
+  order({ id: 'ord-102', orderNumber: 'ORD-98213', customerName: 'Priya Sundaram', email: 'priya.s@example.com', phone: '+91 94440 56789', shippingAddress: '8, Lakshmi Street, T. Nagar', city: 'Chennai', state: 'Tamil Nadu', postalCode: '600017', date: '2026-10-31', time: '10:12', items: [line(HEADPHONES, STANDARD, 'Silver Mist'), line(KEYBOARD, 'TKL', 'Arctic White')], paymentMethod: 'Credit Card', paymentId: 'pay_QX5tY4bWm8Kc', paymentStatus: 'Paid', orderStatus: 'Shipped', source: 'Website', shipment: { courier: 'Delhivery', awb: '1490223655213', pickup: 'Bengaluru Warehouse', weightKg: 1.4, dimensions: '30 × 25 × 12 cm', status: 'In Transit', createdAt: '2026-11-01T09:30:00+05:30', srOrderId: 734120558, srShipmentId: 731998204, remoteStatus: 'IN TRANSIT', deliveryState: 'Tamil Nadu' } }),
   order({ id: 'ord-103', orderNumber: 'ORD-98212', customerName: 'Vikram Joshi', email: 'v.joshi@example.com', phone: '+91 98220 34567', shippingAddress: '5B, Shivaji Nagar, FC Road', city: 'Pune', state: 'Maharashtra', postalCode: '411005', date: '2026-10-30', time: '13:48', items: [line(BACKPACK, '15 inch', 'Tan Brown')], paymentMethod: 'Cash on Delivery', paymentStatus: 'Pending', orderStatus: 'Processing', source: 'Website' }),
-  order({ id: 'ord-104', orderNumber: 'ORD-98211', customerName: 'Ananya Roy', email: 'ananya.roy@example.com', phone: '+91 98300 45678', shippingAddress: '41, Lake Gardens, Southern Avenue', city: 'Kolkata', state: 'West Bengal', postalCode: '700045', date: '2026-10-28', time: '18:30', items: [line(SMARTWATCH, '45mm', 'Midnight Black')], paymentMethod: 'Net Banking', paymentId: 'pay_QX2pR6dZs1Ve', paymentStatus: 'Paid', orderStatus: 'Delivered', source: 'Website', shipment: { courier: 'Blue Dart', awb: '7730091846521', pickup: 'Bengaluru Warehouse', weightKg: 0.6, dimensions: '18 × 12 × 9 cm', status: 'Delivered', createdAt: '2026-10-29T10:00:00+05:30' } }),
+  order({ id: 'ord-104', orderNumber: 'ORD-98211', customerName: 'Ananya Roy', email: 'ananya.roy@example.com', phone: '+91 98300 45678', shippingAddress: '41, Lake Gardens, Southern Avenue', city: 'Kolkata', state: 'West Bengal', postalCode: '700045', date: '2026-10-28', time: '18:30', items: [line(SMARTWATCH, '45mm', 'Midnight Black')], paymentMethod: 'Net Banking', paymentId: 'pay_QX2pR6dZs1Ve', paymentStatus: 'Paid', orderStatus: 'Delivered', source: 'Website', shipment: { courier: 'Blue Dart', awb: '7730091846521', pickup: 'Bengaluru Warehouse', weightKg: 0.6, dimensions: '18 × 12 × 9 cm', status: 'Delivered', createdAt: '2026-10-29T10:00:00+05:30', srOrderId: 733870412, srShipmentId: 731745690, remoteStatus: 'DELIVERED', deliveryState: 'West Bengal' } }),
 ];
 
 const SEED_CUSTOMERS: Customer[] = [
@@ -856,6 +894,69 @@ export const ordersStore = createStore(KEY('orders'), SEED_ORDERS, Array.isArray
 export const customersStore = createStore(KEY('customers'), SEED_CUSTOMERS, Array.isArray);
 export const bannersStore = createStore(KEY('banners'), SEED_BANNERS, Array.isArray);
 export const instagramStore = createStore(KEY('instagram'), SEED_INSTAGRAM, Array.isArray);
+// Product videos made in Admin → Videos and shown on the storefront (same storage key as before).
+export interface EcommerceVideo {
+  id: string;
+  title: string;
+  productName: string;
+  duration: string;
+  views: number;
+  thumbnail: string;
+  videoUrl: string;
+  dateAdded: string;
+}
+
+/** A small, freely licensed clip that reliably plays; used for the sample videos. */
+export const DEMO_VIDEO_URL = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+// The original sample link no longer serves video, so saved demo data falls back to the working clip.
+const DEAD_SAMPLE_VIDEO = 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4';
+
+export const videosStore = createStore<EcommerceVideo[]>('demo.admin.videos', [
+  {
+    id: 'vid-1',
+    title: 'Unboxing & Sound Test: Wireless Headphones Pro',
+    productName: 'Wireless Noise-Cancelling Headphones Pro',
+    duration: '01:45',
+    views: 12450,
+    thumbnail: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400',
+    videoUrl: DEMO_VIDEO_URL,
+    dateAdded: '2026-08-20',
+  },
+  {
+    id: 'vid-2',
+    title: 'Water Resistance & Fitness Tracking Test',
+    productName: 'Ultra Slim Smartwatch Series 7',
+    duration: '00:58',
+    views: 8930,
+    thumbnail: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=400',
+    videoUrl: DEMO_VIDEO_URL,
+    dateAdded: '2026-08-18',
+  },
+  {
+    id: 'vid-3',
+    title: 'Mechanical Switch Sound Profile & Typing ASMR',
+    productName: 'Ergonomic Mechanical Keyboard RGB',
+    duration: '02:15',
+    views: 24100,
+    thumbnail: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=400',
+    videoUrl: DEMO_VIDEO_URL,
+    dateAdded: '2026-08-10',
+  },
+], Array.isArray);
+
+/** The link to actually play: a YouTube embed, or the file URL (with the dead sample link swapped out). */
+export function playableVideo(url: string): { kind: 'youtube' | 'file'; src: string } {
+  const trimmed = url.trim();
+  const youtube = trimmed.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
+  if (youtube) return { kind: 'youtube', src: `https://www.youtube.com/embed/${youtube[1]}?autoplay=1&rel=0` };
+  return { kind: 'file', src: !trimmed || trimmed === DEAD_SAMPLE_VIDEO ? DEMO_VIDEO_URL : trimmed };
+}
+
+/** Counts a play from the storefront, so Admin → Videos shows real view numbers. */
+export function recordVideoView(id: string) {
+  videosStore.set(videosStore.get().map((v) => (v.id === id ? { ...v, views: v.views + 1 } : v)));
+}
+
 export const shopperAccountsStore = createStore<ShopperAccount[]>(KEY('shoppers'), [
   { id: 'acc-1', name: 'Meera Iyer', email: 'meera.iyer@example.com', phone: '+91 98450 12345', password: 'demo1234', createdAt: '2026-10-20T10:00:00+05:30' },
 ], Array.isArray);
@@ -867,7 +968,7 @@ export const adminAccountStore = createStore<AdminAccount>(
 
 const SHARED_STORES = [
   productsStore, categoriesStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, colorOptionsStore,
-  tagOptionsStore, couponsStore, ordersStore, customersStore, bannersStore, instagramStore, adminAccountStore, shopperAccountsStore,
+  tagOptionsStore, couponsStore, ordersStore, customersStore, bannersStore, instagramStore, adminAccountStore, shopperAccountsStore, videosStore,
 ];
 
 /** Puts every shared list back to the sample data, for both the admin and the website. */

@@ -1,19 +1,25 @@
 'use client';
 
 import { Fragment, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { CameraScanner, type ScanResult } from './camera-scanner';
 import { ProductQrCode } from './product-qr-code';
+import { ProductBarcode } from './product-barcode';
+import { BarcodeLabel, downloadLabelsPdf, type LabelData } from './barcode-label';
 import { VariantStockGrid } from './variant-stock-grid';
 import { ImageListField } from './image-list-field';
+import { ShiprocketDialog } from './shiprocket-dialog';
+import { VideoPlayerModal } from './video-player';
+import { K, KaavuDetails, KaavuImageUploader, KaavuInventoryRow, KaavuStockFields } from './kaavu-ui';
 // Products, orders, coupons, banners and the rest are shared with the storefront and saved in the browser.
 import {
-  useStore, productsStore, categoriesStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, colorOptionsStore,
-  tagOptionsStore, couponsStore, ordersStore, customersStore, bannersStore, instagramStore, adminAccountStore,
-  buildVariantStock, sizeTotal, variantSizes, variantColors, stockStatus, couponState, restockOrder, resetDemoData, fakePaymentId, fakeAwb, uid,
-  localDate, STANDARD, ORDER_STATUSES, STORE_INFO,
+  useStore, createStore, productsStore, categoriesStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, colorOptionsStore,
+  tagOptionsStore, couponsStore, ordersStore, customersStore, bannersStore, instagramStore, adminAccountStore, videosStore,
+  buildVariantStock, variantSizes, variantColors, stockStatus, couponState, restockOrder, resetDemoData, fakePaymentId, uid,
+  localDate, sellInStore, returnToStock, STANDARD, ORDER_STATUSES, STORE_INFO, DEMO_VIDEO_URL,
   type VariantStock, type Product, type SizeOption, type ColorOption, type TagOption, type Coupon, type Order, type OrderStatus,
-  type HeroBanner, type Shipment, type CategoryItem,
+  type HeroBanner, type CategoryItem, type EcommerceVideo, type StockLine,
 } from './demo-data';
 
 interface PosCartItem {
@@ -29,25 +35,78 @@ interface PosTransaction {
   customer: string;
   itemsCount: number;
   total: number;
-  paymentMethod: 'Cash' | 'Card' | 'UPI';
-  items: { name: string; qty: number; price: number }[];
+  paymentMethod: 'Cash' | 'Card' | 'UPI' | 'COD';
+  customerPhone?: string;
+  items: { productId?: string; name: string; qty: number; price: number }[];
+  // Exactly which size/colour stock the sale took, so a return puts it back in the same place.
+  stockLines?: StockLine[];
+  returnedItems?: number[];
 }
 
-interface EcommerceVideo {
-  id: string;
-  title: string;
-  productName: string;
-  duration: string;
-  views: number;
-  thumbnail: string;
-  videoUrl: string;
-  dateAdded: string;
-}
+// POS bills are saved in the browser like the rest of the demo data, so they survive a refresh.
+const posHistoryStore = createStore<PosTransaction[]>('demo.admin.posHistory', [
+  {
+    id: 'tx-1',
+    receiptNo: 'REC-2026-8091',
+    date: '2026-08-26 03:45 PM',
+    cashier: 'John Cashier (Reg #01)',
+    customer: 'Siddharth Rao',
+    itemsCount: 2,
+    total: 22498,
+    paymentMethod: 'UPI',
+    items: [
+      { productId: 'wireless-nc-headphones-pro', name: 'Wireless Noise-Cancelling Headphones Pro', qty: 1, price: 14999 },
+      { productId: 'ergonomic-mechanical-keyboard', name: 'Ergonomic Mechanical Keyboard RGB', qty: 1, price: 7499 },
+    ],
+  },
+  {
+    id: 'tx-2',
+    receiptNo: 'REC-2026-8090',
+    date: '2026-08-26 01:15 PM',
+    cashier: 'Sarah Jenkins (Reg #02)',
+    customer: 'Walk-in Customer',
+    itemsCount: 1,
+    total: 21999,
+    paymentMethod: 'Card',
+    items: [
+      { productId: 'ultra-slim-smartwatch-7', name: 'Ultra Slim Smartwatch Series 7', qty: 1, price: 21999 },
+    ],
+  },
+  {
+    id: 'tx-3',
+    receiptNo: 'REC-2026-8089',
+    date: '2026-08-25 06:20 PM',
+    cashier: 'John Cashier (Reg #01)',
+    customer: 'Rahul Nair',
+    itemsCount: 1,
+    total: 4999,
+    paymentMethod: 'Cash',
+    items: [
+      { productId: 'minimalist-leather-backpack', name: 'Minimalist Matte Leather Backpack', qty: 1, price: 4999 },
+    ],
+  },
+], Array.isArray);
+
 
 type AdminTab =
   | 'dashboard' | 'add-product' | 'product-list' | 'inventory' | 'attributes'
   | 'category' | 'sub-category' | 'sub-sub-category' | 'coupons' | 'orders' | 'customers'
   | 'pos-terminal' | 'pos-history' | 'banners' | 'instagram' | 'videos' | 'reports' | 'settings';
+
+type DemoSubAdmin = { id: string; name: string; email: string; password: string; permissions: AdminTab[] };
+// Staff logins and product videos are saved in the browser like the rest of the demo data (same keys as before).
+const subAdminsStore = createStore<DemoSubAdmin[]>('demo.admin.subAdmins', [], Array.isArray);
+const SUBADMIN_MODULES: { id: AdminTab; label: string }[] = [
+  { id: 'add-product', label: 'Add and edit products' },
+  { id: 'product-list', label: 'Product list' },
+  { id: 'inventory', label: 'Inventory' },
+  { id: 'orders', label: 'Orders' },
+  { id: 'customers', label: 'Customers' },
+  { id: 'banners', label: 'Store banners' },
+  { id: 'instagram', label: 'Instagram feed' },
+  { id: 'videos', label: 'Videos' },
+  { id: 'reports', label: 'Reports' },
+];
 
 const TAB_TITLES: Record<AdminTab, string> = {
   dashboard: 'Commerce Overview',
@@ -72,6 +131,35 @@ const TAB_TITLES: Record<AdminTab, string> = {
 
 const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=400';
 
+function PanelIcon({ name, size = 18 }: { name: 'money' | 'box' | 'tag' | 'warning' | 'folder' | 'image' | 'instagram' | 'palette' | 'file' | 'monitor' | 'plus' | 'ticket' | 'camera' | 'eye' | 'eye-off' | 'lock' | 'truck' | 'receipt' | 'bag' | 'mobile' | 'video' | 'views' | 'barcode'; size?: number }) {
+  const paths: Record<string, React.ReactNode> = {
+    money: <><path d="M12 2v20" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>,
+    box: <><path d="m12 3 9 5v8l-9 5-9-5V8l9-5Z" /><path d="m3 8 9 5 9-5M12 13v8" /></>,
+    tag: <><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" /><circle cx="7.5" cy="7.5" r="1" /></>,
+    warning: <><path d="m10.3 3.9-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3.1l-8-14a2 2 0 0 0-3.4 0Z" /><path d="M12 9v4m0 4h.01" /></>,
+    folder: <><path d="M3 6a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Z" /></>,
+    image: <><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></>,
+    instagram: <><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".6" /></>,
+    palette: <><path d="M12 3a9 9 0 1 0 0 18h1.2a2 2 0 0 0 1.4-3.4 1.8 1.8 0 0 1 1.3-3.1H18a3 3 0 0 0 3-3c0-4.7-4-8.5-9-8.5Z" /><path d="M7.5 11h.01M9 7.5h.01M14 7.5h.01M16.5 10h.01" /></>,
+    file: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6M8 13h8M8 17h8" /></>,
+    monitor: <><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M8 21h8m-4-4v4" /></>,
+    plus: <><path d="M12 5v14M5 12h14" /></>,
+    ticket: <><path d="M2 9a3 3 0 0 0 0 6v3h20v-3a3 3 0 0 1 0-6V6H2v3Z" /><path d="M13 6v2m0 4v2m0 4v1" /></>,
+    camera: <><path d="M14 4h-4L8 7H4a2 2 0 0 0-2 2v10h20V9a2 2 0 0 0-2-2h-4l-2-3Z" /><circle cx="12" cy="13" r="3" /></>,
+    eye: <><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></>,
+    'eye-off': <><path d="m3 3 18 18M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7c1.6 0 3.1-.4 4.4-1.1" /></>,
+    lock: <><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 1 1 8 0v3" /></>,
+    truck: <><path d="M2 6h12v11H2zM14 10h4l4 4v3h-8z" /><circle cx="7" cy="18" r="2" /><circle cx="18" cy="18" r="2" /></>,
+    receipt: <><path d="M4 2v20l4-2 4 2 4-2 4 2V2l-4 2-4-2-4 2-4-2Z" /><path d="M8 9h8m-8 4h8" /></>,
+    bag: <><path d="M5 8h14l1 13H4L5 8Z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /></>,
+    mobile: <><rect x="6" y="2" width="12" height="20" rx="2" /><path d="M11 18h2" /></>,
+    video: <><rect x="3" y="5" width="13" height="14" rx="2" /><path d="m16 10 5-3v10l-5-3" /></>,
+    views: <><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></>,
+    barcode: <><path d="M3 5v14M6 5v14M10 5v14M12 5v14M17 5v14M21 5v14" /></>,
+  };
+  return <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">{paths[name]}</svg>;
+}
+
 const orderStatusStyle = (status: OrderStatus) =>
   status === 'Delivered'
     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
@@ -90,12 +178,20 @@ export default function EcommerceAdminPanel() {
 
   // Auth State
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [signedInSubAdmin, setSignedInSubAdmin] = useState<DemoSubAdmin | null>(null);
+  const demoSubAdmins = useStore(subAdminsStore);
+  const setDemoSubAdmins = subAdminsStore.set;
+  const [subAdminDraft, setSubAdminDraft] = useState({ name: '', email: '', password: '', permissions: [] as AdminTab[] });
+  const [editingSubAdminId, setEditingSubAdminId] = useState<string | null>(null);
+  const [subAdminError, setSubAdminError] = useState('');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const adminAccount = useStore(adminAccountStore);
   const adminEmail = adminAccount.email;
   const adminPassword = adminAccount.password;
+  const canSeeAdminTab = (tab: AdminTab) => !signedInSubAdmin || signedInSubAdmin.permissions.includes(tab);
+
 
   // Active Tab and Dropdown States
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
@@ -127,7 +223,6 @@ export default function EcommerceAdminPanel() {
   const products = useStore(productsStore);
   const setProducts = productsStore.set;
   const [productSearch, setProductSearch] = useState('');
-  const [productStockFilter, setProductStockFilter] = useState<'All' | Product['status']>('All');
   const [productCategoryFilter, setProductCategoryFilter] = useState('All');
   const [expandedProductId, setExpandedProductId] = useState<string | null>(null);
 
@@ -145,8 +240,10 @@ export default function EcommerceAdminPanel() {
   const [isGenerateBarcodeModalOpen, setIsGenerateBarcodeModalOpen] = useState(false);
   const [isPrintBarcodeModalOpen, setIsPrintBarcodeModalOpen] = useState(false);
   const [barcodeGenStatus, setBarcodeGenStatus] = useState<'idle' | 'generating' | 'success'>('idle');
-  const [barcodePrintStatus, setBarcodePrintStatus] = useState<'idle' | 'printing' | 'success'>('idle');
   const [activeBarcodeProduct, setActiveBarcodeProduct] = useState<Product | null>(null);
+  const [barcodeLabelCount, setBarcodeLabelCount] = useState(1);
+  const [barcodeLabelDims, setBarcodeLabelDims] = useState({ w: 50, h: 25 });
+  const [barcodeDimInput, setBarcodeDimInput] = useState({ w: '50', h: '25' });
 
   const [isMultiProductModalOpen, setIsMultiProductModalOpen] = useState(false);
   const [multiProductInput, setMultiProductInput] = useState('');
@@ -215,8 +312,9 @@ export default function EcommerceAdminPanel() {
   const [selectedOrderForView, setSelectedOrderForView] = useState<Order | null>(null);
   const [invoicePaper, setInvoicePaper] = useState<'A4' | '4x6'>('A4');
   const [orderDetailsId, setOrderDetailsId] = useState<string | null>(null);
-  const [shipDraft, setShipDraft] = useState<{ orderId: string; courier: string; pickup: string; weightKg: string; length: string; breadth: string; height: string } | null>(null);
-  const [shipError, setShipError] = useState('');
+  const [shiprocketOrderId, setShiprocketOrderId] = useState<string | null>(null);
+  const [checkingPayments, setCheckingPayments] = useState(false);
+  const [paymentCheckMessage, setPaymentCheckMessage] = useState('');
   const [orderSearch, setOrderSearch] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState<'All' | OrderStatus>('All');
 
@@ -262,96 +360,34 @@ export default function EcommerceAdminPanel() {
   ]);
   const [posSearchTerm, setPosSearchTerm] = useState('');
   const [isPosCameraOpen, setIsPosCameraOpen] = useState(false);
-  const [posCustomerName, setPosCustomerName] = useState('Walk-in Customer');
-  const [posPaymentMethod, setPosPaymentMethod] = useState<'Cash' | 'Card' | 'UPI'>('Cash');
+  const [posCustomerName, setPosCustomerName] = useState('');
+  const [posCustomerPhone, setPosCustomerPhone] = useState('');
+  const [posPaymentMethod, setPosPaymentMethod] = useState<'COD' | 'Card' | 'UPI'>('COD');
   const [posReceiptModal, setPosReceiptModal] = useState<PosTransaction | null>(null);
   const [isExchangeModalOpen, setIsExchangeModalOpen] = useState(false);
   const [exchangeTx, setExchangeTx] = useState<PosTransaction | null>(null);
   const [posManualTotal, setPosManualTotal] = useState<string>('');
   const [isNewCustomerModalOpen, setIsNewCustomerModalOpen] = useState(false);
+  const [isCustomerLookupOpen, setIsCustomerLookupOpen] = useState(false);
+  const [customerLookupQuery, setCustomerLookupQuery] = useState('');
   const [newCustomerFormName, setNewCustomerFormName] = useState('');
+  const [newCustomerFormPhone, setNewCustomerFormPhone] = useState('');
+  const [newCustomerFormError, setNewCustomerFormError] = useState('');
 
-  const [posHistory, setPosHistory] = useState<PosTransaction[]>([
-    {
-      id: 'tx-1',
-      receiptNo: 'REC-2026-8091',
-      date: '2026-08-26 03:45 PM',
-      cashier: 'John Cashier (Reg #01)',
-      customer: 'Siddharth Rao',
-      itemsCount: 2,
-      total: 22498,
-      paymentMethod: 'UPI',
-      items: [
-        { name: 'Wireless Headphones Pro', qty: 1, price: 14999 },
-        { name: 'Ergonomic Keyboard RGB', qty: 1, price: 7499 },
-      ],
-    },
-    {
-      id: 'tx-2',
-      receiptNo: 'REC-2026-8090',
-      date: '2026-08-26 01:15 PM',
-      cashier: 'Sarah Jenkins (Reg #02)',
-      customer: 'Walk-in Customer',
-      itemsCount: 1,
-      total: 21999,
-      paymentMethod: 'Card',
-      items: [
-        { name: 'Ultra Slim Smartwatch Series 7', qty: 1, price: 21999 },
-      ],
-    },
-    {
-      id: 'tx-3',
-      receiptNo: 'REC-2026-8089',
-      date: '2026-08-25 06:20 PM',
-      cashier: 'John Cashier (Reg #01)',
-      customer: 'Rahul Nair',
-      itemsCount: 1,
-      total: 4999,
-      paymentMethod: 'Cash',
-      items: [
-        { name: 'Minimalist Matte Leather Backpack', qty: 1, price: 4999 },
-      ],
-    },
-  ]);
+  const posHistory = useStore(posHistoryStore);
+  const setPosHistory = posHistoryStore.set;
+  const [exchangeSelected, setExchangeSelected] = useState<number[]>([]);
 
   // Videos State
-  const [videos, setVideos] = useState<EcommerceVideo[]>([
-    {
-      id: 'vid-1',
-      title: 'Unboxing & Sound Test: Wireless Headphones Pro',
-      productName: 'Wireless Noise-Cancelling Headphones Pro',
-      duration: '01:45',
-      views: 12450,
-      thumbnail: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400',
-      videoUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
-      dateAdded: '2026-08-20',
-    },
-    {
-      id: 'vid-2',
-      title: 'Water Resistance & Fitness Tracking Test',
-      productName: 'Ultra Slim Smartwatch Series 7',
-      duration: '00:58',
-      views: 8930,
-      thumbnail: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=400',
-      videoUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
-      dateAdded: '2026-08-18',
-    },
-    {
-      id: 'vid-3',
-      title: 'Mechanical Switch Sound Profile & Typing ASMR',
-      productName: 'Ergonomic Mechanical Keyboard RGB',
-      duration: '02:15',
-      views: 24100,
-      thumbnail: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=400',
-      videoUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
-      dateAdded: '2026-08-10',
-    },
-  ]);
+  const videos = useStore(videosStore);
+  const setVideos = videosStore.set;
   const [isUploadVideoModalOpen, setIsUploadVideoModalOpen] = useState(false);
+  const [playingVideo, setPlayingVideo] = useState<EcommerceVideo | null>(null);
   const [newVidTitle, setNewVidTitle] = useState('');
   const [newVidProduct, setNewVidProduct] = useState('Wireless Noise-Cancelling Headphones Pro');
   const [newVidDuration, setNewVidDuration] = useState('01:30');
-  const [newVidThumbnail, setNewVidThumbnail] = useState('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400');
+  const [newVidThumbnail, setNewVidThumbnail] = useState('');
+  const [newVidVideoUrl, setNewVidVideoUrl] = useState('');
 
   // Helper Functions
   const resetProductForm = () => {
@@ -443,8 +479,8 @@ export default function EcommerceAdminPanel() {
       id: existing?.id ?? `${slug || 'product'}-${Date.now().toString(36)}`,
       name: newProdName.trim(),
       description: newProdDescription.trim(),
-      sku: newProdSku || existing?.sku || `SKU-${Math.floor(1000 + Math.random() * 9000)}`,
-      barcode: newProdBarcode || existing?.barcode || `890${Math.floor(1000000000 + Math.random() * 9000000000)}`,
+      sku: newProdSku.trim() || existing?.sku || `SKU-${Math.floor(1000 + Math.random() * 9000)}`,
+      barcode: newProdSku.trim() || existing?.sku || `SKU-${Math.floor(1000 + Math.random() * 9000)}`,
       category: newProdCategory,
       subCategory: newProdSubCategory,
       subSubCategory: newProdSubSubCategory,
@@ -515,11 +551,13 @@ export default function EcommerceAdminPanel() {
     updateOrder(ord.id, (o) => ({
       ...o,
       orderStatus: status,
-      shipment: o.shipment && status === 'Delivered' ? { ...o.shipment, status: 'Delivered' } : o.shipment,
+      shipment: o.shipment && status === 'Delivered' ? { ...o.shipment, status: 'Delivered', remoteStatus: 'DELIVERED' } : o.shipment,
       // Cash on delivery is collected when the parcel arrives.
       paymentStatus: status === 'Delivered' && o.paymentMethod === 'Cash on Delivery' ? 'Paid' : o.paymentStatus,
+      // Like Kaavu, every status change emails the customer.
+      emails: [...o.emails, { kind: 'Status update', at: new Date().toISOString() }],
     }));
-    notify(`${ord.orderNumber} marked ${status}${status === 'Cancelled' ? ' — stock returned' : ''}`);
+    notify(`${ord.orderNumber} marked ${status}${status === 'Cancelled' ? ' — stock returned' : ''} · customer emailed`);
   };
 
   const emailCustomer = (ord: Order, kind: 'Status update' | 'Invoice') => {
@@ -527,14 +565,19 @@ export default function EcommerceAdminPanel() {
     notify(`${kind === 'Invoice' ? 'Invoice' : `Status update (${ord.orderStatus})`} emailed to ${ord.email}`);
   };
 
+  // Asks the payment gateway (simulated) about online payments still marked Pending.
   const reconcilePayments = () => {
-    const pending = orders.filter((o) => o.paymentStatus === 'Pending' && o.paymentMethod !== 'Cash on Delivery' && o.orderStatus !== 'Cancelled');
-    if (!pending.length) {
-      notify('All online payments are already confirmed');
-      return;
-    }
-    setOrders(orders.map((o) => (pending.some((p) => p.id === o.id) ? { ...o, paymentStatus: 'Paid', paymentId: o.paymentId ?? fakePaymentId() } : o)));
-    notify(`${pending.length} payment(s) confirmed with the payment gateway`);
+    if (checkingPayments) return;
+    setCheckingPayments(true);
+    setPaymentCheckMessage('');
+    setTimeout(() => {
+      const current = ordersStore.get();
+      const pending = current.filter((o) => o.paymentStatus === 'Pending' && o.paymentMethod !== 'Cash on Delivery' && o.orderStatus !== 'Cancelled');
+      const failed = current.filter((o) => o.paymentStatus === 'Failed').length;
+      setOrders(current.map((o) => (pending.some((p) => p.id === o.id) ? { ...o, paymentStatus: 'Paid', paymentId: o.paymentId ?? fakePaymentId() } : o)));
+      setPaymentCheckMessage(`${pending.length + failed} attempts checked. ${pending.length} orders confirmed. 0 awaiting payment. ${failed} need review.`);
+      setCheckingPayments(false);
+    }, 900);
   };
 
   const openInvoice = (ord: Order, paper: 'A4' | '4x6' = 'A4') => {
@@ -542,53 +585,9 @@ export default function EcommerceAdminPanel() {
     setSelectedOrderForView(ord);
   };
 
-  const openShipmentForm = (ord: Order) => {
-    setShipError('');
-    setShipDraft({ orderId: ord.id, courier: 'Delhivery', pickup: 'Bengaluru Warehouse', weightKg: String(Math.max(0.5, ord.itemsCount * 0.8)), length: '30', breadth: '25', height: '12' });
-  };
-
-  const handleCreateShipment = () => {
-    if (!shipDraft) return;
-    const ord = orders.find((o) => o.id === shipDraft.orderId);
-    if (!ord) return;
-    const nums = [shipDraft.weightKg, shipDraft.length, shipDraft.breadth, shipDraft.height].map(Number);
-    if (nums.some((n) => !(n > 0))) {
-      setShipError('Enter the packed weight and all three measurements.');
-      return;
-    }
-    if (ord.paymentStatus !== 'Paid' && ord.paymentMethod !== 'Cash on Delivery') {
-      setShipError('Payment must be confirmed before creating a shipment. Use "Check Payments" first.');
-      return;
-    }
-    const shipment: Shipment = {
-      courier: shipDraft.courier,
-      awb: fakeAwb(),
-      pickup: shipDraft.pickup,
-      weightKg: nums[0],
-      dimensions: `${nums[1]} × ${nums[2]} × ${nums[3]} cm`,
-      status: 'Created',
-      createdAt: new Date().toISOString(),
-    };
-    updateOrder(ord.id, (o) => ({ ...o, shipment, orderStatus: o.orderStatus === 'Pending' ? 'Processing' : o.orderStatus }));
-    setShipDraft(null);
-    notify(`Shipment created with ${shipment.courier} — AWB ${shipment.awb}`);
-  };
-
-  const advanceShipment = (ord: Order) => {
-    if (!ord.shipment) return;
-    const next = ord.shipment.status === 'Created' ? 'In Transit' : 'Delivered';
-    updateOrder(ord.id, (o) => ({
-      ...o,
-      shipment: o.shipment && { ...o.shipment, status: next },
-      orderStatus: next === 'In Transit' ? 'Shipped' : 'Delivered',
-      paymentStatus: next === 'Delivered' && o.paymentMethod === 'Cash on Delivery' ? 'Paid' : o.paymentStatus,
-    }));
-    notify(`${ord.orderNumber}: parcel ${next === 'In Transit' ? 'picked up and in transit' : 'delivered'}`);
-  };
-
   // Category Helpers
   const openCategoryModal = (cat?: CategoryItem) => {
-    setCategoryDraft(cat ?? { id: '', name: '', slug: '', icon: '📦', image: '', blurb: '', status: 'Active' });
+    setCategoryDraft(cat ?? { id: '', name: '', slug: '', icon: 'folder', image: '', blurb: '', status: 'Active' });
     setCategoryFormError('');
   };
 
@@ -607,7 +606,7 @@ export default function EcommerceAdminPanel() {
       ...categoryDraft,
       name,
       blurb: categoryDraft.blurb.trim(),
-      icon: categoryDraft.icon.trim() || '📦',
+      icon: categoryDraft.icon.trim() || 'folder',
       slug: name.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
     };
     const previous = categories.find((c) => c.id === categoryDraft.id);
@@ -925,10 +924,15 @@ export default function EcommerceAdminPanel() {
   const websiteRevenue = orders.filter((o) => o.orderStatus !== 'Cancelled').reduce((sum, o) => sum + o.total, 0);
   const posRevenue = posHistory.reduce((sum, tx) => sum + tx.total, 0);
   const totalRevenue = websiteRevenue + posRevenue;
+  // Every unit actually sold (website orders that weren't cancelled, plus POS bills), for Reports.
+  const soldLines = [
+    ...orders.filter((o) => o.orderStatus !== 'Cancelled').flatMap((o) => o.items.map((it) => ({ productId: it.productId, name: it.name, qty: it.qty, amount: it.price * it.qty }))),
+    ...posHistory.flatMap((tx) => tx.items.map((it) => ({ productId: it.productId, name: it.name, qty: it.qty, amount: it.price * it.qty }))),
+  ];
+  const categoryOfSale = (line: { productId?: string; name: string }) => (products.find((p) => p.id === line.productId) ?? products.find((p) => p.name === line.name))?.category;
 
   const visibleProducts = products.filter(
     (p) =>
-      (productStockFilter === 'All' || p.status === productStockFilter) &&
       (productCategoryFilter === 'All' || p.category === productCategoryFilter) &&
       [p.name, p.sku, p.category, p.subCategory].some((v) => v.toLowerCase().includes(productSearch.trim().toLowerCase()))
   );
@@ -1053,32 +1057,59 @@ export default function EcommerceAdminPanel() {
 
   const handleCompletePosOrder = () => {
     if (posCart.length === 0) return;
+    if (posCustomerName.trim().length < 2 || posCustomerPhone.replace(/\D/g, '').length < 10) {
+      alert('Enter the customer name and a valid 10-digit phone number before checkout.');
+      return;
+    }
+    let stockLines: StockLine[];
+    try {
+      stockLines = sellInStore(posCart.map((item) => ({ productId: item.product.id, qty: item.quantity })));
+    } catch (error) {
+      notify(error instanceof Error ? error.message : 'Not enough stock for this bill.');
+      return;
+    }
     const newTx: PosTransaction = {
       id: `tx-${Date.now()}`,
       receiptNo: `REC-2026-${Math.floor(1000 + Math.random() * 9000)}`,
       date: new Date().toLocaleString(),
       cashier: 'Admin POS Terminal #01',
       customer: posCustomerName,
+      customerPhone: posCustomerPhone.trim(),
       itemsCount: posCart.reduce((acc, cur) => acc + cur.quantity, 0),
       total: posTotal,
       paymentMethod: posPaymentMethod,
       items: posCart.map((item) => ({
+        productId: item.product.id,
         name: item.product.name,
         qty: item.quantity,
         price: item.product.price,
       })),
+      stockLines,
     };
     setPosHistory([newTx, ...posHistory]);
     setPosReceiptModal(newTx);
     setPosCart([]);
+    setPosCustomerName('');
+    setPosCustomerPhone('');
   };
 
   // Login handler
   const handleLogin = () => {
     if (loginEmail.trim().toLowerCase() === adminEmail.toLowerCase() && loginPassword === adminPassword) {
+      setSignedInSubAdmin(null);
       setIsLoggedIn(true);
       setLoginError('');
+      setActiveTab('dashboard');
+      return;
     } else {
+      const subAdmin = demoSubAdmins.find((account) => account.email.toLowerCase() === loginEmail.trim().toLowerCase() && account.password === loginPassword);
+      if (subAdmin) {
+        setSignedInSubAdmin(subAdmin);
+        setIsLoggedIn(true);
+        setLoginError('');
+        setActiveTab(subAdmin.permissions[0] ?? 'product-list');
+        return;
+      }
       setLoginError('Invalid credentials. Please try again.');
     }
   };
@@ -1158,6 +1189,16 @@ export default function EcommerceAdminPanel() {
                 <p className="text-[13px] font-semibold text-[#6e6e73]">Password: <span className="font-bold text-[#1d1d1f] group-hover:text-[#ea580c]">{adminPassword}</span></p>
               </div>
             </div>
+            {demoSubAdmins.length > 0 && (
+              <div className="mt-3 p-4 rounded-2xl border border-[#e5e5ea] bg-white">
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b]">Demo sub-admin logins</p>
+                <div className="mt-2 space-y-2">
+                  {demoSubAdmins.map((account) => <button key={account.id} onClick={() => { setLoginEmail(account.email); setLoginPassword(account.password); setLoginError(''); }} className="w-full text-left rounded-xl p-2.5 hover:bg-[#fff2e8]">
+                    <span className="block text-sm font-bold text-[#1d1d1f]">{account.name}</span><span className="block text-xs text-[#6e6e73]">{account.email} · {account.permissions.length} modules · click to fill</span>
+                  </button>)}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Back link */}
@@ -1170,6 +1211,22 @@ export default function EcommerceAdminPanel() {
             </button>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (signedInSubAdmin && !signedInSubAdmin.permissions.includes(activeTab)) {
+    return (
+      <div className="min-h-screen bg-[#f5f5f7] flex items-center justify-center p-6">
+        <section className="max-w-lg w-full rounded-[28px] bg-white border border-[#e5e5ea] p-8 text-center shadow-sm">
+<p className="flex justify-center text-[#ea580c]"><PanelIcon name="lock" size={34} /></p>
+          <h1 className="mt-4 text-2xl font-black">This section isn&apos;t assigned to you</h1>
+          <p className="mt-2 text-sm text-[#6e6e73]">Signed in as {signedInSubAdmin.name}. Your demo access is limited to the modules selected by the super admin.</p>
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {signedInSubAdmin.permissions.map((permission) => <button key={permission} onClick={() => setActiveTab(permission)} className="px-4 py-2 rounded-full bg-[#fff2e8] text-[#c2410c] text-sm font-bold">{TAB_TITLES[permission]}</button>)}
+          </div>
+          <button onClick={() => { setIsLoggedIn(false); setSignedInSubAdmin(null); setLoginPassword(''); }} className="mt-7 px-5 py-2.5 rounded-full bg-[#1d1d1f] text-white text-sm font-bold">Sign out</button>
+        </section>
       </div>
     );
   }
@@ -1188,27 +1245,27 @@ export default function EcommerceAdminPanel() {
       )}
 
       {/* Sidebar Navigation - Clean Inline, No Section Titles */}
-      <aside className={`w-[280px] min-w-[280px] bg-white border-r border-[#e5e5ea] flex flex-col justify-between h-screen shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-40 transition-transform duration-300 ${isMobileSidebarOpen ? 'fixed top-0 bottom-0 left-0 translate-x-0' : 'fixed top-0 bottom-0 left-0 -translate-x-full md:translate-x-0 md:sticky md:top-0'
+      <aside className={`w-[280px] min-w-[280px] bg-gradient-to-b from-[#1f1b18] via-[#191512] to-[#120f0d] border-r border-white/[0.06] flex flex-col justify-between h-screen shadow-[4px_0_32px_rgba(0,0,0,0.18)] z-40 transition-transform duration-300 ${isMobileSidebarOpen ? 'fixed top-0 bottom-0 left-0 translate-x-0' : 'fixed top-0 bottom-0 left-0 -translate-x-full md:translate-x-0 md:sticky md:top-0'
         }`}>
-        <div className="space-y-2 overflow-y-auto px-4 pt-8 pb-4 custom-scrollbar">
+        <div className="space-y-2 overflow-y-auto px-4 pt-8 pb-4 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.14)_transparent]">
           {/* Brand Header */}
           <div className="flex flex-col items-center text-center pb-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#ea580c] to-[#f97316] text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-orange-500/20 mb-3 transform hover:scale-105 transition-transform">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#ea580c] to-[#f97316] text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-orange-500/30 ring-1 ring-white/10 mb-3 transform hover:scale-105 transition-transform">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
             </div>
-            <h2 className="text-xl font-black tracking-tight text-[#1d1d1f]">Commerce Hub</h2>
-            <p className="text-[10px] text-[#86868b] mt-0.5 font-extrabold uppercase tracking-[0.2em]">
+            <h2 className="text-xl font-black tracking-tight text-white">Commerce Hub</h2>
+            <p className="text-[10px] text-[#fb923c]/80 mt-0.5 font-extrabold uppercase tracking-[0.2em]">
               Admin Control Suite
             </p>
           </div>
 
           <nav className="space-y-1 text-[14px]">
             {/* Dashboard */}
-            <button
+            {canSeeAdminTab('dashboard') && <button
               onClick={() => { setActiveTab('dashboard'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all duration-300 flex justify-between items-center ${activeTab === 'dashboard'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-md shadow-[#ea580c]/20'
-                : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
+                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -1216,51 +1273,51 @@ export default function EcommerceAdminPanel() {
                 <span>Dashboard</span>
               </div>
               {activeTab === 'dashboard' && <span className="text-white/80 text-lg leading-none">•</span>}
-            </button>
+            </button>}
 
             {/* Products Dropdown */}
-            <div className="space-y-1">
+            {(!signedInSubAdmin || ['add-product', 'product-list', 'inventory'].some((tab) => signedInSubAdmin.permissions.includes(tab as AdminTab))) && <div className="space-y-1">
               <button
                 onClick={() => setIsProductsDropdownOpen(!isProductsDropdownOpen)}
-                className="w-full text-left px-5 py-3 rounded-full text-[#1d1d1f] font-bold hover:bg-[#f5f5f7] transition-all flex justify-between items-center"
+                className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg></span>
                   <span>Products</span>
                 </div>
-                <span className={`text-[12px] text-[#86868b] transition-transform duration-200 ${isProductsDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
+                <span className={`text-[12px] text-[#8a7f77] transition-transform duration-200 ${isProductsDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
               </button>
 
               {isProductsDropdownOpen && (
-                <div className="pl-6 space-y-1 pt-1 border-l-2 border-[#e5e5ea] ml-5">
-                  <button
+                <div className="pl-6 space-y-1 pt-1 border-l-2 border-white/[0.08] ml-5">
+                  {canSeeAdminTab('add-product') && <button
                     onClick={() => { openAddProduct(); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === 'add-product'
                       ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg></span>
                     <span>Add Product</span>
-                  </button>
-                  <button
+                  </button>}
+                  {canSeeAdminTab('product-list') && <button
                     onClick={() => { setActiveTab('product-list'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center justify-between ${activeTab === 'product-list'
                       ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg></span>
                       <span>Product List</span>
                     </div>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'product-list' ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#86868b]'}`}>{products.length}</span>
-                  </button>
-                  <button
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'product-list' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#d6cfc9]'}`}>{products.length}</span>
+                  </button>}
+                  {canSeeAdminTab('inventory') && <button
                     onClick={() => { setActiveTab('inventory'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center justify-between ${activeTab === 'inventory'
                       ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <div className="flex items-center gap-2.5">
@@ -1268,38 +1325,38 @@ export default function EcommerceAdminPanel() {
                       <span>Inventory</span>
                     </div>
                     {products.some((p) => p.status !== 'In Stock') && (
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'inventory' ? 'bg-white/20 text-white' : 'bg-red-50 text-red-600'}`}>{products.filter((p) => p.status !== 'In Stock').length}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'inventory' ? 'bg-white/20 text-white' : 'bg-red-500/15 text-red-300'}`}>{products.filter((p) => p.status !== 'In Stock').length}</span>
                     )}
-                  </button>
-                  <button
+                  </button>}
+                  {!signedInSubAdmin && <button
                     onClick={() => { setActiveTab('attributes'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === 'attributes'
                       ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="2.5" /><circle cx="19" cy="13" r="2.5" /><circle cx="6" cy="12" r="2.5" /><circle cx="10" cy="19" r="2.5" /></svg></span>
                     <span>Sizes, Colors & Tags</span>
-                  </button>
+                  </button>}
                 </div>
               )}
-            </div>
+            </div>}
 
             {/* Categories Dropdown */}
-            <div className="space-y-1">
+            {!signedInSubAdmin && <div className="space-y-1">
               <button
                 onClick={() => setIsCategoriesDropdownOpen(!isCategoriesDropdownOpen)}
-                className="w-full text-left px-5 py-3 rounded-full text-[#1d1d1f] font-bold hover:bg-[#f5f5f7] transition-all flex justify-between items-center"
+                className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg></span>
                   <span>Categories</span>
                 </div>
-                <span className={`text-[12px] text-[#86868b] transition-transform duration-200 ${isCategoriesDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
+                <span className={`text-[12px] text-[#8a7f77] transition-transform duration-200 ${isCategoriesDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
               </button>
 
               {isCategoriesDropdownOpen && (
-                <div className="pl-6 space-y-1 pt-1 border-l-2 border-[#e5e5ea] ml-5">
+                <div className="pl-6 space-y-1 pt-1 border-l-2 border-white/[0.08] ml-5">
                   {([
                     { id: 'category', label: 'Category', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg> },
                     { id: 'sub-category', label: 'Sub Category', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" /><path d="M2 10h20" /></svg> },
@@ -1310,7 +1367,7 @@ export default function EcommerceAdminPanel() {
                       onClick={() => { setActiveTab(item.id); setIsMobileSidebarOpen(false); }}
                       className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === item.id
                         ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                        : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                        : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                         }`}
                     >
                       <span className="w-4 h-4 flex items-center justify-center opacity-70">{item.icon}</span>
@@ -1319,14 +1376,14 @@ export default function EcommerceAdminPanel() {
                   ))}
                 </div>
               )}
-            </div>
+            </div>}
 
             {/* Coupons */}
-            <button
+            {!signedInSubAdmin && <button
               onClick={() => { setActiveTab('coupons'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'coupons'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-md shadow-[#ea580c]/20'
-                : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
+                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -1334,58 +1391,58 @@ export default function EcommerceAdminPanel() {
                 <span>Coupons</span>
               </div>
               {activeTab === 'coupons' && <span className="text-white/80 text-lg leading-none">•</span>}
-            </button>
+            </button>}
 
             {/* Orders */}
-            <button
+            {canSeeAdminTab('orders') && <button
               onClick={() => { setActiveTab('orders'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'orders'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-md shadow-[#ea580c]/20'
-                : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
+                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
                 <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg></span>
                 <span>Orders</span>
               </div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'orders' ? 'bg-white/20 text-white' : 'bg-[#fff2e8] text-[#ea580c]'}`}>{orders.length}</span>
-            </button>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'orders' ? 'bg-white/20 text-white' : 'bg-[#ea580c]/20 text-[#fdba74]'}`}>{orders.length}</span>
+            </button>}
 
             {/* Customers */}
-            <button
+            {canSeeAdminTab('customers') && <button
               onClick={() => { setActiveTab('customers'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'customers'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-md shadow-[#ea580c]/20'
-                : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
+                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
                 <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg></span>
                 <span>Customers</span>
               </div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'customers' ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#86868b]'}`}>{customers.length}</span>
-            </button>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'customers' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#d6cfc9]'}`}>{customers.length}</span>
+            </button>}
 
             {/* POS Dropdown */}
-            <div className="space-y-1">
+            {!signedInSubAdmin && <div className="space-y-1">
               <button
                 onClick={() => setIsPosDropdownOpen(!isPosDropdownOpen)}
-                className="w-full text-left px-5 py-3 rounded-full text-[#1d1d1f] font-bold hover:bg-[#f5f5f7] transition-all flex justify-between items-center"
+                className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg></span>
                   <span>POS Terminal</span>
                 </div>
-                <span className={`text-[12px] text-[#86868b] transition-transform duration-200 ${isPosDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
+                <span className={`text-[12px] text-[#8a7f77] transition-transform duration-200 ${isPosDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
               </button>
 
               {isPosDropdownOpen && (
-                <div className="pl-6 space-y-1 pt-1 border-l-2 border-[#e5e5ea] ml-5">
+                <div className="pl-6 space-y-1 pt-1 border-l-2 border-white/[0.08] ml-5">
                   <button
                     onClick={() => { setActiveTab('pos-terminal'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center gap-2.5 ${activeTab === 'pos-terminal'
                       ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg></span>
@@ -1395,78 +1452,78 @@ export default function EcommerceAdminPanel() {
                     onClick={() => { setActiveTab('pos-history'); setIsMobileSidebarOpen(false); }}
                     className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center justify-between ${activeTab === 'pos-history'
                       ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                      : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                      : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                       }`}
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="w-4 h-4 flex items-center justify-center opacity-70"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg></span>
                       <span>POS History</span>
                     </div>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'pos-history' ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#86868b]'}`}>{posHistory.length}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === 'pos-history' ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#d6cfc9]'}`}>{posHistory.length}</span>
                   </button>
                 </div>
               )}
-            </div>
+            </div>}
 
             {/* Storefront Dropdown */}
-            <div className="space-y-1">
+            {(!signedInSubAdmin || canSeeAdminTab('banners') || canSeeAdminTab('instagram')) && <div className="space-y-1">
               <button
                 onClick={() => setIsStorefrontDropdownOpen(!isStorefrontDropdownOpen)}
-                className="w-full text-left px-5 py-3 rounded-full text-[#1d1d1f] font-bold hover:bg-[#f5f5f7] transition-all flex justify-between items-center"
+                className="w-full text-left px-5 py-3 rounded-full text-[#f5f0eb] font-bold hover:bg-white/[0.06] transition-all flex justify-between items-center"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l1-5h16l1 5" /><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" /><path d="M5 12v8h14v-8" /></svg></span>
                   <span>Storefront</span>
                 </div>
-                <span className={`text-[12px] text-[#86868b] transition-transform duration-200 ${isStorefrontDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
+                <span className={`text-[12px] text-[#8a7f77] transition-transform duration-200 ${isStorefrontDropdownOpen ? 'rotate-180' : ''}`}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg></span>
               </button>
 
               {isStorefrontDropdownOpen && (
-                <div className="pl-6 space-y-1 pt-1 border-l-2 border-[#e5e5ea] ml-5">
+                <div className="pl-6 space-y-1 pt-1 border-l-2 border-white/[0.08] ml-5">
                   {([
                     { id: 'banners', label: 'Hero Banners', count: banners.length, icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg> },
                     { id: 'instagram', label: 'Instagram Feed', count: instagramPosts.length, icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg> },
-                  ] satisfies { id: AdminTab; label: string; count: number; icon: React.ReactNode }[]).map((item) => (
+                  ] satisfies { id: AdminTab; label: string; count: number; icon: React.ReactNode }[]).filter((item) => canSeeAdminTab(item.id)).map((item) => (
                     <button
                       key={item.id}
                       onClick={() => { setActiveTab(item.id); setIsMobileSidebarOpen(false); }}
                       className={`w-full text-left px-4 py-2.5 rounded-full text-[13px] transition-all flex items-center justify-between ${activeTab === item.id
                         ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-sm'
-                        : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                        : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                         }`}
                     >
                       <div className="flex items-center gap-2.5">
                         <span className="w-4 h-4 flex items-center justify-center opacity-70">{item.icon}</span>
                         <span>{item.label}</span>
                       </div>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === item.id ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#86868b]'}`}>{item.count}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${activeTab === item.id ? 'bg-white/20 text-white' : 'bg-white/[0.08] text-[#d6cfc9]'}`}>{item.count}</span>
                     </button>
                   ))}
                 </div>
               )}
-            </div>
+            </div>}
 
             {/* Videos */}
-            <button
+            {canSeeAdminTab('videos') && <button
               onClick={() => { setActiveTab('videos'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'videos'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-md shadow-[#ea580c]/20'
-                : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
+                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
                 <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" ry="2" /></svg></span>
-                <span>Videos & Reels</span>
+                <span>Videos</span>
               </div>
               {activeTab === 'videos' && <span className="text-white/80 text-lg leading-none">•</span>}
-            </button>
+            </button>}
 
             {/* Reports */}
-            <button
+            {canSeeAdminTab('reports') && <button
               onClick={() => { setActiveTab('reports'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'reports'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-md shadow-[#ea580c]/20'
-                : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
+                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -1474,14 +1531,14 @@ export default function EcommerceAdminPanel() {
                 <span>Reports</span>
               </div>
               {activeTab === 'reports' && <span className="text-white/80 text-lg leading-none">•</span>}
-            </button>
+            </button>}
 
             {/* Admin Security */}
-            <button
+            {!signedInSubAdmin && <button
               onClick={() => { setActiveTab('settings'); setIsMobileSidebarOpen(false); }}
               className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'settings'
-                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-md shadow-[#ea580c]/20'
-                : 'text-[#6e6e73] font-semibold hover:bg-[#f5f5f7] hover:text-[#1d1d1f]'
+                ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold shadow-lg shadow-[#ea580c]/30'
+                : 'text-[#b5aca5] font-semibold hover:bg-white/[0.06] hover:text-white'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -1489,15 +1546,15 @@ export default function EcommerceAdminPanel() {
                 <span>Admin Security</span>
               </div>
               {activeTab === 'settings' && <span className="text-white/80 text-lg leading-none">•</span>}
-            </button>
+            </button>}
           </nav>
         </div>
 
         {/* Sidebar Footer / Exit */}
-        <div className="p-4 border-t border-[#e5e5ea] bg-white">
+        <div className="p-4 border-t border-white/[0.08]">
           <button
             onClick={() => setIsLoggedIn(false)}
-            className="w-full py-3 px-4 bg-white hover:bg-[#fff2e8] text-[#ea580c] font-bold rounded-full text-[13px] transition-all text-center border border-[#e5e5ea] hover:border-[#ea580c] flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 bg-white/[0.05] hover:bg-gradient-to-r hover:from-[#ea580c] hover:to-[#f97316] text-[#fb923c] hover:text-white font-bold rounded-full text-[13px] transition-all text-center border border-white/10 hover:border-transparent flex items-center justify-center gap-2"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
             <span>Log Out Securely</span>
@@ -1566,10 +1623,10 @@ export default function EcommerceAdminPanel() {
               {/* Stat Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}`, sub: `Website ₹${websiteRevenue.toLocaleString('en-IN')} • POS ₹${posRevenue.toLocaleString('en-IN')}`, color: 'text-[#10b981]', icon: '💰' },
-                  { label: 'Active Orders', value: orders.filter((o) => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').length.toString(), sub: `${orders.filter((o) => o.orderStatus === 'Pending' || o.orderStatus === 'Processing').length} require dispatch`, color: 'text-[#ea580c]', icon: '📦' },
-                  { label: 'Total Products', value: products.length.toString(), sub: `Across ${categories.length} categories`, color: 'text-[#1d1d1f]', icon: '🏷️' },
-                  { label: 'Low Stock Alerts', value: products.filter((p) => p.status !== 'In Stock').length.toString(), sub: `${products.filter((p) => p.status === 'Out of Stock').length} sold out • restock recommended`, color: 'text-[#ef4444]', icon: '⚠️' },
+                  { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}`, sub: `Website ₹${websiteRevenue.toLocaleString('en-IN')} • POS ₹${posRevenue.toLocaleString('en-IN')}`, color: 'text-[#10b981]', icon: 'money' },
+                  { label: 'Active Orders', value: orders.filter((o) => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').length.toString(), sub: `${orders.filter((o) => o.orderStatus === 'Pending' || o.orderStatus === 'Processing').length} require dispatch`, color: 'text-[#ea580c]', icon: 'box' },
+                  { label: 'Total Products', value: products.length.toString(), sub: `Across ${categories.length} categories`, color: 'text-[#1d1d1f]', icon: 'tag' },
+                  { label: 'Low Stock Alerts', value: products.filter((p) => p.status !== 'In Stock').length.toString(), sub: `${products.filter((p) => p.status === 'Out of Stock').length} sold out • restock recommended`, color: 'text-[#ef4444]', icon: 'warning' },
                 ].map((stat, i) => (
                   <div
                     key={i}
@@ -1577,7 +1634,7 @@ export default function EcommerceAdminPanel() {
                   >
                     <div className="flex justify-between items-start mb-2">
                       <p className="text-[12px] font-extrabold text-[#86868b] uppercase tracking-wider">{stat.label}</p>
-                      <span className="text-xl p-2 bg-[#f5f5f7] rounded-xl">{stat.icon}</span>
+                      <span className="text-xl p-2 bg-[#f5f5f7] rounded-xl"><PanelIcon name={stat.icon as 'money' | 'box' | 'tag' | 'warning'} /></span>
                     </div>
                     <p className={`text-3xl font-black tracking-tight ${stat.color}`}>{stat.value}</p>
                     <p className="text-[12px] text-[#6e6e73] font-semibold mt-2">{stat.sub}</p>
@@ -1599,11 +1656,11 @@ export default function EcommerceAdminPanel() {
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   {([
-                    { label: 'Categories', value: categories.filter((c) => c.status === 'Active').length, sub: `${subCategories.length} sub • ${subSubCategories.length} level 3`, tab: 'category', icon: '🗂️' },
-                    { label: 'Hero Banners', value: banners.filter((b) => b.isActive).length, sub: `${banners.length} total slides`, tab: 'banners', icon: '🖼️' },
-                    { label: 'Instagram Feed', value: instagramPosts.length, sub: 'Posts on the home page', tab: 'instagram', icon: '📸' },
-                    { label: 'Sizes, Colors & Tags', value: sizeOptions.length + colorOptions.length + tagOptions.length, sub: `${sizeOptions.length} sizes • ${colorOptions.length} colors • ${tagOptions.length} tags`, tab: 'attributes', icon: '🎨' },
-                  ] satisfies { label: string; value: number; sub: string; tab: AdminTab; icon: string }[]).map((tile) => (
+                    { label: 'Categories', value: categories.filter((c) => c.status === 'Active').length, sub: `${subCategories.length} sub • ${subSubCategories.length} level 3`, tab: 'category', icon: 'folder' },
+                    { label: 'Hero Banners', value: banners.filter((b) => b.isActive).length, sub: `${banners.length} total slides`, tab: 'banners', icon: 'image' },
+                    { label: 'Instagram Feed', value: instagramPosts.length, sub: 'Posts on the home page', tab: 'instagram', icon: 'instagram' },
+                    { label: 'Sizes, Colors & Tags', value: sizeOptions.length + colorOptions.length + tagOptions.length, sub: `${sizeOptions.length} sizes • ${colorOptions.length} colors • ${tagOptions.length} tags`, tab: 'attributes', icon: 'palette' },
+                  ] satisfies { label: string; value: number; sub: string; tab: AdminTab; icon: 'folder' | 'image' | 'instagram' | 'palette' }[]).map((tile) => (
                     <button
                       key={tile.label}
                       onClick={() => setActiveTab(tile.tab)}
@@ -1611,7 +1668,7 @@ export default function EcommerceAdminPanel() {
                     >
                       <div className="flex justify-between items-start">
                         <p className="text-3xl font-black tracking-tight text-[#1d1d1f] group-hover:text-[#ea580c]">{tile.value}</p>
-                        <span className="text-xl">{tile.icon}</span>
+                        <span className="text-[#ea580c]"><PanelIcon name={tile.icon} size={22} /></span>
                       </div>
                       <p className="text-[12px] font-extrabold text-[#1d1d1f] uppercase tracking-wider mt-2">{tile.label}</p>
                       <p className="text-[11px] text-[#86868b] font-semibold mt-0.5">{tile.sub}</p>
@@ -1678,7 +1735,7 @@ export default function EcommerceAdminPanel() {
                         className="w-full p-4 bg-[#f5f5f7] hover:bg-[#fff2e8] border border-[#e5e5ea] hover:border-[#ea580c] rounded-2xl text-left transition-all group flex items-center justify-between"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-xl">➕</span>
+                          <PanelIcon name="plus" size={20} />
                           <div>
                             <span className="font-bold text-[#1d1d1f] group-hover:text-[#ea580c] block text-[14px]">
                               Add Single Product
@@ -1697,7 +1754,7 @@ export default function EcommerceAdminPanel() {
                         className="w-full p-4 bg-[#f5f5f7] hover:bg-[#fff2e8] border border-[#e5e5ea] hover:border-[#ea580c] rounded-2xl text-left transition-all group flex items-center justify-between"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-xl">📑</span>
+                          <PanelIcon name="file" size={20} />
                           <div>
                             <span className="font-bold text-[#1d1d1f] group-hover:text-[#ea580c] block text-[14px]">
                               Bulk Multi-Product Add
@@ -1713,7 +1770,7 @@ export default function EcommerceAdminPanel() {
                         className="w-full p-4 bg-[#f5f5f7] hover:bg-[#fff2e8] border border-[#e5e5ea] hover:border-[#ea580c] rounded-2xl text-left transition-all group flex items-center justify-between"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-xl">🖥️</span>
+                          <PanelIcon name="monitor" size={20} />
                           <div>
                             <span className="font-bold text-[#1d1d1f] group-hover:text-[#ea580c] block text-[14px]">
                               Open POS Terminal
@@ -1774,416 +1831,202 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {/* 2. ADD PRODUCT TAB */}
           {/* ========================================================================= */}
-          {activeTab === 'add-product' && (
-            <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 md:p-10 shadow-sm w-full">
-              <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#e5e5ea]">
-                <div>
-                  <h3 className="text-2xl font-bold tracking-tight text-[#1d1d1f]">{editingProductId ? 'Edit Product' : 'Add New Product'}</h3>
-                  <p className="text-[14px] text-[#6e6e73] font-medium mt-1">
-                    {editingProductId
-                      ? 'Update details, sizes, colors, stock and photos. Changes go live as soon as you save.'
-                      : 'Fill in the details below to publish an item to the e-commerce inventory.'}
-                  </p>
-                </div>
-                {!editingProductId && (
-                  <button
-                    onClick={() => setIsMultiProductModalOpen(true)}
-                    className="px-4 py-2 bg-[#f5f5f7] hover:bg-[#e5e5ea] text-[#1d1d1f] rounded-full text-[12px] font-extrabold border border-[#e5e5ea] transition-all"
-                  >
-                    ⚡ Bulk Add Multiple
-                  </button>
-                )}
-              </div>
-
-              <form onSubmit={handleSaveProduct} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Product Title */}
-                  <div className="md:col-span-2">
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Product Name / Title *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={newProdName}
-                      onChange={(e) => setNewProdName(e.target.value)}
-                      placeholder="e.g. Wireless Noise-Cancelling Headphones"
-                      className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold"
-                    />
-                  </div>
-
-                  {/* Description */}
-                  <div className="md:col-span-2">
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Description
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={newProdDescription}
-                      onChange={(e) => setNewProdDescription(e.target.value)}
-                      placeholder="Key features, materials, battery life, what's in the box..."
-                      className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-[24px] text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold resize-none"
-                    />
-                  </div>
-
-                  {/* SKU */}
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2 flex justify-between">
-                      <span>SKU Code</span>
-                      <button
-                        type="button"
-                        onClick={() => setNewProdSku(`SKU-${Math.floor(1000 + Math.random() * 9000)}`)}
-                        className="text-[#ea580c] hover:underline font-bold text-[11px]"
-                      >
-                        Auto-Generate
+          {activeTab === 'add-product' && (() => {
+            const chosenSizes = sizeOptions.map((s) => s.code).filter((code) => newProdSizes.includes(code));
+            const chosenColors = colorOptions.map((c) => c.name).filter((name) => newProdColors.includes(name));
+            const totalStock = buildVariantStock(chosenSizes, chosenColors, newProdVariantStock).stock;
+            const price = parseFloat(newProdPrice);
+            const mrp = parseFloat(newProdMrp);
+            const discount = mrp > price && price > 0 ? Math.round((1 - price / mrp) * 100) : 0;
+            const backToProducts = () => { resetProductForm(); setActiveTab('product-list'); };
+            return (
+              <div className={K.page}>
+                <div className="max-w-6xl mx-auto space-y-6">
+                  {/* Page intro */}
+                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                      <button type="button" onClick={backToProducts} className={`text-xs ${K.link}`}>← Back to products</button>
+                      <h1 className={`${K.serif} text-2xl sm:text-3xl text-[#1d1d1f] mt-2`}>{editingProductId ? 'Refine your product' : 'Create a new product'}</h1>
+                      <p className="text-sm text-[#86868b] mt-1">Add details, allocate stock by size and colour, and upload photos for each colour.</p>
+                    </div>
+                    {!editingProductId && (
+                      <button type="button" onClick={() => setIsMultiProductModalOpen(true)} className="self-start sm:self-auto px-4 py-2.5 bg-white border border-[#e5e5ea] hover:border-[#ea580c] rounded-lg text-xs font-semibold text-[#1d1d1f] whitespace-nowrap transition-colors">
+                        Bulk add multiple
                       </button>
-                    </label>
-                    <input
-                      type="text"
-                      value={newProdSku}
-                      onChange={(e) => setNewProdSku(e.target.value)}
-                      placeholder="e.g. WNC-HP-01"
-                      className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold font-mono"
-                    />
+                    )}
                   </div>
 
-                  {/* Category */}
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Category *
-                    </label>
-                    <select
-                      value={newProdCategory}
-                      onChange={(e) => handleProductCategoryChange(e.target.value)}
-                      className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-bold cursor-pointer"
-                    >
-                      {categories.map((c) => (
-                        <option key={c.id} value={c.name}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Sub-Category */}
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Sub Category
-                    </label>
-                    <select
-                      value={newProdSubCategory}
-                      onChange={(e) => { setNewProdSubCategory(e.target.value); setNewProdSubSubCategory(''); }}
-                      className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-bold cursor-pointer"
-                    >
-                      {subCategories
-                        .filter((sc) => sc.parentCategory === newProdCategory)
-                        .map((sc) => (
-                          <option key={sc.id} value={sc.name}>
-                            {sc.name}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-
-                  {/* Sub-Sub-Category */}
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Sub Sub Category
-                    </label>
-                    <select
-                      value={newProdSubSubCategory}
-                      onChange={(e) => setNewProdSubSubCategory(e.target.value)}
-                      className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-bold cursor-pointer"
-                    >
-                      <option value="">None</option>
-                      {subSubCategories
-                        .filter((ssc) => ssc.parentSubCategory === newProdSubCategory)
-                        .map((ssc) => (
-                          <option key={ssc.id} value={ssc.name}>
-                            {ssc.name}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-
-                  {/* Price */}
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Price (₹ INR) *
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      value={newProdPrice}
-                      onChange={(e) => setNewProdPrice(e.target.value)}
-                      placeholder="e.g. 14999"
-                      className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-bold"
-                    />
-                  </div>
-
-                  {/* MRP */}
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2 flex justify-between">
-                      <span>MRP / Original Price (₹)</span>
-                      {parseFloat(newProdMrp) > parseFloat(newProdPrice) && (
-                        <span className="text-emerald-600 normal-case tracking-normal">
-                          {Math.round((1 - parseFloat(newProdPrice) / parseFloat(newProdMrp)) * 100)}% off
-                        </span>
-                      )}
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={newProdMrp}
-                      onChange={(e) => setNewProdMrp(e.target.value)}
-                      placeholder="Optional — shown struck through, e.g. 19999"
-                      className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-bold"
-                    />
-                  </div>
-                </div>
-
-                {/* Sizes, Colors & Stock */}
-                <div className="pt-6 border-t border-[#e5e5ea] space-y-6">
-                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-                    <div>
-                      <h4 className="text-lg font-bold tracking-tight text-[#1d1d1f]">Sizes, Colors & Stock</h4>
-                      <p className="text-[13px] text-[#86868b] font-semibold">
-                        Every size and color combination has its own stock. Total stock is calculated automatically.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('attributes')}
-                      className="text-[#ea580c] hover:underline font-bold text-[12px] whitespace-nowrap"
-                    >
-                      Manage sizes & colors →
-                    </button>
-                  </div>
-
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Available Sizes <span className="normal-case tracking-normal font-semibold">(leave empty for one size)</span>
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {sizeOptions.map((sz) => (
-                        <button
-                          key={sz.id}
-                          type="button"
-                          aria-pressed={newProdSizes.includes(sz.code)}
-                          title={sz.name}
-                          onClick={() => setNewProdSizes(toggleInList(newProdSizes, sz.code))}
-                          className={`px-4 py-2 rounded-full text-[13px] font-bold border transition-all ${newProdSizes.includes(sz.code)
-                            ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white border-transparent shadow-sm'
-                            : 'bg-[#f5f5f7] text-[#1d1d1f] border-[#e5e5ea] hover:bg-white hover:border-[#ea580c]'
-                            }`}
-                        >
-                          {sz.code}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Available Colors <span className="normal-case tracking-normal font-semibold">(leave empty for one color)</span>
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {colorOptions.map((col) => (
-                        <button
-                          key={col.id}
-                          type="button"
-                          aria-pressed={newProdColors.includes(col.name)}
-                          onClick={() => setNewProdColors(toggleInList(newProdColors, col.name))}
-                          className={`pl-2 pr-4 py-1.5 rounded-full text-[13px] font-bold border transition-all flex items-center gap-2 ${newProdColors.includes(col.name)
-                            ? 'bg-[#1d1d1f] text-white border-[#1d1d1f] shadow-sm'
-                            : 'bg-[#f5f5f7] text-[#1d1d1f] border-[#e5e5ea] hover:bg-white hover:border-[#ea580c]'
-                            }`}
-                        >
-                          <span className="w-5 h-5 rounded-full border border-black/10" style={{ backgroundColor: col.hex }} />
-                          {col.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <VariantStockGrid
-                    sizes={sizeOptions.map((s) => s.code).filter((code) => newProdSizes.includes(code))}
-                    colors={colorOptions.map((c) => c.name).filter((name) => newProdColors.includes(name))}
-                    values={newProdVariantStock}
-                    onChange={setNewProdVariantStock}
-                    colorHex={colorHex}
-                  />
-                </div>
-
-                {/* Photos */}
-                <div className="pt-6 border-t border-[#e5e5ea] space-y-6">
-                  <div>
-                    <h4 className="text-lg font-bold tracking-tight text-[#1d1d1f]">Photos</h4>
-                    <p className="text-[13px] text-[#86868b] font-semibold">
-                      Main photos show on the product page. Photos for a color replace them when a shopper picks that color.
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Main Product Photos
-                    </label>
-                    <ImageListField images={newProdImages} onChange={setNewProdImages} label="Main product photo" />
-                  </div>
-
-                  {colorOptions
-                    .filter((col) => newProdColors.includes(col.name))
-                    .map((col) => (
-                      <details key={col.id} className="group bg-[#f5f5f7] border border-[#e5e5ea] rounded-[24px] overflow-hidden">
-                        <summary className="flex items-center gap-3 px-5 py-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                          <span className="w-5 h-5 rounded-full border border-black/10" style={{ backgroundColor: col.hex }} />
-                          <span className="flex-1 font-bold text-[14px] text-[#1d1d1f]">Photos for {col.name}</span>
-                          <span className="text-[12px] font-semibold text-[#86868b]">{(newProdColorImages[col.name] ?? []).length} photos</span>
-                          <svg className="w-4 h-4 text-[#ea580c] transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
-                        </summary>
-                        <div className="px-5 pb-5">
-                          <ImageListField
-                            images={newProdColorImages[col.name] ?? []}
-                            onChange={(images) => setNewProdColorImages({ ...newProdColorImages, [col.name]: images })}
-                            label={`${col.name} photo`}
-                          />
+                  <form id="product-form" onSubmit={handleSaveProduct} className="grid grid-cols-1 xl:grid-cols-2 gap-6 text-sm items-start">
+                    {/* ===== Product details ===== */}
+                    <section className={`${K.card} min-w-0`}>
+                      <h2 className={`${K.serif} text-xl text-[#1d1d1f]`}>Product details</h2>
+                      <div>
+                        <label htmlFor="prod-name" className={K.label}>Name</label>
+                        <input id="prod-name" type="text" required value={newProdName} onChange={(e) => setNewProdName(e.target.value)} placeholder="e.g. Wireless Noise-Cancelling Headphones" className={K.input} />
+                      </div>
+                      <div>
+                        <label htmlFor="prod-desc" className={K.label}>Description</label>
+                        <textarea id="prod-desc" rows={3} value={newProdDescription} onChange={(e) => setNewProdDescription(e.target.value)} placeholder="Key features, battery life, what's in the box…" className={K.input} />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="prod-price" className={K.label}>Price (INR ₹)</label>
+                          <input id="prod-price" type="number" min="0" required value={newProdPrice} onChange={(e) => setNewProdPrice(e.target.value)} placeholder="14999" className={K.input} />
                         </div>
-                      </details>
-                    ))}
-                </div>
+                        <div>
+                          <label htmlFor="prod-mrp" className={K.label}>Original Price (MRP)</label>
+                          <input id="prod-mrp" type="number" min="0" value={newProdMrp} onChange={(e) => setNewProdMrp(e.target.value)} placeholder="19999" className={K.input} />
+                        </div>
+                      </div>
+                      {discount > 0 && <p className="-mt-2 text-xs text-emerald-700">Shoppers will see {discount}% off.</p>}
+                      <div>
+                        <label htmlFor="prod-cat" className={K.label}>Category</label>
+                        <select id="prod-cat" value={newProdCategory} onChange={(e) => handleProductCategoryChange(e.target.value)} className={`${K.input} cursor-pointer`}>
+                          {categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="prod-sub" className={K.label}>Sub category</label>
+                          <select id="prod-sub" value={newProdSubCategory} onChange={(e) => { setNewProdSubCategory(e.target.value); setNewProdSubSubCategory(''); }} className={`${K.input} cursor-pointer`}>
+                            {subCategories.filter((sc) => sc.parentCategory === newProdCategory).map((sc) => <option key={sc.id} value={sc.name}>{sc.name}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label htmlFor="prod-subsub" className={K.label}>Sub sub category</label>
+                          <select id="prod-subsub" value={newProdSubSubCategory} onChange={(e) => setNewProdSubSubCategory(e.target.value)} className={`${K.input} cursor-pointer`}>
+                            <option value="">None</option>
+                            {subSubCategories.filter((ssc) => ssc.parentSubCategory === newProdSubCategory).map((ssc) => <option key={ssc.id} value={ssc.name}>{ssc.name}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center justify-between gap-2">
+                          <label htmlFor="prod-sku" className={K.label}>SKU / Barcode</label>
+                          <button type="button" onClick={() => setNewProdSku(`SKU-${Math.floor(1000 + Math.random() * 9000)}`)} className={`mb-1 text-xs ${K.link}`}>Generate</button>
+                        </div>
+                        <input id="prod-sku" type="text" required value={newProdSku} onChange={(e) => setNewProdSku(e.target.value)} placeholder="e.g. WNC-HP-01" className={`${K.input} font-mono uppercase placeholder:normal-case`} />
+                        {newProdSku.trim() && (
+                          <div className="mt-3 rounded-xl border border-[#e5e5ea] bg-[#f9f9fb] p-3 text-center">
+                            <div className="bg-white p-2 rounded-lg border border-[#e5e5ea]">
+                              <ProductBarcode value={newProdSku} className="w-full h-14" />
+                            </div>
+                            <p className="font-mono text-xs font-semibold text-[#1d1d1f] mt-2 tracking-widest">{newProdSku}</p>
+                          </div>
+                        )}
+                      </div>
+                    </section>
 
-                {/* Product Page Details */}
-                <div className="pt-6 border-t border-[#e5e5ea] space-y-5">
-                  <div>
-                    <h4 className="text-lg font-bold tracking-tight text-[#1d1d1f]">Product Page Details</h4>
-                    <p className="text-[13px] text-[#86868b] font-semibold">Shown on the website&apos;s product page under &quot;Why you&apos;ll love it&quot; and &quot;Specifications&quot;.</p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                        Key Highlights <span className="normal-case tracking-normal font-semibold">(one per line)</span>
-                      </label>
-                      <textarea
-                        rows={5}
-                        value={newProdHighlights}
-                        onChange={(e) => setNewProdHighlights(e.target.value)}
-                        placeholder={'Adaptive noise cancelling\n40-hour battery\nFolds into a travel case'}
-                        className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-[24px] text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold resize-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                        Specifications <span className="normal-case tracking-normal font-semibold">(Label: Value, one per line)</span>
-                      </label>
-                      <textarea
-                        rows={5}
-                        value={newProdSpecs}
-                        onChange={(e) => setNewProdSpecs(e.target.value)}
-                        placeholder={'Battery: 40 hours\nBluetooth: 5.3\nWeight: 254 g'}
-                        className="w-full px-6 py-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-[24px] text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all font-semibold font-mono resize-none"
-                      />
-                    </div>
-                  </div>
-                </div>
+                    <div className="space-y-6 min-w-0">
+                      {/* ===== Sizes & inventory ===== */}
+                      <section className={K.card}>
+                        <div className="flex items-baseline justify-between gap-3">
+                          <h2 className={`${K.serif} text-xl text-[#1d1d1f]`}>Sizes &amp; inventory</h2>
+                          <button type="button" onClick={() => setActiveTab('attributes')} className={`text-xs whitespace-nowrap ${K.link}`}>Manage options →</button>
+                        </div>
+                        <div>
+                          <p className={K.label}>Available Sizes</p>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {sizeOptions.map((sz) => (
+                              <button key={sz.id} type="button" title={sz.name} aria-pressed={newProdSizes.includes(sz.code)} onClick={() => setNewProdSizes(toggleInList(newProdSizes, sz.code))} className={K.chip(newProdSizes.includes(sz.code), 'accent')}>
+                                {sz.code}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <KaavuStockFields sizes={chosenSizes} colors={chosenColors} values={newProdVariantStock} onChange={setNewProdVariantStock} colorHex={colorHex} />
+                        <p className="text-xs text-[#86868b]">
+                          Each size and colour has its own stock. Checkout deducts only the size and colour the shopper picks. Total: <strong className="text-[#1d1d1f]">{totalStock}</strong> · {stockStatus(totalStock)}
+                        </p>
+                        <div>
+                          <p className={K.label}>Tags</p>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {tagOptions.map((tag) => (
+                              <button key={tag.id} type="button" aria-pressed={newProdTags.includes(tag.name)} onClick={() => setNewProdTags(toggleInList(newProdTags, tag.name))} className={K.chip(newProdTags.includes(tag.name), 'soft')}>
+                                {tag.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </section>
 
-                {/* Tags & Visibility */}
-                <div className="pt-6 border-t border-[#e5e5ea] space-y-5">
-                  <div>
-                    <label className="block text-[12px] font-extrabold uppercase tracking-widest text-[#86868b] mb-2 pl-2">
-                      Tags
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {tagOptions.map((tag) => (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          aria-pressed={newProdTags.includes(tag.name)}
-                          onClick={() => setNewProdTags(toggleInList(newProdTags, tag.name))}
-                          className={`px-4 py-2 rounded-full text-[13px] font-bold border transition-all ${newProdTags.includes(tag.name)
-                            ? 'bg-[#fff2e8] text-[#ea580c] border-[#ea580c]'
-                            : 'bg-[#f5f5f7] text-[#6e6e73] border-[#e5e5ea] hover:bg-white'
-                            }`}
-                        >
-                          #{tag.name}
+                      {/* ===== Product page details ===== */}
+                      <section className={K.card}>
+                        <h2 className={`${K.serif} text-xl text-[#1d1d1f]`}>Product page details</h2>
+                        <div>
+                          <label htmlFor="prod-highlights" className={K.label}>Key highlights (one per line)</label>
+                          <textarea id="prod-highlights" rows={4} value={newProdHighlights} onChange={(e) => setNewProdHighlights(e.target.value)} placeholder={'Adaptive noise cancelling\n40-hour battery\nFolds into a travel case'} className={K.input} />
+                        </div>
+                        <div>
+                          <label htmlFor="prod-specs" className={K.label}>Specifications (Label: Value per line)</label>
+                          <textarea id="prod-specs" rows={4} value={newProdSpecs} onChange={(e) => setNewProdSpecs(e.target.value)} placeholder={'Battery: 40 hours\nBluetooth: 5.3\nWeight: 254 g'} className={`${K.input} font-mono`} />
+                        </div>
+                      </section>
+                    </div>
+
+                    {/* ===== Colors & photography ===== */}
+                    <section className={`${K.card} xl:col-span-2 min-w-0`}>
+                      <h2 className={`${K.serif} text-xl text-[#1d1d1f]`}>Colors &amp; photography</h2>
+                      <div>
+                        <p className={K.label}>Available Colors</p>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {colorOptions.map((col) => (
+                            <button key={col.id} type="button" aria-pressed={newProdColors.includes(col.name)} onClick={() => setNewProdColors(toggleInList(newProdColors, col.name))} className={`${K.chip(newProdColors.includes(col.name), 'dark')} inline-flex items-center gap-1.5`}>
+                              <span className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: col.hex }} />
+                              {col.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        {colorOptions
+                          .filter((col) => newProdColors.includes(col.name))
+                          .map((col) => (
+                            <KaavuDetails key={col.id} title={`Photos for ${col.name}`} meta={`${(newProdColorImages[col.name] ?? []).length} photos`} swatch={col.hex}>
+                              <KaavuImageUploader label={`${col.name} photos`} images={newProdColorImages[col.name] ?? []} onChange={(images) => setNewProdColorImages({ ...newProdColorImages, [col.name]: images })} />
+                            </KaavuDetails>
+                          ))}
+                        <KaavuDetails title="Main product photos" meta={`${newProdImages.length} photos`} defaultOpen={!editingProductId || chosenColors.length === 0}>
+                          <KaavuImageUploader label="Main photos (the first is the cover)" images={newProdImages} onChange={setNewProdImages} />
+                        </KaavuDetails>
+                      </div>
+                      <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1">
+                        <label className="flex items-center gap-2 text-xs text-[#1d1d1f] cursor-pointer">
+                          <input type="checkbox" checked={newProdIsNew} onChange={(e) => setNewProdIsNew(e.target.checked)} className="accent-[#ea580c] w-4 h-4" />
+                          Mark as New Arrival
+                        </label>
+                        <label className="flex items-center gap-2 text-xs text-[#1d1d1f] cursor-pointer">
+                          <input type="checkbox" checked={newProdIsFeatured} onChange={(e) => setNewProdIsFeatured(e.target.checked)} className="accent-[#ea580c] w-4 h-4" />
+                          Feature on Home Page
+                        </label>
+                      </div>
+                      {productFormError && (
+                        <p role="alert" className="rounded-lg border border-[#ea580c]/40 bg-[#ea580c]/5 p-3 text-sm font-medium text-[#ea580c]">{productFormError}</p>
+                      )}
+                      <div className="flex flex-col-reverse sm:flex-row gap-3">
+                        <button type="button" onClick={backToProducts} className="sm:w-40 py-3.5 bg-white border border-[#e5e5ea] hover:border-[#ea580c] text-[#1d1d1f] text-xs uppercase tracking-[0.24em] font-semibold rounded transition-colors">Cancel</button>
+                        <button type="submit" className={`flex-1 py-3.5 text-xs uppercase tracking-[0.24em] font-semibold shadow-md rounded ${K.button}`}>
+                          {editingProductId ? 'Save changes' : 'Publish product'}
                         </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3">
-                    {[
-                      { label: 'Mark as New Arrival', checked: newProdIsNew, set: setNewProdIsNew },
-                      { label: 'Feature on Home Page', checked: newProdIsFeatured, set: setNewProdIsFeatured },
-                    ].map((opt) => (
-                      <label
-                        key={opt.label}
-                        className={`flex items-center gap-3 px-5 py-3 rounded-full border cursor-pointer transition-all ${opt.checked ? 'bg-[#fff2e8] border-[#ea580c]' : 'bg-[#f5f5f7] border-[#e5e5ea]'}`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={opt.checked}
-                          onChange={(e) => opt.set(e.target.checked)}
-                          className="w-4 h-4 accent-[#ea580c]"
-                        />
-                        <span className="text-[13px] font-bold text-[#1d1d1f]">{opt.label}</span>
-                      </label>
-                    ))}
-                  </div>
+                      </div>
+                    </section>
+                  </form>
                 </div>
-
-                {productFormError && (
-                  <p role="alert" className="text-red-500 text-[13px] font-bold bg-red-50 px-4 py-2.5 rounded-xl">{productFormError}</p>
-                )}
-
-                <div className="pt-4 flex gap-4">
-                  <button
-                    type="submit"
-                    className="px-8 py-4 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-black text-[14px] rounded-full transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 uppercase tracking-wider"
-                  >
-                    {editingProductId ? 'Save Changes' : 'Save & Publish Product'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { resetProductForm(); setActiveTab('product-list'); }}
-                    className="px-8 py-4 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[14px] rounded-full transition-all"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
+              </div>
+            );
+          })()}
 
           {/* ========================================================================= */}
           {/* 3. PRODUCT LIST TAB (With Scanner, Multi-Add, Edit, Delete) */}
           {/* ========================================================================= */}
           {activeTab === 'product-list' && (
             <div className="space-y-6">
-              {/* Stock Summary Cards (click to filter) */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {([
-                  { label: 'Total Products', filter: 'All', count: products.length, color: 'text-[#1d1d1f]', bg: 'bg-white', border: 'border-[#e5e5ea]' },
-                  { label: 'Healthy Stock', filter: 'In Stock', count: products.filter((p) => p.status === 'In Stock').length, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-                  { label: 'Low Stock (1-10)', filter: 'Low Stock', count: products.filter((p) => p.status === 'Low Stock').length, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200' },
-                  { label: 'Sold Out', filter: 'Out of Stock', count: products.filter((p) => p.status === 'Out of Stock').length, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
-                ] satisfies { label: string; filter: typeof productStockFilter; count: number; color: string; bg: string; border: string }[]).map((card) => (
-                  <button
-                    key={card.label}
-                    onClick={() => setProductStockFilter(card.filter)}
-                    className={`${card.bg} border ${productStockFilter === card.filter ? 'border-[#ea580c] ring-2 ring-[#ea580c]/20' : card.border} rounded-[24px] p-5 text-left transition-all hover:shadow-md`}
-                  >
-                    <p className={`text-3xl font-black tracking-tight ${card.color}`}>{card.count}</p>
-                    <p className="text-[12px] font-extrabold text-[#86868b] uppercase tracking-wider mt-1">{card.label}</p>
-                  </button>
-                ))}
-              </div>
-
               {/* Action Toolbar */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#fffdfa] p-5 rounded-[24px] border border-[#ead9bd] shadow-sm">
                 <div>
                   <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Inventory Catalog</h3>
                   <p className="text-[13px] text-[#86868b] font-semibold">
-                    {products.length} products currently active in store
+                    {visibleProducts.length} matching {visibleProducts.length === 1 ? 'product' : 'products'}
                   </p>
                 </div>
 
@@ -2192,7 +2035,7 @@ export default function EcommerceAdminPanel() {
                     onClick={() => setIsMultiProductModalOpen(true)}
                     className="px-5 py-2.5 bg-[#f5f5f7] hover:bg-[#e5e5ea] text-[#1d1d1f] border border-[#e5e5ea] rounded-full text-[13px] font-extrabold transition-all flex items-center gap-2"
                   >
-                    <span>📑</span>
+                    <PanelIcon name="file" size={16} />
                     <span>Add Multiple Products</span>
                   </button>
 
@@ -2228,48 +2071,88 @@ export default function EcommerceAdminPanel() {
                 </select>
               </div>
 
+              {/* Product cards on phones (the table below is for tablets and desktops) */}
+              <div className="md:hidden space-y-3">
+                {visibleProducts.length === 0 && (
+                  <p className="py-10 text-center text-[13px] font-semibold text-[#86868b] bg-[#fffdfa] border border-[#ead9bd] rounded-[20px]">No products match your search or filter.</p>
+                )}
+                {visibleProducts.map((prod) => (
+                  <div key={prod.id} className="bg-[#fffdfa] border border-[#ead9bd] rounded-[20px] p-4 shadow-sm">
+                    <div className="flex gap-3.5">
+                      <img src={prod.image} alt={prod.name} className="w-16 h-16 shrink-0 rounded-2xl object-cover border border-[#f0e4d1] bg-white" />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-[#351313] text-[14.5px] leading-snug line-clamp-2">{prod.name}</p>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                          <span className="text-[11px] text-[#8b7867] font-semibold font-mono">{prod.sku}</span>
+                          {prod.colors.map((c) => (
+                            <span key={c} title={c} className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: colorHex[c] ?? '#d2d2d7' }} />
+                          ))}
+                        </div>
+                        <p className="mt-1 text-[12px] text-[#8b7867] truncate">{prod.category} · {prod.subCategory}</p>
+                      </div>
+                    </div>
+                    <div className="mt-3.5 flex items-center justify-between gap-2">
+                      <div className="whitespace-nowrap">
+                        <span className="font-bold text-[#351313] text-[15px]">₹{prod.price.toLocaleString()}</span>
+                        {prod.mrp && prod.mrp > prod.price && <span className="ml-1.5 text-[12px] text-[#86868b] line-through">₹{prod.mrp.toLocaleString()}</span>}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button onClick={() => openStockEditor(prod)} className="px-3 py-1.5 rounded-full bg-[#fbf4e3] text-[#8d661b] text-[12px] font-bold whitespace-nowrap">{prod.stock} units</button>
+                        <span className={`px-3 py-1.5 rounded-full text-[11.5px] font-bold whitespace-nowrap ${prod.status === 'In Stock' ? 'bg-gradient-to-r from-[#e6bb55] to-[#f4d889] text-[#44280b]' : prod.status === 'Low Stock' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700'}`}>{prod.status}</span>
+                      </div>
+                    </div>
+                    <div className="mt-3.5 pt-3.5 border-t border-[#f0e4d1] grid grid-cols-[1fr_1fr_auto] gap-2">
+                      <button onClick={() => { setActiveBarcodeProduct(prod); setBarcodeLabelCount(1); setIsPrintBarcodeModalOpen(true); }} className="h-10 rounded-full border border-[#ead9bd] text-[#401717] font-bold text-[13px] inline-flex items-center justify-center gap-2"><PanelIcon name="barcode" size={15} /> Barcode</button>
+                      <button onClick={() => openEditProduct(prod)} className="h-10 rounded-full border border-[#ead9bd] text-[#401717] font-bold text-[13px] inline-flex items-center justify-center gap-2">
+                        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m14.5 6.5 3 3" /><path d="M4 20l4.2-.9L19.5 7.8a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z" /></svg> Edit
+                      </button>
+                      <button onClick={() => handleDeleteProduct(prod.id)} aria-label={`Delete ${prod.name}`} className="w-10 h-10 rounded-full border border-[#ead9bd] text-[#401717] inline-flex items-center justify-center">
+                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16" /><path d="M10 11v6M14 11v6" /><path d="m5 7 1 13h12l1-13" /><path d="M9 7V4h6v3" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               {/* Product Table */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 shadow-sm overflow-hidden">
+              <div className="hidden md:block bg-[#fffdfa] border border-[#ead9bd] rounded-[24px] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-[14px]">
                     <thead className="text-[#86868b] border-b border-[#e5e5ea]">
-                      <tr>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Product</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">SKU</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Category</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Price</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Stock</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Status</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider text-right">
-                          Actions
-                        </th>
+                      <tr className="bg-[#fbf4e3] text-[#401717]">
+                        <th className="py-4 pl-5 pr-3 font-extrabold text-[13px]">Product</th>
+                        <th className="py-4 px-3 font-extrabold text-[13px]">Category</th>
+                        <th className="py-4 px-4 font-extrabold text-[13px] whitespace-nowrap">Price</th>
+                        <th className="py-4 px-4 font-extrabold text-[13px] whitespace-nowrap">Stock</th>
+                        <th className="py-4 px-4 font-extrabold text-[13px] whitespace-nowrap">Visibility</th>
+                        <th className="py-4 px-5 font-extrabold text-[13px] text-right whitespace-nowrap">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#e5e5ea]">
                       {visibleProducts.length === 0 && (
                         <tr>
-                          <td colSpan={7} className="py-12 text-center text-[13px] font-semibold text-[#86868b]">
+                          <td colSpan={6} className="py-12 text-center text-[13px] font-semibold text-[#86868b]">
                             No products match your search or filter.
                           </td>
                         </tr>
                       )}
                       {visibleProducts.map((prod) => (
                         <Fragment key={prod.id}>
-                        <tr className="group hover:bg-[#f5f5f7]/60 transition-colors">
+                        <tr className="group hover:bg-[#fff9ef] transition-colors">
                           {/* Image & Title */}
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-3.5">
+                          <td className="py-3.5 pl-5 pr-3">
+                            <div className="flex items-center gap-3.5 w-[270px]">
                               <img
                                 src={prod.image}
                                 alt={prod.name}
-                                className="w-12 h-12 rounded-2xl object-cover border border-[#e5e5ea] shadow-sm bg-white"
+                                className="w-12 h-12 shrink-0 rounded-2xl object-cover border border-[#f0e4d1] bg-white"
                               />
-                              <div>
-                                <span className="font-bold text-[#1d1d1f] block text-[14px] leading-tight max-w-xs">
+                              <div className="min-w-0">
+                                <span title={prod.name} className="font-bold text-[#351313] block text-[14px] leading-tight truncate">
                                   {prod.name}
                                 </span>
-                                <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                                  <span className="text-[11px] text-[#86868b] font-semibold">⭐ {prod.rating}</span>
+                                <div className="flex flex-nowrap items-center gap-1.5 mt-1 whitespace-nowrap overflow-hidden">
+                                  <span className="text-[11px] text-[#8b7867] font-semibold font-mono">{prod.sku}</span>
                                   {prod.colors.map((c) => (
                                     <span
                                       key={c}
@@ -2285,52 +2168,37 @@ export default function EcommerceAdminPanel() {
                             </div>
                           </td>
 
-                          {/* SKU */}
-                          <td className="py-4 px-4 font-mono text-[12px]">
-                            <span className="font-bold text-[#1d1d1f] block">{prod.sku}</span>
-                          </td>
-
                           {/* Category */}
-                          <td className="py-4 px-4">
-                            <span className="font-bold text-[#1d1d1f] block">{prod.category}</span>
-                            <span className="text-[12px] text-[#86868b]">
-                              {prod.subCategory} {prod.subSubCategory && `> ${prod.subSubCategory}`}
+                          <td className="py-3.5 px-3">
+                            <div className="w-[165px]">
+                            <span className="font-medium text-[#351313] block truncate">{prod.category}</span>
+                            <span title={`${prod.subCategory}${prod.subSubCategory ? ` > ${prod.subSubCategory}` : ''}`} className="text-[12px] text-[#8b7867] block truncate">
+                              {prod.subCategory}{prod.subSubCategory && ` > ${prod.subSubCategory}`}
                             </span>
+                            </div>
                           </td>
 
                           {/* Price */}
-                          <td className="py-4 px-4">
-                            <span className="font-black text-[#1d1d1f] text-[15px] block">₹{prod.price.toLocaleString()}</span>
+                          <td className="py-3.5 px-4 whitespace-nowrap">
+                            <span className="font-semibold text-[#351313] text-[15px] block">₹{prod.price.toLocaleString()}</span>
                             {prod.mrp && prod.mrp > prod.price && (
                               <span className="text-[12px] text-[#86868b] font-semibold line-through">₹{prod.mrp.toLocaleString()}</span>
                             )}
                           </td>
 
                           {/* Stock (by size) */}
-                          <td className="py-4 px-4">
-                            <span className="font-bold text-[#1d1d1f] block">{prod.stock} units</span>
-                            {prod.sizes.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1 max-w-[180px]">
-                                {prod.sizes.map((size) => (
-                                  <span
-                                    key={size}
-                                    className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${sizeTotal(prod.variantStock, size) > 0 ? 'bg-[#f5f5f7] text-[#6e6e73] border-[#e5e5ea]' : 'bg-red-50 text-red-600 border-red-200'}`}
-                                  >
-                                    {size}: {sizeTotal(prod.variantStock, size)}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
+                          <td className="py-3.5 px-4 whitespace-nowrap">
+                            <button onClick={() => openStockEditor(prod)} title="Edit stock by size and color" className="px-3 py-2 rounded-full bg-[#fbf4e3] text-[#8d661b] text-[13px] font-bold hover:bg-[#f6ebd3] whitespace-nowrap">{prod.stock} units</button>
                           </td>
 
                           {/* Status */}
-                          <td className="py-4 px-4">
+                          <td className="py-3.5 px-4 whitespace-nowrap">
                             <span
-                              className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider ${prod.status === 'In Stock'
-                                ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                              className={`inline-block px-3.5 py-2 rounded-full text-[12px] font-bold whitespace-nowrap ${prod.status === 'In Stock'
+                                ? 'bg-gradient-to-r from-[#e6bb55] to-[#f4d889] text-[#44280b]'
                                 : prod.status === 'Low Stock'
-                                  ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                                  : 'bg-red-100 text-red-700 border border-red-200'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : 'bg-red-100 text-red-700'
                                 }`}
                             >
                               {prod.status}
@@ -2338,76 +2206,36 @@ export default function EcommerceAdminPanel() {
                           </td>
 
                           {/* Actions: Scanner, Edit, Delete */}
-                          <td className="py-4 px-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              {/* Barcode Actions */}
-                              <div className="flex bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl overflow-hidden shadow-sm">
-                                <button
-                                  onClick={() => {
-                                    setActiveBarcodeProduct(prod);
-                                    setBarcodeGenStatus('idle');
-                                    setIsGenerateBarcodeModalOpen(true);
-                                  }}
-                                  className="px-3 py-2 text-[11px] font-bold text-[#ea580c] hover:bg-[#fff2e8] transition-colors border-r border-[#e5e5ea] flex items-center gap-1.5"
-                                >
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5h2v14H3z M7 5h1v14H7z M11 5h2v14h-2z M15 5h1v14h-1z M19 5h2v14h-2z" /></svg>
-                                  Generate
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setActiveBarcodeProduct(prod);
-                                    setBarcodePrintStatus('idle');
-                                    setIsPrintBarcodeModalOpen(true);
-                                  }}
-                                  title="Print Barcode"
-                                  className="px-2.5 py-2 text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-[#e5e5ea] transition-colors flex items-center justify-center"
-                                >
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-                                </button>
-                              </div>
-
-                              {/* Stock Button */}
-                              <button
-                                onClick={() => openStockEditor(prod)}
-                                title="Edit stock by size & color"
-                                className="p-2.5 bg-[#f5f5f7] hover:bg-[#fff2e8] text-[#ea580c] hover:border-[#ea580c] border border-[#e5e5ea] rounded-xl transition-all shadow-sm"
-                              >
-                                📦
-                              </button>
+                          <td className="py-3.5 pl-2 pr-5 whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-2 flex-nowrap">
+                              <button onClick={() => { setActiveBarcodeProduct(prod); setBarcodeLabelCount(1); setIsPrintBarcodeModalOpen(true); }} title="Print barcode labels" aria-label={`Print barcode labels for ${prod.name}`} className="h-9 px-2.5 2xl:px-3.5 rounded-full border border-[#ead9bd] text-[#401717] font-bold text-[13px] inline-flex items-center gap-2 hover:bg-[#fbf4e3] whitespace-nowrap"><PanelIcon name="barcode" size={15} /><span className="hidden 2xl:inline">Barcode</span></button>
 
                               {/* Edit Button */}
                               <button
                                 onClick={() => openEditProduct(prod)}
                                 title="Edit Product"
-                                className="p-2.5 bg-[#f5f5f7] hover:bg-blue-50 text-blue-600 hover:border-blue-300 border border-[#e5e5ea] rounded-xl transition-all shadow-sm"
+                                aria-label={`Edit ${prod.name}`}
+                                className="h-9 px-3.5 rounded-full border border-[#ead9bd] text-[#401717] hover:bg-[#fbf4e3] inline-flex items-center gap-2 text-[13px] font-bold whitespace-nowrap"
                               >
-                                ✏️
+                                <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m14.5 6.5 3 3" /><path d="M4 20l4.2-.9L19.5 7.8a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z" /></svg> Edit
                               </button>
 
                               {/* Delete Button */}
                               <button
                                 onClick={() => handleDeleteProduct(prod.id)}
                                 title="Delete Product"
-                                className="p-2.5 bg-[#f5f5f7] hover:bg-red-50 text-red-600 hover:border-red-300 border border-[#e5e5ea] rounded-xl transition-all shadow-sm"
+                                aria-label={`Delete ${prod.name}`}
+                                className="w-9 h-9 shrink-0 rounded-full border border-[#ead9bd] text-[#401717] hover:bg-red-50 inline-flex items-center justify-center"
                               >
-                                🗑️
+                                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16" /><path d="M10 11v6M14 11v6" /><path d="m5 7 1 13h12l1-13" /><path d="M9 7V4h6v3" /></svg>
                               </button>
 
-                              {/* Expand Details */}
-                              <button
-                                onClick={() => setExpandedProductId(expandedProductId === prod.id ? null : prod.id)}
-                                title={expandedProductId === prod.id ? 'Hide details' : 'Show stock & photo details'}
-                                aria-expanded={expandedProductId === prod.id}
-                                className="p-2.5 bg-[#f5f5f7] hover:bg-[#e5e5ea] text-[#1d1d1f] border border-[#e5e5ea] rounded-xl transition-all shadow-sm"
-                              >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${expandedProductId === prod.id ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9" /></svg>
-                              </button>
                             </div>
                           </td>
                         </tr>
                         {expandedProductId === prod.id && (
                           <tr className="bg-[#fafafa]">
-                            <td colSpan={7} className="px-4 pb-6 pt-2">
+                            <td colSpan={6} className="px-4 pb-6 pt-2">
                               <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                                 {/* Stock grid */}
                                 <div className="lg:col-span-2 bg-white border border-[#e5e5ea] rounded-[24px] p-5 overflow-x-auto">
@@ -2484,100 +2312,48 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {/* 3b. INVENTORY TAB (Stock by Size & Color) */}
           {/* ========================================================================= */}
-          {activeTab === 'inventory' && (
-            <div className="space-y-6">
-              <div className="bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Stock by Size & Color</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Each combination is counted separately. Sold-out combinations are shown in red.</p>
-                </div>
-                <span className="px-4 py-1.5 bg-[#fff2e8] text-[#ea580c] font-black text-[13px] rounded-full border border-orange-200">
-                  {products.reduce((sum, p) => sum + p.stock, 0).toLocaleString()} Units in Stock
-                </span>
-              </div>
-
-              <input
-                type="text"
-                value={inventorySearch}
-                onChange={(e) => setInventorySearch(e.target.value)}
-                placeholder="Search product name or SKU..."
-                className="w-full px-6 py-3.5 bg-white border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c] transition-all font-semibold shadow-sm"
-              />
-
-              <div className="space-y-4">
-                {products
-                  .filter((p) => [p.name, p.sku].some((v) => v.toLowerCase().includes(inventorySearch.trim().toLowerCase())))
-                  .map((prod) => (
-                    <div key={prod.id} className="bg-white border border-[#e5e5ea] rounded-[32px] p-6 shadow-sm">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-                        <div className="flex items-center gap-3.5">
-                          <img src={prod.image} alt={prod.name} className="w-12 h-12 rounded-2xl object-cover border border-[#e5e5ea] bg-white" />
-                          <div>
-                            <span className="font-bold text-[#1d1d1f] block text-[15px] leading-tight">{prod.name}</span>
-                            <span className="text-[12px] text-[#86868b] font-semibold font-mono">{prod.sku}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span
-                            className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border ${prod.status === 'In Stock'
-                              ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
-                              : prod.status === 'Low Stock'
-                                ? 'bg-amber-100 text-amber-700 border-amber-200'
-                                : 'bg-red-100 text-red-700 border-red-200'
-                              }`}
-                          >
-                            {prod.stock} units
-                          </span>
-                          <button
-                            onClick={() => openStockEditor(prod)}
-                            className="px-4 py-2 bg-[#f5f5f7] hover:bg-[#fff2e8] text-[#ea580c] border border-[#e5e5ea] hover:border-[#ea580c] rounded-full text-[12px] font-extrabold transition-all"
-                          >
-                            Update Stock
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-[13px]">
-                          <thead className="text-[#86868b]">
-                            <tr>
-                              <th className="pb-2 px-3 font-extrabold uppercase text-[10px] tracking-wider">Size</th>
-                              {variantColors(prod.colors).map((color) => (
-                                <th key={color} className="pb-2 px-3 font-extrabold uppercase text-[10px] tracking-wider">
-                                  <span className="flex items-center gap-1.5">
-                                    {color !== STANDARD && <span className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: colorHex[color] ?? '#d2d2d7' }} />}
-                                    {color === STANDARD ? 'Stock' : color}
-                                  </span>
-                                </th>
-                              ))}
-                              <th className="pb-2 px-3 font-extrabold uppercase text-[10px] tracking-wider text-right">Total</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {variantSizes(prod.sizes).map((size) => (
-                              <tr key={size} className="border-t border-[#f5f5f7]">
-                                <td className="py-2.5 px-3 font-bold text-[#1d1d1f]">{size === STANDARD ? 'One Size' : size}</td>
-                                {variantColors(prod.colors).map((color) => {
-                                  const qty = prod.variantStock[size]?.[color] ?? 0;
-                                  return (
-                                    <td key={color} className="py-2.5 px-3">
-                                      <span className={`px-2.5 py-1 rounded-lg font-black text-[12px] ${qty === 0 ? 'bg-red-50 text-red-600' : qty <= 5 ? 'bg-amber-50 text-amber-700' : 'bg-[#f5f5f7] text-[#1d1d1f]'}`}>
-                                        {qty}
-                                      </span>
-                                    </td>
-                                  );
-                                })}
-                                <td className="py-2.5 px-3 text-right font-black text-[#1d1d1f]">{sizeTotal(prod.variantStock, size)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+          {activeTab === 'inventory' && (() => {
+            const query = inventorySearch.trim().toLowerCase();
+            const rows = products.filter((p) => [p.name, p.sku, p.id].some((v) => v.toLowerCase().includes(query)));
+            return (
+              <div className={K.page}>
+                <div className="max-w-6xl mx-auto space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                    <div>
+                      <h1 className={`${K.serif} text-2xl sm:text-3xl text-[#1d1d1f]`}>Stock by size &amp; color</h1>
+                      <p className="text-sm text-[#86868b] mt-1">Review and update quantities. Checkout deducts only the selected size and color.</p>
                     </div>
-                  ))}
+                    <p className="text-xs text-[#86868b] whitespace-nowrap">
+                      <strong className="text-[#1d1d1f]">{products.reduce((sum, p) => sum + p.stock, 0).toLocaleString('en-IN')}</strong> units across {products.length} products
+                    </p>
+                  </div>
+                  <input
+                    type="search"
+                    value={inventorySearch}
+                    onChange={(e) => setInventorySearch(e.target.value)}
+                    placeholder="Search product name, SKU or ID"
+                    aria-label="Search inventory"
+                    className="w-full border border-[#e5e5ea] rounded-lg p-3 bg-white text-sm text-[#1d1d1f] outline-none focus:border-[#ea580c]"
+                  />
+                  <div className="space-y-3">
+                    {rows.length === 0 && <p className="py-10 text-center text-sm text-[#86868b] bg-white rounded-xl border border-[#e5e5ea]">No products match your search.</p>}
+                    {rows.map((prod) => (
+                      <KaavuInventoryRow
+                        key={prod.id}
+                        product={prod}
+                        colorHex={colorHex}
+                        onEdit={() => openEditProduct(prod)}
+                        onSave={(values) => {
+                          const { variantStock, stock } = buildVariantStock(prod.sizes, prod.colors, values);
+                          setProducts(products.map((p) => (p.id === prod.id ? { ...p, variantStock, stock, status: stockStatus(stock) } : p)));
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* ========================================================================= */}
           {/* 3c. SIZES, COLORS & TAGS TAB (Product Attributes) */}
@@ -2806,7 +2582,7 @@ export default function EcommerceAdminPanel() {
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[12px] font-bold text-[#86868b]">No photo yet</div>
                         )}
-                        <span className="absolute -bottom-6 left-6 text-3xl w-14 h-14 bg-white border border-[#e5e5ea] rounded-2xl shadow-sm flex items-center justify-center">{cat.icon}</span>
+                        <span className="absolute -bottom-6 left-6 text-[#ea580c] w-14 h-14 bg-white border border-[#e5e5ea] rounded-2xl shadow-sm flex items-center justify-center"><PanelIcon name="folder" size={24} /></span>
                       </div>
                       <div className="p-6 pt-9 space-y-4">
                         <div>
@@ -3063,7 +2839,7 @@ export default function EcommerceAdminPanel() {
                   onClick={() => openCouponModal()}
                   className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
-                  <span>🎟️</span>
+                  <PanelIcon name="ticket" size={16} />
                   <span>Create Coupon</span>
                 </button>
               </div>
@@ -3073,7 +2849,7 @@ export default function EcommerceAdminPanel() {
                 <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#86868b] pl-1">Store Header Preview</p>
                 <div className="bg-[#1d1d1f] text-white rounded-full px-6 py-2.5 text-[12px] font-bold text-center overflow-hidden whitespace-nowrap text-ellipsis">
                   {headerCoupons.length
-                    ? headerCoupons.map((c) => `🎉 Use ${c.code} — ${c.discountType === 'Percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue} OFF`} on orders above ₹${c.minPurchase.toLocaleString()}`).join('   •   ')
+                    ? headerCoupons.map((c) => `Use ${c.code} — ${c.discountType === 'Percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue} OFF`} on orders above ₹${c.minPurchase.toLocaleString()}`).join('   •   ')
                     : 'No coupon is shown in the store header. Turn on "Show in header" on a coupon below.'}
                 </div>
               </div>
@@ -3183,175 +2959,203 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {/* 8. ORDERS TAB */}
           {/* ========================================================================= */}
-          {activeTab === 'orders' && (
-            <div className="space-y-6">
-              {/* Order Status Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {[
-                  { label: 'Pending', count: orders.filter(o => o.orderStatus === 'Pending').length, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg> },
-                  { label: 'Processing', count: orders.filter(o => o.orderStatus === 'Processing').length, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg> },
-                  { label: 'Shipped', count: orders.filter(o => o.orderStatus === 'Shipped').length, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg> },
-                  { label: 'Delivered', count: orders.filter(o => o.orderStatus === 'Delivered').length, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg> },
-                ].map((status, i) => (
+          {activeTab === 'orders' && (() => {
+            const month = localDate().slice(0, 7);
+            const monthLabel = new Date(`${month}-01T00:00:00`).toLocaleString('en-IN', { month: 'long', year: 'numeric' });
+            const counted = orders.filter((o) => o.orderStatus !== 'Cancelled');
+            const thisMonth = orders.filter((o) => o.date.startsWith(month));
+            const revenue = (list: Order[]) => list.filter((o) => o.orderStatus !== 'Cancelled').reduce((sum, o) => sum + o.total, 0);
+            const countOf = (status: OrderStatus) => orders.filter((o) => o.orderStatus === status).length;
+            const paymentBadge = (o: Order) => (o.paymentStatus === 'Paid' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : o.paymentStatus === 'Failed' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200');
+            const itemCount = (o: Order) => { const n = o.items.reduce((sum, item) => sum + item.qty, 0); return `${n} item${n === 1 ? '' : 's'}`; };
+            const shortDate = (o: Order) => new Date(`${o.date}T00:00:00`).toLocaleDateString('en-IN');
+            const shipLabel = (o: Order) => (o.shipment && o.shipment.status !== 'Cancelled' ? 'Shipment' : 'Shipping');
+            return (
+              <div className="space-y-6">
+                {/* Check pending payments */}
+                <div className="space-y-2">
                   <button
-                    key={i}
-                    onClick={() => setOrderStatusFilter(orderStatusFilter === status.label ? 'All' : (status.label as OrderStatus))}
-                    className={`${status.bg} border ${orderStatusFilter === status.label ? 'border-[#ea580c] ring-2 ring-[#ea580c]/20' : status.border} rounded-[24px] p-5 text-left transition-all hover:shadow-md`}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className={`${status.color} opacity-70`}>{status.icon}</span>
-                    </div>
-                    <p className={`text-3xl font-black tracking-tight ${status.color}`}>{status.count}</p>
-                    <p className="text-[12px] font-extrabold text-[#86868b] uppercase tracking-wider mt-1">{status.label}</p>
-                  </button>
-                ))}
-              </div>
-
-              <div className="bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Customer Orders</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Track fulfillment and dispatch statuses</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 text-[12px] font-extrabold">
-                  <button
+                    type="button"
+                    disabled={checkingPayments}
                     onClick={reconcilePayments}
-                    title="Ask the payment gateway about online payments still marked Pending"
-                    className="px-4 py-1.5 bg-white hover:bg-[#f5f5f7] text-[#1d1d1f] rounded-full border border-[#e5e5ea] transition-all flex items-center gap-1.5"
+                    className="px-5 py-2.5 bg-white hover:bg-[#fff2e8] border border-[#ea580c] text-[#ea580c] rounded-full text-[13px] font-extrabold transition-all disabled:opacity-50"
                   >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
-                    Check Payments
+                    {checkingPayments ? 'Checking captured payments…' : 'Check pending payments'}
                   </button>
-                  <span className="px-3 py-1.5 bg-[#fff2e8] text-[#ea580c] rounded-full border border-orange-200">
-                    Total: {orders.length} Orders
-                  </span>
-                  <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">
-                    Revenue: ₹{orders.filter((o) => o.orderStatus !== 'Cancelled').reduce((sum, o) => sum + o.total, 0).toLocaleString()}
-                  </span>
+                  {paymentCheckMessage && <p role="status" className="text-[13px] font-semibold text-[#6e6e73]">{paymentCheckMessage}</p>}
                 </div>
-              </div>
 
-              {/* Search & Status Filter */}
-              <div className="flex flex-col md:flex-row gap-3">
-                <input
-                  type="text"
-                  value={orderSearch}
-                  onChange={(e) => setOrderSearch(e.target.value)}
-                  placeholder="Search orders by order #, name, email or phone..."
-                  className="flex-1 px-6 py-3.5 bg-white border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c] transition-all font-semibold shadow-sm"
-                />
-                <div className="flex flex-wrap gap-2">
-                  {(['All', ...ORDER_STATUSES] as const).map((status) => (
-                    <button
-                      key={status}
-                      onClick={() => setOrderStatusFilter(status)}
-                      className={`px-4 py-2.5 rounded-full text-[12px] font-extrabold border transition-all ${orderStatusFilter === status
-                        ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white border-transparent shadow-sm'
-                        : 'bg-white text-[#6e6e73] border-[#e5e5ea] hover:bg-[#f5f5f7]'
-                        }`}
+                {/* Key order & revenue numbers */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-white border border-[#e5e5ea] rounded-[24px] p-5 space-y-2 shadow-sm">
+                    <span className="block text-[10.5px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Total Orders (All-Time)</span>
+                    <p className="text-3xl font-black tracking-tight text-[#1d1d1f]">{orders.length}</p>
+                    <span className="block text-[11.5px] font-bold text-[#ea580c]">{countOf('Delivered')} Delivered · {countOf('Pending')} Pending</span>
+                  </div>
+                  <div className="bg-amber-50 border border-amber-200 rounded-[24px] p-5 space-y-2 shadow-sm">
+                    <span className="block text-[10.5px] uppercase tracking-[0.16em] font-extrabold text-amber-900">This Month&apos;s Orders</span>
+                    <p className="text-3xl font-black tracking-tight text-amber-700">{thisMonth.length}</p>
+                    <span className="block text-[11.5px] font-bold text-amber-700 uppercase">{monthLabel}</span>
+                  </div>
+                  <div className="bg-white border border-[#e5e5ea] rounded-[24px] p-5 space-y-2 shadow-sm">
+                    <span className="block text-[10.5px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Total Sales Revenue</span>
+                    <p className="text-2xl sm:text-3xl font-black tracking-tight text-[#ea580c]">₹{revenue(orders).toLocaleString('en-IN')}</p>
+                    <span className="block text-[11.5px] font-bold text-emerald-700">{counted.length} orders, excluding cancelled</span>
+                  </div>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-[24px] p-5 space-y-2 shadow-sm">
+                    <span className="block text-[10.5px] uppercase tracking-[0.16em] font-extrabold text-emerald-900">This Month&apos;s Revenue</span>
+                    <p className="text-2xl sm:text-3xl font-black tracking-tight text-emerald-700">₹{revenue(thisMonth).toLocaleString('en-IN')}</p>
+                    <span className="block text-[11.5px] font-bold text-emerald-700 uppercase">Current month total</span>
+                  </div>
+                </div>
+
+                {/* Search & status filter */}
+                <div className="bg-white p-4 rounded-[24px] border border-[#e5e5ea] shadow-sm flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
+                  <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <input
+                      type="search"
+                      value={orderSearch}
+                      onChange={(e) => setOrderSearch(e.target.value)}
+                      placeholder="Search orders by Order #, Name, Email or Phone..."
+                      aria-label="Search orders"
+                      className="flex-1 px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] font-semibold focus:outline-none focus:bg-white focus:border-[#ea580c] transition-all"
+                    />
+                    <select
+                      value={orderStatusFilter}
+                      onChange={(e) => setOrderStatusFilter(e.target.value as 'All' | OrderStatus)}
+                      aria-label="Filter by status"
+                      className="px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] text-[#1d1d1f] font-extrabold uppercase tracking-wider focus:outline-none focus:border-[#ea580c] cursor-pointer"
                     >
-                      {status}
-                    </button>
-                  ))}
+                      <option value="All">All Statuses ({orders.length})</option>
+                      {ORDER_STATUSES.map((status) => <option key={status} value={status}>{status} ({countOf(status)})</option>)}
+                    </select>
+                  </div>
+                  <p className="text-[13px] font-bold text-[#86868b] whitespace-nowrap">Showing {visibleOrders.length} of {orders.length} orders</p>
                 </div>
-              </div>
 
-              {/* Orders Table */}
-              <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-6 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-[14px]">
-                    <thead className="text-[#86868b] border-b border-[#e5e5ea]">
-                      <tr>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Order No.</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Customer</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Items</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Date</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Total</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Payment</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider">Fulfillment</th>
-                        <th className="pb-4 pt-2 px-4 font-extrabold uppercase text-[11px] tracking-wider text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#e5e5ea]">
-                      {visibleOrders.length === 0 && (
-                        <tr>
-                          <td colSpan={8} className="py-12 text-center text-[13px] font-semibold text-[#86868b]">
-                            No orders match your search or filter.
-                          </td>
+                <div className="bg-white border border-[#e5e5ea] rounded-[24px] shadow-sm overflow-hidden">
+                  {/* Phones, tablets and small laptops: one card per order */}
+                  <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3 p-3">
+                    {visibleOrders.length === 0 && <p className="md:col-span-2 p-6 text-center text-[13px] font-semibold text-[#86868b]">No orders match your filters.</p>}
+                    {visibleOrders.map((ord) => (
+                      <div key={ord.id} className="rounded-[20px] border border-[#e5e5ea] p-4 space-y-3 text-[14px]">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-mono font-black text-[#ea580c]">#{ord.orderNumber}</p>
+                            <p className="font-bold text-[#1d1d1f] truncate">{ord.customerName}</p>
+                          </div>
+                          <span className={`shrink-0 px-3 py-1 rounded-full text-[10.5px] font-black uppercase tracking-wider border ${orderStatusStyle(ord.orderStatus)}`}>{ord.orderStatus}</span>
+                        </div>
+                        <div className="flex justify-between gap-3"><span className="text-[#86868b] font-semibold">Total</span><strong className="font-black text-[#ea580c]">₹{ord.total.toLocaleString('en-IN')}</strong></div>
+                        <div className="flex justify-between items-center gap-2 text-[12px] py-2 border-y border-[#f0f0f2]">
+                          <span className="text-[#86868b] font-semibold">Payment:</span>
+                          <span className="flex items-center gap-2 min-w-0">
+                            <span className={`px-2 py-0.5 rounded-md border text-[9.5px] font-black uppercase ${paymentBadge(ord)}`}>{ord.paymentStatus}</span>
+                            <span className="font-mono text-[11px] text-[#1d1d1f] truncate">{ord.paymentId ?? ord.paymentMethod}</span>
+                          </span>
+                        </div>
+                        <p className="text-[12px] font-semibold text-[#86868b]">{itemCount(ord)} · {shortDate(ord)}</p>
+                        <div className="bg-[#f9f9fb] border border-[#e5e5ea] rounded-xl p-3 space-y-0.5">
+                          <p className="font-bold text-[#1d1d1f]">{ord.customerName}</p>
+                          <p className="text-[12px] text-[#86868b] break-all">{ord.email}</p>
+                          <p className="text-[12px] text-[#86868b]">{ord.phone}</p>
+                        </div>
+                        <label className="block text-[12px] font-bold text-[#86868b]">
+                          Order status
+                          <select
+                            aria-label={`Status for ${ord.orderNumber}`}
+                            value={ord.orderStatus}
+                            disabled={ord.orderStatus === 'Cancelled'}
+                            onChange={(e) => changeOrderStatus(ord, e.target.value as OrderStatus)}
+                            className="block w-full mt-2 p-3 border border-[#e5e5ea] rounded-xl bg-white text-[14px] font-bold text-[#1d1d1f] disabled:opacity-60"
+                          >
+                            {ORDER_STATUSES.map((status) => <option key={status}>{status}</option>)}
+                          </select>
+                        </label>
+                        <button type="button" onClick={() => setShiprocketOrderId(ord.id)} className="w-full border border-[#ea580c] text-[#ea580c] rounded-xl py-3 text-[13px] font-bold">
+                          {shipLabel(ord) === 'Shipment' ? 'View shipment' : 'Shipping · enter parcel details'}
+                        </button>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button type="button" onClick={() => openInvoice(ord)} className="border border-[#e5e5ea] text-[#1d1d1f] rounded-xl py-3 text-[13px] font-bold">Invoice</button>
+                          <button type="button" onClick={() => setOrderDetailsId(ord.id)} className="bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-xl py-3 text-[13px] font-bold">View details</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop table */}
+                  <div className="hidden xl:block overflow-x-auto">
+                    <table className="w-full text-left text-[13px]">
+                      <thead>
+                        <tr className="border-b border-[#e5e5ea] uppercase tracking-wider text-[10.5px] font-extrabold text-[#86868b] bg-[#f9f9fb]">
+                          <th className="py-3.5 px-2.5">Order #</th>
+                          <th className="py-3.5 px-2.5">Customer</th>
+                          <th className="py-3.5 px-2.5">Total</th>
+                          <th className="py-3.5 px-2.5">Payment</th>
+                          <th className="py-3.5 px-2.5">Status</th>
+                          <th className="py-3.5 px-2.5 text-right">Actions</th>
                         </tr>
-                      )}
-                      {visibleOrders.map((ord) => (
-                        <tr key={ord.id} className="hover:bg-[#f5f5f7]/60 transition-colors">
-                          <td className="py-4 px-4">
-                            <span className="font-mono font-bold text-[#ea580c] block">{ord.orderNumber}</span>
-                            {ord.shipment && (
-                              <span className="mt-1 inline-block px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-[10px] font-black uppercase" title={`${ord.shipment.courier} AWB ${ord.shipment.awb}`}>
-                                🚚 {ord.shipment.status}
-                              </span>
-                            )}
-                          </td>
-                          <td className="py-4 px-4">
-                            <span className="font-bold text-[#1d1d1f] block">{ord.customerName}</span>
-                            <span className="text-[12px] text-[#86868b] block">{ord.email}</span>
-                            <span className="text-[12px] text-[#86868b]">{ord.phone}</span>
-                          </td>
-                          <td className="py-4 px-4 min-w-[220px]">
-                            {(ord.items ?? []).map((item, idx) => (
-                              <div key={idx} className="text-[12px] leading-snug mb-1 last:mb-0">
-                                <span className="font-bold text-[#1d1d1f]">{item.name}</span>
-                                <span className="text-[#86868b] font-semibold block">
-                                  {[item.size !== STANDARD && item.size, item.color !== STANDARD && item.color].filter(Boolean).join(' / ') || 'One size'} × {item.qty}
+                      </thead>
+                      <tbody className="divide-y divide-[#f0f0f2]">
+                        {visibleOrders.length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="py-10 text-center text-[13px] font-semibold text-[#86868b]">No orders matching the selected filter criteria.</td>
+                          </tr>
+                        )}
+                        {visibleOrders.map((ord) => (
+                          <tr key={ord.id} className="hover:bg-[#f9f9fb] transition-colors">
+                            <td className="py-3 px-2.5">
+                              <span className="font-mono font-black text-[#ea580c] block whitespace-nowrap">#{ord.orderNumber}</span>
+                              <span className="block text-[11px] text-[#86868b] font-semibold">{shortDate(ord)}</span>
+                              {ord.shipment && (
+                                <span className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9.5px] font-black uppercase whitespace-nowrap ${ord.shipment.status === 'Cancelled' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-700'}`}>
+                                  <PanelIcon name="truck" size={11} />{ord.shipment.remoteStatus ?? ord.shipment.status}
                                 </span>
+                              )}
+                            </td>
+                            <td className="py-3 px-2.5">
+                              <span className="font-bold text-[#1d1d1f] block">{ord.customerName}</span>
+                              <span className="text-[11px] text-[#86868b] block max-w-[170px] truncate" title={ord.email}>{ord.email}</span>
+                              <span className="text-[11px] text-[#ea580c] font-semibold block">{ord.phone}</span>
+                            </td>
+                            <td className="py-3 px-2.5 whitespace-nowrap">
+                              <span className="block text-[14px] font-black text-[#ea580c]">₹{ord.total.toLocaleString('en-IN')}</span>
+                              <span className="block text-[11px] font-semibold text-[#86868b]">{itemCount(ord)}</span>
+                            </td>
+                            <td className="py-3 px-2.5">
+                              <span className={`inline-flex px-2 py-0.5 rounded-md border text-[10px] font-black uppercase tracking-wider ${paymentBadge(ord)}`}>{ord.paymentStatus}</span>
+                              <span className="block mt-1 font-mono text-[11px] text-[#86868b] whitespace-nowrap">{ord.paymentId ?? '—'}</span>
+                            </td>
+                            <td className="py-3 px-2.5">
+                              <select
+                                value={ord.orderStatus}
+                                onChange={(e) => changeOrderStatus(ord, e.target.value as OrderStatus)}
+                                disabled={ord.orderStatus === 'Cancelled'}
+                                aria-label={`Status for ${ord.orderNumber}`}
+                                title={ord.orderStatus === 'Cancelled' ? 'Cancelled orders are closed; their stock was returned' : 'Changing the status emails the customer'}
+                                className={`px-2.5 py-1.5 rounded-lg text-[10.5px] font-black uppercase tracking-wider border cursor-pointer disabled:cursor-not-allowed ${orderStatusStyle(ord.orderStatus)}`}
+                              >
+                                {ORDER_STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}
+                              </select>
+                            </td>
+                            <td className="py-3 px-2.5 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button type="button" onClick={() => setShiprocketOrderId(ord.id)} className="px-2.5 py-1.5 border border-[#ea580c] text-[#ea580c] hover:bg-[#fff2e8] rounded-lg text-[11px] font-extrabold whitespace-nowrap">{shipLabel(ord)}</button>
+                                <button type="button" onClick={() => openInvoice(ord)} title="Open the invoice to print or save as PDF" className="px-2.5 py-1.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-lg text-[11px] font-extrabold inline-flex items-center gap-1 shadow-sm">
+                                  <PanelIcon name="receipt" size={13} /> Invoice
+                                </button>
+                                <button type="button" onClick={() => setOrderDetailsId(ord.id)} className="px-2.5 py-1.5 bg-[#f5f5f7] hover:bg-[#1d1d1f] hover:text-white text-[#1d1d1f] border border-[#e5e5ea] rounded-lg text-[11px] font-extrabold transition-colors">Details</button>
                               </div>
-                            ))}
-                          </td>
-                          <td className="py-4 px-4 text-[#6e6e73] font-semibold">{ord.date}</td>
-                          <td className="py-4 px-4 font-black text-[#1d1d1f]">₹{ord.total.toLocaleString()}</td>
-                          <td className="py-4 px-4">
-                            <span className="font-semibold block text-[13px]">{ord.paymentMethod}</span>
-                            <span
-                              className={`text-[11px] font-black uppercase ${ord.paymentStatus === 'Paid' ? 'text-emerald-600' : 'text-amber-600'
-                                }`}
-                            >
-                              ● {ord.paymentStatus}
-                            </span>
-                          </td>
-                          <td className="py-4 px-4">
-                            <select
-                              value={ord.orderStatus}
-                              onChange={(e) => changeOrderStatus(ord, e.target.value as OrderStatus)}
-                              disabled={ord.orderStatus === 'Cancelled'}
-                              title={ord.orderStatus === 'Cancelled' ? 'Cancelled orders are closed; their stock was returned' : undefined}
-                              className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border cursor-pointer disabled:cursor-not-allowed ${orderStatusStyle(ord.orderStatus)}`}
-                            >
-                              {ORDER_STATUSES.map((status) => (
-                                <option key={status} value={status}>{status}</option>
-                              ))}
-                            </select>
-                          </td>
-                          <td className="py-4 px-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <button
-                                onClick={() => setOrderDetailsId(ord.id)}
-                                className="px-4 py-1.5 bg-[#1d1d1f] hover:bg-black text-white rounded-full text-[12px] font-extrabold transition-all whitespace-nowrap"
-                              >
-                                Details
-                              </button>
-                              <button
-                                onClick={() => openInvoice(ord)}
-                                className="px-4 py-1.5 bg-[#f5f5f7] hover:bg-[#fff2e8] text-[#ea580c] border border-[#e5e5ea] rounded-full text-[12px] font-extrabold transition-all"
-                              >
-                                Invoice
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* ========================================================================= */}
           {/* 8b. CUSTOMERS TAB */}
@@ -3519,32 +3323,32 @@ export default function EcommerceAdminPanel() {
           {/* 9. POS TERMINAL (Live Point of Sale Register) */}
           {/* ========================================================================= */}
           {activeTab === 'pos-terminal' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Product Grid on Left */}
-              <div className="lg:col-span-7 space-y-6">
-                <div className="bg-white p-6 rounded-[32px] border border-[#e5e5ea] shadow-sm space-y-4">
-                  <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Catalog Selector</h3>
+              <div className="lg:col-span-8 space-y-5">
+                <div className="bg-white p-5 rounded-[28px] border border-[#e5e5ea] shadow-sm space-y-3">
+                  <h3 className="text-lg font-bold tracking-tight text-[#1d1d1f]">Catalog Selector</h3>
                   <div className="relative">
                     <input
                       type="text"
                       placeholder="Search product by title, SKU, or category..."
                       value={posSearchTerm}
                       onChange={(e) => setPosSearchTerm(e.target.value)}
-                      className="w-full pl-5 pr-14 sm:pr-28 py-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[14px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] font-semibold"
+                      className="w-full pl-5 pr-14 sm:pr-28 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c] font-semibold"
                     />
                     <button
                       onClick={() => setIsPosCameraOpen(true)}
                       aria-label="Scan a QR code with the camera"
-                      className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 sm:px-4 py-2 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[12px] font-extrabold shadow-sm flex items-center gap-1.5"
+                      className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 sm:px-4 py-1.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[11px] font-extrabold shadow-sm flex items-center gap-1.5"
                     >
-                      <span className="flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg></span>
+                      <span className="flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg></span>
                       <span className="hidden sm:inline">Scan</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Items Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
                   {products
                     .filter(
                       (p) =>
@@ -3555,33 +3359,33 @@ export default function EcommerceAdminPanel() {
                     .map((prod) => (
                       <div
                         key={prod.id}
-                        className="bg-white border border-[#e5e5ea] rounded-[28px] p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                        className="bg-white border border-[#e5e5ea] rounded-[24px] p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
                       >
-                        <div className="flex gap-4 items-start">
+                        <div className="flex gap-3 items-start">
                           <img
                             src={prod.image}
                             alt={prod.name}
-                            className="w-16 h-16 rounded-2xl object-cover border border-[#e5e5ea] bg-white flex-shrink-0"
+                            className="w-14 h-14 rounded-xl object-cover border border-[#e5e5ea] bg-white shrink-0"
                           />
-                          <div>
-                            <span className="text-[10px] font-black text-[#ea580c] uppercase tracking-wider block">
+                          <div className="min-w-0 flex-1">
+                            <span className="text-[9px] font-black text-[#ea580c] uppercase tracking-wider block">
                               {prod.category}
                             </span>
-                            <h4 className="font-bold text-[#1d1d1f] text-[14px] leading-snug line-clamp-2">
+                            <h4 className="font-bold text-[#1d1d1f] text-[13px] leading-snug line-clamp-2">
                               {prod.name}
                             </h4>
-                            <span className="font-black text-[#1d1d1f] text-[16px] block mt-1">
+                            <span className="font-black text-[#1d1d1f] text-[15px] block mt-1">
                               ₹{prod.price.toLocaleString()}
                             </span>
                           </div>
                         </div>
 
-                        <div className="pt-4 mt-3 border-t border-[#e5e5ea] flex justify-between items-center">
+                        <div className="pt-3 mt-2.5 border-t border-[#e5e5ea] flex justify-between items-center">
                           <span className="text-[11px] text-[#86868b] font-semibold">Stock: {prod.stock}</span>
                           <button
                             onClick={() => addToPosCart(prod)}
                             disabled={prod.stock <= 0}
-                            className={`px-4 py-2 rounded-full text-[12px] font-black transition-all ${prod.stock > 0
+                            className={`px-3 py-1.5 rounded-full text-[11px] font-black transition-all ${prod.stock > 0
                               ? 'bg-[#f5f5f7] hover:bg-[#fff2e8] text-[#ea580c] hover:border-[#ea580c] border border-[#e5e5ea]'
                               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                               }`}
@@ -3594,138 +3398,104 @@ export default function EcommerceAdminPanel() {
                 </div>
               </div>
 
-              {/* Live Cart / Billing Slip on Right */}
-              <div className="lg:col-span-5 bg-white border border-[#e5e5ea] rounded-[36px] p-7 shadow-sm flex flex-col justify-between sticky top-6">
-                <div>
-                  <div className="flex justify-between items-center pb-4 border-b border-[#e5e5ea]">
-                    <div>
-                      <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Current Bill</h3>
-                      <p className="text-[12px] text-[#86868b] font-semibold">Terminal #01 • Walk-in Sale</p>
-                    </div>
-                    {posCart.length > 0 && (
-                      <button
-                        onClick={() => setPosCart([])}
-                        className="text-[12px] text-red-500 hover:text-red-700 font-bold"
-                      >
-                        Clear All
-                      </button>
-                    )}
+              {/* Compact Current Bill Card */}
+              <div className="lg:col-span-4 bg-white border border-[#e5e5ea] rounded-[24px] p-4 shadow-sm flex flex-col gap-2.5 sticky top-6 self-start w-full">
+                {/* Header */}
+                <div className="flex justify-between items-center pb-2.5 border-b border-[#e5e5ea]">
+                  <div>
+                    <h3 className="text-[14px] font-black text-[#1d1d1f] uppercase tracking-wide">Current Bill</h3>
+                    <p className="text-[10px] text-[#86868b] font-semibold">Terminal #01 · Walk-in Sale</p>
                   </div>
+                  {posCart.length > 0 && (
+                    <button onClick={() => setPosCart([])} className="text-[11px] text-red-500 hover:text-red-700 font-bold px-2 py-0.5 rounded-full hover:bg-red-50">Clear All</button>
+                  )}
+                </div>
 
-                  {/* Customer Input */}
-                  <div className="my-4">
-                    <div className="flex justify-between items-center mb-1.5 pl-2 pr-1">
-                      <label className="block text-[11px] font-extrabold uppercase tracking-widest text-[#86868b]">
-                        Customer Name
-                      </label>
-                      <div className="flex gap-3">
-                        <button className="text-[10px] font-bold text-[#ea580c] hover:underline" onClick={() => alert('Looking up customer...')}>Lookup</button>
-                        <button className="text-[10px] font-bold text-[#ea580c] hover:underline" onClick={() => setIsNewCustomerModalOpen(true)}>New Reg</button>
-                      </div>
+                {/* Customer Row */}
+                <div className="bg-[#f9f9fb] p-2.5 rounded-2xl border border-[#e5e5ea] space-y-1.5">
+                  <div className="flex justify-between items-center px-1">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#86868b]">Customer Info</span>
+                    <div className="flex gap-2">
+                      <button className="text-[10px] font-bold text-[#ea580c] hover:underline" onClick={() => { setCustomerLookupQuery(posCustomerPhone.trim() || posCustomerName.trim()); setIsCustomerLookupOpen(true); }}>Lookup</button>
+                      <button className="text-[10px] font-bold text-[#ea580c] hover:underline" onClick={() => { setNewCustomerFormName(posCustomerName); setNewCustomerFormPhone(posCustomerPhone); setNewCustomerFormError(''); setIsNewCustomerModalOpen(true); }}>+ New</button>
                     </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
                     <input
                       type="text"
                       value={posCustomerName}
                       onChange={(e) => setPosCustomerName(e.target.value)}
-                      placeholder="Walk-in Customer"
-                      className="w-full px-4 py-2.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold text-[#1d1d1f] focus:outline-none focus:bg-white focus:border-[#ea580c]"
+                      placeholder="Name *"
+                      required
+                      className="w-full px-2.5 py-1.5 bg-white border border-[#e5e5ea] rounded-xl text-[12px] font-semibold text-[#1d1d1f] focus:outline-none focus:border-[#ea580c]"
+                    />
+                    <input
+                      id="pos-customer-phone"
+                      type="tel"
+                      inputMode="numeric"
+                      value={posCustomerPhone}
+                      onChange={(e) => setPosCustomerPhone(e.target.value)}
+                      placeholder="Phone *"
+                      required
+                      className="w-full px-2.5 py-1.5 bg-white border border-[#e5e5ea] rounded-xl text-[12px] font-semibold text-[#1d1d1f] focus:outline-none focus:border-[#ea580c]"
                     />
                   </div>
+                </div>
 
-                  {/* Cart Items List */}
-                  <div className="space-y-3 max-h-72 overflow-y-auto pr-1 my-4">
-                    {posCart.length === 0 ? (
-                      <div className="py-12 text-center text-[#86868b] text-[13px] font-semibold">
-                        Cart is currently empty. Click &quot;+ Add to Bill&quot; from catalog.
-                      </div>
-                    ) : (
-                      posCart.map((item) => (
-                        <div
-                          key={item.product.id}
-                          className="p-3.5 bg-[#f5f5f7] rounded-2xl flex justify-between items-center"
-                        >
-                          <div className="max-w-[170px]">
-                            <span className="font-bold text-[#1d1d1f] text-[13px] block truncate">
-                              {item.product.name}
-                            </span>
-                            <span className="text-[12px] text-[#ea580c] font-black mt-0.5">
-                              ₹{item.product.price.toLocaleString()}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => updatePosQty(item.product.id, -1)}
-                              className="w-7 h-7 rounded-full bg-white border border-[#e5e5ea] font-black text-[13px] hover:bg-[#fff2e8] flex items-center justify-center"
-                            >
-                              -
-                            </button>
-                            <span className="font-black text-[14px] w-5 text-center">{item.quantity}</span>
-                            <button
-                              onClick={() => updatePosQty(item.product.id, 1)}
-                              className="w-7 h-7 rounded-full bg-white border border-[#e5e5ea] font-black text-[13px] hover:bg-[#fff2e8] flex items-center justify-center"
-                            >
-                              +
-                            </button>
-                          </div>
+                {/* Cart Items */}
+                <div className="space-y-1.5 max-h-44 overflow-y-auto pr-0.5 custom-scrollbar">
+                  {posCart.length === 0 ? (
+                    <div className="py-7 text-center text-[#86868b] text-[12px] font-semibold border border-dashed border-[#e5e5ea] rounded-2xl">
+                      Cart empty · Click &quot;+ Add to Bill&quot;
+                    </div>
+                  ) : (
+                    posCart.map((item) => (
+                      <div key={item.product.id} className="p-2 bg-[#f5f5f7] rounded-xl flex justify-between items-center">
+                        <div className="min-w-0 flex-1 mr-2">
+                          <span className="font-bold text-[#1d1d1f] text-[12px] block truncate">{item.product.name}</span>
+                          <span className="text-[11px] text-[#ea580c] font-black">₹{item.product.price.toLocaleString()}</span>
                         </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Calculation Summary & Payment */}
-                <div className="pt-4 border-t border-[#e5e5ea] space-y-4">
-                  <div className="space-y-2 text-[13px] font-semibold text-[#6e6e73]">
-                    <div className="flex justify-between">
-                      <span>Subtotal</span>
-                      <span className="font-bold text-[#1d1d1f]">₹{posSubtotal.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>GST / Tax (18%)</span>
-                      <span className="font-bold text-[#1d1d1f]">₹{posTax.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-[17px] font-black text-[#1d1d1f] pt-2 border-t border-[#e5e5ea]">
-                      <span>Grand Total</span>
-                      <div className="flex items-center text-[#ea580c]">
-                        <span>₹</span>
-                        <input
-                          type="number"
-                          value={posManualTotal !== '' ? posManualTotal : posCalculatedTotal}
-                          onChange={(e) => setPosManualTotal(e.target.value)}
-                          className="w-24 bg-transparent outline-none border-b-2 border-transparent focus:border-[#ea580c] ml-1 text-right py-0"
-                        />
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button onClick={() => updatePosQty(item.product.id, -1)} className="w-5 h-5 rounded-full bg-white border border-[#e5e5ea] font-black text-[11px] hover:bg-[#fff2e8] flex items-center justify-center">-</button>
+                          <span className="font-black text-[12px] w-4 text-center">{item.quantity}</span>
+                          <button onClick={() => updatePosQty(item.product.id, 1)} className="w-5 h-5 rounded-full bg-white border border-[#e5e5ea] font-black text-[11px] hover:bg-[#fff2e8] flex items-center justify-center">+</button>
+                        </div>
                       </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Totals */}
+                <div className="border-t border-[#e5e5ea] pt-2 space-y-1 text-[11.5px] font-semibold text-[#6e6e73]">
+                  <div className="flex justify-between"><span>Subtotal</span><span className="font-bold text-[#1d1d1f]">₹{posSubtotal.toLocaleString()}</span></div>
+                  <div className="flex justify-between"><span>GST (18%)</span><span className="font-bold text-[#1d1d1f]">₹{posTax.toLocaleString()}</span></div>
+                  <div className="flex justify-between items-center text-[14px] font-black text-[#1d1d1f] pt-1 border-t border-[#e5e5ea]">
+                    <span>Total</span>
+                    <div className="flex items-center text-[#ea580c]">
+                      <span>₹</span>
+                      <input type="number" value={posManualTotal !== '' ? posManualTotal : posCalculatedTotal} onChange={(e) => setPosManualTotal(e.target.value)} className="w-20 bg-transparent outline-none border-b border-dashed border-[#ea580c] ml-1 text-right py-0 font-black text-[14px]" />
                     </div>
                   </div>
-
-                  {/* Payment Method Selector */}
-                  <div className="grid grid-cols-3 gap-2">
-                    {(['Cash', 'Card', 'UPI'] as const).map((method) => (
-                      <button
-                        key={method}
-                        onClick={() => setPosPaymentMethod(method)}
-                        className={`py-2 rounded-xl text-[12px] font-black border transition-all ${posPaymentMethod === method
-                          ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white border-transparent shadow-sm'
-                          : 'bg-[#f5f5f7] text-[#6e6e73] border-[#e5e5ea] hover:bg-white'
-                          }`}
-                      >
-                        {method}
-                      </button>
-                    ))}
-                  </div>
-
-                  <button
-                    onClick={handleCompletePosOrder}
-                    disabled={posCart.length === 0}
-                    className={`w-full py-4 rounded-full font-black text-[14px] uppercase tracking-wider transition-all shadow-md ${posCart.length > 0
-                      ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white hover:shadow-lg hover:-translate-y-0.5'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      }`}
-                  >
-                    Complete Checkout (₹{posTotal.toLocaleString()})
-                  </button>
                 </div>
+
+                {/* Payment Method */}
+                <div className="grid grid-cols-3 gap-1.5">
+                  {(['UPI', 'Card', 'COD'] as const).map((method) => (
+                    <button key={method} onClick={() => setPosPaymentMethod(method)}
+                      className={`py-1 rounded-lg text-[11px] font-black border transition-all ${posPaymentMethod === method ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white border-transparent shadow-xs' : 'bg-[#f5f5f7] text-[#6e6e73] border-[#e5e5ea] hover:bg-white'}`}>
+                      {method}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Checkout Button */}
+                <button
+                  onClick={handleCompletePosOrder}
+                  disabled={posCart.length === 0}
+                  className={`w-full py-2.5 rounded-full font-black text-[12px] uppercase tracking-wider transition-all ${posCart.length > 0 ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white shadow-md hover:shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                >
+                  Pay ₹{posTotal.toLocaleString()}
+                </button>
               </div>
             </div>
           )}
@@ -3785,6 +3555,7 @@ export default function EcommerceAdminPanel() {
                             <button
                               onClick={() => {
                                 setExchangeTx(tx);
+                                setExchangeSelected([]);
                                 setIsExchangeModalOpen(true);
                               }}
                               className="px-4 py-1.5 bg-white hover:bg-[#f5f5f7] text-[#1d1d1f] border border-[#e5e5ea] rounded-full text-[12px] font-bold transition-all shadow-sm"
@@ -3808,7 +3579,7 @@ export default function EcommerceAdminPanel() {
           )}
 
           {/* ========================================================================= */}
-          {/* 11. VIDEOS TAB (E-Commerce Product Reels & Video Marketing) */}
+          {/* 11. VIDEOS TAB (Product Video Marketing) */}
           {/* ========================================================================= */}
           {activeTab === 'videos' && (
             <div className="space-y-6">
@@ -3816,13 +3587,13 @@ export default function EcommerceAdminPanel() {
               <div className="bg-white p-6 rounded-[28px] border border-[#e5e5ea] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                   <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f]">Product Video Marketing</h3>
-                  <p className="text-[13px] text-[#86868b] font-semibold">Upload customer demo reels, unboxings & feature reviews</p>
+                  <p className="text-[13px] text-[#86868b] font-semibold">Upload product demos, unboxings & feature reviews</p>
                 </div>
                 <button
                   onClick={() => setIsUploadVideoModalOpen(true)}
                   className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
-                  <span>📹</span>
+                  <PanelIcon name="video" size={16} />
                   <span>Upload New Video</span>
                 </button>
               </div>
@@ -3837,7 +3608,7 @@ export default function EcommerceAdminPanel() {
                     {/* Thumbnail & Video Preview simulation */}
                     <div className="relative h-48 bg-[#1d1d1f] overflow-hidden">
                       <img
-                        src={vid.thumbnail}
+                        src={vid.thumbnail || products.find((p) => p.name === vid.productName)?.image || ''}
                         alt={vid.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                       />
@@ -3858,14 +3629,14 @@ export default function EcommerceAdminPanel() {
                       </span>
                       <h4 className="font-bold text-[#1d1d1f] text-[15px] leading-snug">{vid.title}</h4>
                       <div className="flex justify-between items-center text-[12px] text-[#86868b] font-semibold pt-2 border-t border-[#e5e5ea]">
-                        <span>👀 {vid.views.toLocaleString()} views</span>
+                        <span className="inline-flex items-center gap-1"><PanelIcon name="views" size={14} />{vid.views.toLocaleString()} views</span>
                         <span>{vid.dateAdded}</span>
                       </div>
                     </div>
 
                     <div className="px-6 pb-5 pt-1 flex justify-end gap-3">
                       <button
-                        onClick={() => alert(`Previewing Video URL: ${vid.videoUrl}`)}
+                        onClick={() => setPlayingVideo(vid)}
                         className="text-[12px] text-[#ea580c] font-black hover:underline"
                       >
                         Play Demo
@@ -3891,31 +3662,29 @@ export default function EcommerceAdminPanel() {
               {/* Summary Cards Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {[
-                  { title: 'Total Revenue', value: `₹${products.reduce((sum, p) => sum + p.price * p.stock, 0).toLocaleString()}`, change: '+12.5%', color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg> },
-                  { title: 'Total Orders', value: orders.length.toString(), change: '+8.2%', color: 'text-blue-600', bg: 'bg-blue-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg> },
-                  { title: 'Products Listed', value: products.length.toString(), change: '+3.1%', color: 'text-purple-600', bg: 'bg-purple-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg> },
-                  { title: 'POS Transactions', value: posHistory.length.toString(), change: '+15.7%', color: 'text-orange-600', bg: 'bg-orange-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg> },
+                  { title: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}`, change: `Website ₹${websiteRevenue.toLocaleString('en-IN')} · POS ₹${posRevenue.toLocaleString('en-IN')}`, color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg> },
+                  { title: 'Total Orders', value: orders.length.toString(), change: `${orders.filter((o) => o.orderStatus === 'Delivered').length} delivered · ${orders.filter((o) => o.orderStatus === 'Cancelled').length} cancelled`, color: 'text-blue-600', bg: 'bg-blue-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg> },
+                  { title: 'Products Listed', value: products.length.toString(), change: `${products.filter((p) => p.stock === 0).length} sold out · ${products.reduce((sum, p) => sum + p.stock, 0).toLocaleString('en-IN')} units`, color: 'text-purple-600', bg: 'bg-purple-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg> },
+                  { title: 'POS Transactions', value: posHistory.length.toString(), change: `₹${posRevenue.toLocaleString('en-IN')} in-store sales`, color: 'text-orange-600', bg: 'bg-orange-50', icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg> },
                 ].map((card, i) => (
                   <div key={i} className="bg-white border border-[#e5e5ea] rounded-[28px] p-6 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className={`w-11 h-11 rounded-2xl ${card.bg} flex items-center justify-center ${card.color}`}>{card.icon}</span>
-                      <span className={`text-[12px] font-extrabold ${card.color} ${card.bg} px-2.5 py-1 rounded-full`}>{card.change}</span>
-                    </div>
+                    <span className={`mb-4 w-11 h-11 rounded-2xl ${card.bg} flex items-center justify-center ${card.color}`}>{card.icon}</span>
                     <p className="text-[11px] text-[#86868b] font-bold uppercase tracking-wider mb-1">{card.title}</p>
                     <p className="text-2xl font-black text-[#1d1d1f] tracking-tight">{card.value}</p>
+                    <p className={`mt-1 text-[12px] font-bold ${card.color}`}>{card.change}</p>
                   </div>
                 ))}
               </div>
 
               {/* Sales by Category */}
               <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm">
-                <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] mb-6">Sales by Category</h3>
+                <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] mb-1">Sales by Category</h3>
+                <p className="text-[12px] text-[#86868b] font-semibold mb-6">Website orders (not cancelled) and POS bills.</p>
                 <div className="space-y-4">
                   {categories.map((cat) => {
-                    const catProducts = products.filter(p => p.category === cat.name);
-                    const catRevenue = catProducts.reduce((sum, p) => sum + p.price * p.stock, 0);
-                    const totalRevenue = products.reduce((sum, p) => sum + p.price * p.stock, 0);
-                    const percentage = totalRevenue > 0 ? Math.round((catRevenue / totalRevenue) * 100) : 0;
+                    const catRevenue = soldLines.filter((line) => categoryOfSale(line) === cat.name).reduce((sum, line) => sum + line.amount, 0);
+                    const allSales = soldLines.reduce((sum, line) => sum + line.amount, 0);
+                    const percentage = allSales > 0 ? Math.round((catRevenue / allSales) * 100) : 0;
                     return (
                       <div key={cat.id} className="flex items-center gap-4">
                         <div className="w-32 text-[13px] font-bold text-[#1d1d1f] truncate">{cat.name}</div>
@@ -4030,7 +3799,7 @@ export default function EcommerceAdminPanel() {
                   onClick={() => openBannerModal()}
                   className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
-                  <span>🖼️</span>
+                  <PanelIcon name="image" size={16} />
                   <span>Add New Banner</span>
                 </button>
               </div>
@@ -4059,7 +3828,7 @@ export default function EcommerceAdminPanel() {
                       </div>
                       <span className="absolute top-4 left-4 px-3 py-1 bg-black/60 text-white rounded-full text-[11px] font-black">Slide {idx + 1}</span>
                       {bn.mobileImageUrl && (
-                        <span className="absolute top-4 right-4 px-3 py-1 bg-black/60 text-white rounded-full text-[11px] font-black">📱 Mobile image set</span>
+                        <span className="absolute top-4 right-4 px-3 py-1 bg-black/60 text-white rounded-full text-[11px] font-black inline-flex items-center gap-1"><PanelIcon name="mobile" size={12} />Mobile image set</span>
                       )}
                     </div>
 
@@ -4131,7 +3900,7 @@ export default function EcommerceAdminPanel() {
                   }}
                   className="px-6 py-2.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[13px] font-extrabold shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                 >
-                  <span>📸</span>
+                  <PanelIcon name="camera" size={16} />
                   <span>Add Instagram Post</span>
                 </button>
               </div>
@@ -4173,6 +3942,45 @@ export default function EcommerceAdminPanel() {
           {/* ========================================================================= */}
           {activeTab === 'settings' && (
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              {signedInSubAdmin ? (
+                <div className="lg:col-span-5 bg-white border border-[#e5e5ea] rounded-[28px] p-7 shadow-sm">
+                  <h3 className="text-xl font-bold">Demo sub-admin access</h3>
+                  <p className="mt-2 text-sm text-[#6e6e73]">Only the super admin can manage demo accounts. Ask your admin to update your assigned modules.</p>
+                </div>
+              ) : (
+                <section className="lg:col-span-5 bg-white border border-[#e5e5ea] rounded-[28px] p-7 shadow-sm">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div><h3 className="text-xl font-bold">Demo sub-admin access</h3><p className="mt-1 text-sm text-[#6e6e73]">Create sample staff logins and choose which admin modules each person can open. Demo only; credentials are stored in this browser.</p></div>
+                    <span className="px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-extrabold uppercase tracking-wide">Demo access</span>
+                  </div>
+                  <div className="mt-6 grid sm:grid-cols-3 gap-3">
+                    <input aria-label="Sub-admin name" placeholder="Staff name" value={subAdminDraft.name} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, name: e.target.value })} className="px-4 py-3 rounded-xl bg-[#f5f5f7] border border-[#e5e5ea] text-sm" />
+                    <input aria-label="Sub-admin email" type="email" placeholder="Email address" value={subAdminDraft.email} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, email: e.target.value })} className="px-4 py-3 rounded-xl bg-[#f5f5f7] border border-[#e5e5ea] text-sm" />
+                    <input aria-label="Sub-admin password" placeholder="Demo password" value={subAdminDraft.password} onChange={(e) => setSubAdminDraft({ ...subAdminDraft, password: e.target.value })} className="px-4 py-3 rounded-xl bg-[#f5f5f7] border border-[#e5e5ea] text-sm" />
+                  </div>
+                  <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {SUBADMIN_MODULES.map((module) => <label key={module.id} className="flex items-center gap-2.5 rounded-xl bg-[#f8f8fa] px-3 py-2.5 text-sm font-semibold"><input type="checkbox" checked={subAdminDraft.permissions.includes(module.id)} onChange={() => setSubAdminDraft({ ...subAdminDraft, permissions: toggleInList(subAdminDraft.permissions, module.id) as AdminTab[] })} className="accent-[#ea580c]" />{module.label}</label>)}
+                  </div>
+                  {subAdminError && <p role="alert" className="mt-4 text-sm font-bold text-red-600">{subAdminError}</p>}
+                  <button onClick={() => {
+                    const email = subAdminDraft.email.trim().toLowerCase();
+                    if (!subAdminDraft.name.trim() || !email || !subAdminDraft.password.trim() || !subAdminDraft.permissions.length) return setSubAdminError('Enter the staff details and select at least one module.');
+                    if (email === adminEmail.toLowerCase() || demoSubAdmins.some((account) => account.id !== editingSubAdminId && account.email.toLowerCase() === email)) return setSubAdminError('That email is already in use.');
+                    if (editingSubAdminId) setDemoSubAdmins(demoSubAdmins.map((account) => account.id === editingSubAdminId ? { ...subAdminDraft, id: editingSubAdminId, name: subAdminDraft.name.trim(), email } : account));
+                    else setDemoSubAdmins([{ ...subAdminDraft, id: `sub-${Date.now()}`, name: subAdminDraft.name.trim(), email }, ...demoSubAdmins]);
+                    setSubAdminDraft({ name: '', email: '', password: '', permissions: [] });
+                    setEditingSubAdminId(null);
+                    setSubAdminError('');
+                  }} className="mt-5 px-5 py-3 rounded-full bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white text-sm font-extrabold">{editingSubAdminId ? 'Save sub-admin access' : 'Add demo sub-admin'}</button>
+                  <div className="mt-6 space-y-3">
+                    {demoSubAdmins.map((account) => <div key={account.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e5e5ea] p-4">
+                      <div className="min-w-[200px]"><p className="font-bold">{account.name} <span className="ml-2 text-[11px] uppercase tracking-wide text-[#ea580c]">Sub-admin</span></p><p className="text-sm text-[#6e6e73]">{account.email} · Password: {account.password}</p><p className="mt-1 text-xs text-[#86868b]">{account.permissions.map((permission) => TAB_TITLES[permission]).join(' · ')}</p></div>
+                      <div className="flex gap-2"><button onClick={() => { setEditingSubAdminId(account.id); setSubAdminDraft({ name: account.name, email: account.email, password: account.password, permissions: account.permissions }); setSubAdminError(''); }} className="px-3 py-2 rounded-full bg-[#f5f5f7] text-xs font-bold">Edit access</button><button onClick={() => setDemoSubAdmins(demoSubAdmins.filter((item) => item.id !== account.id))} className="px-3 py-2 rounded-full bg-red-50 text-red-600 text-xs font-bold">Remove</button></div>
+                    </div>)}
+                    {!demoSubAdmins.length && <p className="text-sm text-[#86868b]">No sub-admin demo accounts yet.</p>}
+                  </div>
+                </section>
+              )}
               {/* Account Overview */}
               <div className="lg:col-span-2 bg-white border border-[#e5e5ea] rounded-[36px] p-8 shadow-sm space-y-5 h-fit">
                 <div className="flex items-center gap-4">
@@ -4199,7 +4007,7 @@ export default function EcommerceAdminPanel() {
                       aria-label={visiblePasswords.includes('active') ? 'Hide password' : 'Show password'}
                       className="w-9 h-9 rounded-full bg-white border border-[#e5e5ea] hover:border-[#ea580c] text-[15px]"
                     >
-                      {visiblePasswords.includes('active') ? '🙈' : '👁️'}
+                      <PanelIcon name={visiblePasswords.includes('active') ? 'eye-off' : 'eye'} size={16} />
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -4230,6 +4038,7 @@ export default function EcommerceAdminPanel() {
                     onClick={() => {
                       if (!confirm('Reset all products, orders, customers, coupons, banners and settings to the original sample data?')) return;
                       resetDemoData();
+                      posHistoryStore.reset();
                       notify('Demo data reset to the original samples');
                     }}
                     className="w-full py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-full text-[13px] transition-all border border-red-200"
@@ -4271,7 +4080,7 @@ export default function EcommerceAdminPanel() {
                               aria-label={shown ? 'Hide password' : 'Show password'}
                               className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full hover:bg-white text-[15px]"
                             >
-                              {shown ? '🙈' : '👁️'}
+                              <PanelIcon name={shown ? 'eye-off' : 'eye'} size={16} />
                             </button>
                           )}
                         </div>
@@ -4691,7 +4500,7 @@ export default function EcommerceAdminPanel() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-sm w-full shadow-2xl space-y-6 text-center font-mono">
             <div className="space-y-1">
-              <span className="text-2xl">🛍️</span>
+              <PanelIcon name="bag" size={22} />
               <h3 className="text-lg font-black text-[#1d1d1f]">COMMERCE HUB</h3>
               <p className="text-[11px] text-[#86868b]">Receipt: {posReceiptModal.receiptNo}</p>
               <p className="text-[10px] text-[#86868b]">{posReceiptModal.date}</p>
@@ -4699,6 +4508,7 @@ export default function EcommerceAdminPanel() {
 
             <div className="border-t border-b border-dashed border-[#e5e5ea] py-4 text-left text-[12px] space-y-2">
               <p>Customer: {posReceiptModal.customer}</p>
+              {posReceiptModal.customerPhone && <p>Phone: {posReceiptModal.customerPhone}</p>}
               <p>Cashier: {posReceiptModal.cashier}</p>
               <p>Method: {posReceiptModal.paymentMethod}</p>
 
@@ -4745,29 +4555,52 @@ export default function EcommerceAdminPanel() {
             </div>
 
             <div className="space-y-3">
-              <p className="text-[13px] font-bold text-[#1d1d1f]">Select items to exchange or return:</p>
-              {exchangeTx.items.map((it, idx) => (
-                <label key={idx} className="flex items-center gap-3 p-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl cursor-pointer hover:border-[#ea580c]/50 transition-colors">
-                  <input type="checkbox" className="w-4 h-4 text-[#ea580c] rounded border-[#e5e5ea] focus:ring-[#ea580c]" />
+              <p className="text-[13px] font-bold text-[#1d1d1f]">Select the items the customer is bringing back. They go back into stock on the website too.</p>
+              {exchangeTx.items.map((it, idx) => {
+                const returned = exchangeTx.returnedItems?.includes(idx);
+                return (
+                <label key={idx} className={`flex items-center gap-3 p-3.5 bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl transition-colors ${returned ? 'opacity-60' : 'cursor-pointer hover:border-[#ea580c]/50'}`}>
+                  <input
+                    type="checkbox"
+                    disabled={returned}
+                    checked={returned || exchangeSelected.includes(idx)}
+                    onChange={(e) => setExchangeSelected(e.target.checked ? [...exchangeSelected, idx] : exchangeSelected.filter((i) => i !== idx))}
+                    className="w-4 h-4 accent-[#ea580c] rounded border-[#e5e5ea]"
+                  />
                   <div className="flex-1">
                     <span className="text-[13px] font-bold text-[#1d1d1f] block">{it.name}</span>
-                    <span className="text-[11px] text-[#86868b] font-semibold">Qty: {it.qty}</span>
+                    <span className="text-[11px] text-[#86868b] font-semibold">Qty: {it.qty}{returned ? ' · already returned' : ''}</span>
                   </div>
                   <span className="text-[13px] font-black text-[#ea580c]">₹{(it.price * it.qty).toLocaleString()}</span>
                 </label>
-              ))}
+                );
+              })}
             </div>
 
             <div className="pt-2">
               <button
+                disabled={exchangeSelected.length === 0}
                 onClick={() => {
-                  alert(`Successfully processed exchange for ${exchangeTx.customer}'s order!`);
+                  const picked = exchangeSelected.map((idx) => exchangeTx.items[idx]);
+                  // Put back exactly the size/colour the sale took; older bills fall back to the product's first variant.
+                  const lines = picked.flatMap((it) => {
+                    const product = products.find((p) => p.id === it.productId) ?? products.find((p) => p.name === it.name);
+                    if (!product) return [];
+                    const taken = exchangeTx.stockLines?.filter((l) => l.productId === product.id);
+                    if (taken?.length) return taken;
+                    const size = Object.keys(product.variantStock)[0] ?? STANDARD;
+                    const color = Object.keys(product.variantStock[size] ?? {})[0] ?? STANDARD;
+                    return [{ productId: product.id, size, color, qty: it.qty }];
+                  });
+                  returnToStock(lines);
+                  setPosHistory(posHistory.map((tx) => (tx.id === exchangeTx.id ? { ...tx, returnedItems: [...(tx.returnedItems ?? []), ...exchangeSelected] } : tx)));
                   setIsExchangeModalOpen(false);
+                  notify(`${picked.reduce((sum, it) => sum + it.qty, 0)} item(s) from ${exchangeTx.receiptNo} returned to stock`);
                 }}
-                className="w-full py-4 bg-[#1d1d1f] hover:bg-black text-white font-extrabold text-[14px] rounded-full shadow-md transition-all active:scale-95 flex justify-center items-center gap-2"
+                className="w-full py-4 bg-[#1d1d1f] hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold text-[14px] rounded-full shadow-md transition-all active:scale-95 flex justify-center items-center gap-2"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-                Confirm Exchange
+                Return selected to stock
               </button>
             </div>
           </div>
@@ -4832,6 +4665,14 @@ export default function EcommerceAdminPanel() {
                   className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-mono font-bold"
                 />
               </div>
+              <div>
+                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Video URL</label>
+                <input type="url" value={newVidVideoUrl} onChange={(e) => setNewVidVideoUrl(e.target.value)} placeholder="https://… .mp4 file or YouTube link" className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Cover image URL</label>
+                <input type="url" value={newVidThumbnail} onChange={(e) => setNewVidThumbnail(e.target.value)} placeholder="Leave empty to use the product photo" className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-semibold" />
+              </div>
             </div>
 
             <div className="flex gap-3">
@@ -4846,13 +4687,16 @@ export default function EcommerceAdminPanel() {
                       duration: newVidDuration || '01:30',
                       views: 0,
                       thumbnail: newVidThumbnail,
-                      videoUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
-                      dateAdded: 'Today',
+                      videoUrl: newVidVideoUrl.trim() || DEMO_VIDEO_URL,
+                      dateAdded: localDate(),
                     },
                     ...videos,
                   ]);
                   setIsUploadVideoModalOpen(false);
                   setNewVidTitle('');
+                  setNewVidVideoUrl('');
+                  setNewVidThumbnail('');
+                  notify('Video published — it now shows on the storefront');
                 }}
                 className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md"
               >
@@ -5142,28 +4986,22 @@ export default function EcommerceAdminPanel() {
               {/* Shipping */}
               <div className={box}>
                 <div className="flex flex-wrap justify-between items-center gap-3">
-                  <p className={`${heading} !mb-0`}>Shipping</p>
-                  {!ord.shipment && ord.orderStatus !== 'Cancelled' && (
-                    <button onClick={() => openShipmentForm(ord)} className="px-4 py-2 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[12px] font-extrabold shadow-sm">
-                      🚚 Create Shipment
+                  <p className={`${heading} !mb-0`}>Shipping · Shiprocket</p>
+                  {ord.orderStatus !== 'Cancelled' && (
+                    <button onClick={() => setShiprocketOrderId(ord.id)} className="px-4 py-2 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white rounded-full text-[12px] font-extrabold shadow-sm inline-flex items-center gap-1.5">
+                      <PanelIcon name="truck" size={15} /> {ord.shipment && ord.shipment.status !== 'Cancelled' ? 'View shipment' : 'Create shipment'}
                     </button>
                   )}
                 </div>
                 {ord.shipment ? (
-                  <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
-                    <div className="text-[13px] font-semibold text-[#1d1d1f] space-y-0.5">
-                      <p><span className="text-[#6e6e73]">Courier:</span> {ord.shipment.courier} • <span className="font-mono">AWB {ord.shipment.awb}</span></p>
-                      <p><span className="text-[#6e6e73]">Parcel:</span> {ord.shipment.weightKg} kg • {ord.shipment.dimensions} • from {ord.shipment.pickup}</p>
-                      <p><span className="text-[#6e6e73]">Status:</span> <span className="font-black text-blue-700">{ord.shipment.status}</span></p>
-                    </div>
-                    {ord.shipment.status !== 'Delivered' && ord.orderStatus !== 'Cancelled' && (
-                      <button onClick={() => advanceShipment(ord)} className="px-4 py-2 bg-white border border-[#e5e5ea] hover:border-[#ea580c] text-[#1d1d1f] rounded-full text-[12px] font-extrabold">
-                        {ord.shipment.status === 'Created' ? 'Mark Picked Up → In Transit' : 'Mark Delivered'}
-                      </button>
-                    )}
+                  <div className="mt-3 text-[13px] font-semibold text-[#1d1d1f] space-y-0.5">
+                    <p><span className="text-[#6e6e73]">Shiprocket status:</span> <span className={`font-black ${ord.shipment.status === 'Cancelled' ? 'text-red-600' : 'text-blue-700'}`}>{ord.shipment.remoteStatus ?? ord.shipment.status}</span></p>
+                    {ord.shipment.srOrderId && <p><span className="text-[#6e6e73]">Shiprocket order:</span> {ord.shipment.srOrderId} • <span className="text-[#6e6e73]">Shipment:</span> {ord.shipment.srShipmentId}</p>}
+                    <p><span className="text-[#6e6e73]">Courier:</span> {ord.shipment.awb ? <>{ord.shipment.courier} • <span className="font-mono">AWB {ord.shipment.awb}</span></> : 'Not assigned yet'}</p>
+                    <p><span className="text-[#6e6e73]">Parcel:</span> {ord.shipment.weightKg} kg • {ord.shipment.dimensions} • from {ord.shipment.pickup}</p>
                   </div>
                 ) : (
-                  <p className="mt-2 text-[13px] text-[#86868b] font-semibold">No shipment yet. Create one to get an AWB tracking number for the courier.</p>
+                  <p className="mt-2 text-[13px] text-[#86868b] font-semibold">No shipment yet. Create a Shiprocket order with the packed parcel details.</p>
                 )}
               </div>
 
@@ -5176,7 +5014,7 @@ export default function EcommerceAdminPanel() {
                       ✉️ Send Status Update
                     </button>
                     <button onClick={() => emailCustomer(ord, 'Invoice')} className="px-4 py-2 bg-white border border-[#e5e5ea] hover:border-[#ea580c] text-[#1d1d1f] rounded-full text-[12px] font-extrabold">
-                      🧾 Send Invoice
+                    <PanelIcon name="receipt" size={15} /> Send Invoice
                     </button>
                   </div>
                 </div>
@@ -5205,63 +5043,22 @@ export default function EcommerceAdminPanel() {
       })()}
 
       {/* ========================================================================= */}
-      {/* MODAL 7c: CREATE SHIPMENT (courier booking, demo) */}
+      {/* MODAL 7c: SHIPROCKET SHIPMENT (Kaavu's dialog, simulated) */}
       {/* ========================================================================= */}
-      {shipDraft && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[55] flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-md w-full shadow-2xl space-y-5">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-xl font-bold text-[#1d1d1f]">Create Shipment</h3>
-                <p className="text-[12px] text-[#86868b] font-semibold">{orders.find((o) => o.id === shipDraft.orderId)?.orderNumber} • demo courier booking</p>
-              </div>
-              <button onClick={() => setShipDraft(null)} className="w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] flex items-center justify-center text-sm font-bold">✕</button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Courier</label>
-                <select value={shipDraft.courier} onChange={(e) => setShipDraft({ ...shipDraft, courier: e.target.value })} className="w-full px-4 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold">
-                  {['Delhivery', 'Blue Dart', 'Xpressbees', 'Ekart', 'DTDC'].map((c) => <option key={c}>{c}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Pickup Location</label>
-                <select value={shipDraft.pickup} onChange={(e) => setShipDraft({ ...shipDraft, pickup: e.target.value })} className="w-full px-4 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold">
-                  {['Bengaluru Warehouse', 'Mumbai Hub', 'Chennai Store'].map((c) => <option key={c}>{c}</option>)}
-                </select>
-              </div>
-            </div>
-            <div>
-              <p className="text-[11px] font-extrabold uppercase text-[#86868b] mb-1 pl-2">Packed Parcel Measurements</p>
-              <p className="text-[12px] text-[#86868b] font-semibold mb-2 pl-2">Measure the sealed parcel, including its packaging.</p>
-              <div className="grid grid-cols-4 gap-2">
-                {([['weightKg', 'Weight kg'], ['length', 'L cm'], ['breadth', 'B cm'], ['height', 'H cm']] as const).map(([key, label]) => (
-                  <label key={key} className="block">
-                    <span className="block text-[10px] font-extrabold uppercase text-[#86868b] mb-1 text-center">{label}</span>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={shipDraft[key]}
-                      onChange={(e) => { setShipDraft({ ...shipDraft, [key]: e.target.value }); setShipError(''); }}
-                      className="w-full px-2 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-full text-[13px] font-bold text-center"
-                    />
-                  </label>
-                ))}
-              </div>
-            </div>
-            {shipError && <p role="alert" className="text-red-500 text-[13px] font-bold bg-red-50 px-4 py-2.5 rounded-xl">{shipError}</p>}
-            <div className="flex gap-3">
-              <button onClick={handleCreateShipment} className="flex-1 py-3.5 bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-extrabold text-[13px] rounded-full shadow-md">
-                Book Courier & Get AWB
-              </button>
-              <button onClick={() => setShipDraft(null)} className="px-6 py-3.5 bg-white border border-[#e5e5ea] hover:bg-[#f5f5f7] text-[#6e6e73] font-bold text-[13px] rounded-full">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {shiprocketOrderId && (() => {
+        const ord = orders.find((o) => o.id === shiprocketOrderId);
+        if (!ord) return null;
+        return (
+          <ShiprocketDialog
+            order={ord}
+            onClose={() => setShiprocketOrderId(null)}
+            onSave={(changes, message) => {
+              updateOrder(ord.id, (o) => ({ ...o, ...changes }));
+              notify(message);
+            }}
+          />
+        );
+      })()}
 
       {/* ========================================================================= */}
       {/* MODAL 8a: CUSTOMER ORDER HISTORY */}
@@ -5734,31 +5531,127 @@ export default function EcommerceAdminPanel() {
 
       {/* POS NEW CUSTOMER MODAL */}
       {isNewCustomerModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-[#e5e5ea] rounded-[36px] p-8 max-w-sm w-full shadow-2xl">
-            <h3 className="text-xl font-bold text-[#1d1d1f] mb-4">New Registration</h3>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="pos-new-customer-title">
+          <div className="bg-white border border-[#e5e5ea] rounded-[28px] p-7 max-w-sm w-full shadow-2xl">
+            <div className="flex items-start justify-between gap-4 mb-5">
+              <div><h3 id="pos-new-customer-title" className="text-xl font-bold text-[#1d1d1f]">New Registration</h3><p className="mt-1 text-[12px] text-[#86868b]">Customer name and phone are required.</p></div>
+              <button type="button" onClick={() => { setIsNewCustomerModalOpen(false); setNewCustomerFormError(''); }} aria-label="Close new customer registration" className="w-9 h-9 shrink-0 rounded-full border border-[#e5e5ea] text-[#6e6e73] hover:bg-[#f5f5f7] flex items-center justify-center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
+            </div>
             <input
               type="text"
-              placeholder="Customer Name"
+              placeholder="Customer Name *"
               value={newCustomerFormName}
               onChange={(e) => setNewCustomerFormName(e.target.value)}
+              required
               className="w-full px-5 py-3 mb-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c]"
             />
-            <button
-              onClick={() => {
-                if (!newCustomerFormName) return;
-                setPosCustomerName(newCustomerFormName);
-                setIsNewCustomerModalOpen(false);
-                setNewCustomerFormName('');
-                alert(`Successfully registered ${newCustomerFormName}!`);
-              }}
-              className="w-full py-3.5 bg-[#1d1d1f] hover:bg-black text-white font-extrabold text-[13px] rounded-full shadow-md"
-            >
-              Register & Select
-            </button>
+            <input type="tel" inputMode="numeric" autoComplete="tel" placeholder="Phone Number *" value={newCustomerFormPhone} onChange={(e) => setNewCustomerFormPhone(e.target.value)} required className="w-full px-5 py-3 mb-4 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c]" />
+            {newCustomerFormError && <p role="alert" className="mb-4 text-[12px] font-bold text-red-600">{newCustomerFormError}</p>}
+            <div className="flex gap-3">
+              <button onClick={() => { setIsNewCustomerModalOpen(false); setNewCustomerFormError(''); }} className="flex-1 py-3.5 bg-white border border-[#e5e5ea] text-[#6e6e73] font-bold text-[13px] rounded-full">Cancel</button>
+              <button
+                onClick={() => {
+                  const name = newCustomerFormName.trim();
+                  const phone = newCustomerFormPhone.trim();
+                  if (name.length < 2 || phone.replace(/\D/g, '').length < 10) {
+                    setNewCustomerFormError('Enter a customer name and a valid 10-digit phone number.');
+                    return;
+                  }
+                  setPosCustomerName(name);
+                  setPosCustomerPhone(phone);
+                  setIsNewCustomerModalOpen(false);
+                  setNewCustomerFormName('');
+                  setNewCustomerFormPhone('');
+                  setNewCustomerFormError('');
+                }}
+                className="flex-1 py-3.5 bg-[#1d1d1f] hover:bg-black text-white font-extrabold text-[13px] rounded-full shadow-md"
+              >Register & Select</button>
+            </div>
           </div>
         </div>
       )}
+      {/* POS CUSTOMER LOOKUP */}
+      {isCustomerLookupOpen && (() => {
+        const digits = (value: string) => value.replace(/\D/g, '');
+        // Saved customers first, then walk-in buyers from earlier POS bills.
+        const candidates = [
+          ...customers.map((c) => ({ key: c.id, name: c.name, phone: c.phone, email: c.email, note: `Customer since ${c.registeredDate}` })),
+          ...posHistory
+            .filter((tx) => tx.customer.trim() && !/^walk-?in/i.test(tx.customer.trim()))
+            .filter((tx, i, all) => all.findIndex((t) => digits(t.customerPhone ?? '') === digits(tx.customerPhone ?? '') && t.customer === tx.customer) === i)
+            .filter((tx) => { const d = digits(tx.customerPhone ?? '').slice(-10); return d.length < 10 || !customers.some((c) => digits(c.phone).endsWith(d)); })
+            .map((tx) => ({ key: tx.id, name: tx.customer, phone: tx.customerPhone ?? '', email: '', note: `Walk-in · last bill ${tx.receiptNo}` })),
+        ];
+        const q = customerLookupQuery.trim().toLowerCase();
+        const qDigits = digits(q);
+        const matches = candidates.filter((c) => !q
+          || c.name.toLowerCase().includes(q)
+          || c.email.toLowerCase().includes(q)
+          || (qDigits.length >= 3 && digits(c.phone).includes(qDigits)));
+        const close = () => setIsCustomerLookupOpen(false);
+        const pick = (c: (typeof candidates)[number]) => {
+          setPosCustomerName(c.name);
+          setPosCustomerPhone(c.phone);
+          close();
+          if (digits(c.phone).length < 10) {
+            notify(`${c.name} has no phone number saved — please add one`);
+            setTimeout(() => document.getElementById('pos-customer-phone')?.focus(), 50);
+          } else {
+            notify(`${c.name} added to the bill`);
+          }
+        };
+        return (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="pos-lookup-title" onKeyDown={(e) => e.key === 'Escape' && close()}>
+            <div className="bg-white border border-[#e5e5ea] rounded-[28px] p-6 sm:p-7 max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div><h3 id="pos-lookup-title" className="text-xl font-bold text-[#1d1d1f]">Find customer</h3><p className="mt-1 text-[12px] text-[#86868b]">Search by name, phone number or email.</p></div>
+                <button type="button" onClick={close} aria-label="Close customer lookup" className="w-9 h-9 shrink-0 rounded-full border border-[#e5e5ea] text-[#6e6e73] hover:bg-[#f5f5f7] flex items-center justify-center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
+              </div>
+              <input
+                type="search"
+                autoFocus
+                value={customerLookupQuery}
+                onChange={(e) => setCustomerLookupQuery(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && matches.length === 1) pick(matches[0]); }}
+                placeholder="e.g. Meera or 98450"
+                aria-label="Search customers"
+                className="w-full px-5 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-[14px] text-[#1d1d1f] focus:outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20"
+              />
+              <p className="mt-3 mb-2 text-[11px] font-extrabold uppercase tracking-widest text-[#86868b]">{matches.length} {matches.length === 1 ? 'match' : 'matches'}</p>
+              <div className="overflow-y-auto -mx-1 px-1 space-y-1.5 min-h-0">
+                {matches.map((c) => (
+                  <button key={c.key} type="button" onClick={() => pick(c)} className="w-full text-left p-3 rounded-2xl border border-[#e5e5ea] hover:border-[#ea580c] hover:bg-[#fff2e8] transition-colors flex items-center gap-3">
+                    <span className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-[#ea580c] to-[#f97316] text-white text-[13px] font-black flex items-center justify-center">{c.name.trim().charAt(0).toUpperCase() || '?'}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[14px] font-bold text-[#1d1d1f] truncate">{c.name}</span>
+                      <span className="block text-[12px] text-[#6e6e73] truncate">{c.phone || 'No phone saved'}{c.email ? ` · ${c.email}` : ''}</span>
+                      <span className="block text-[11px] text-[#86868b] truncate">{c.note}</span>
+                    </span>
+                    <span className="text-[12px] font-bold text-[#ea580c] shrink-0">Select</span>
+                  </button>
+                ))}
+                {matches.length === 0 && (
+                  <div className="py-8 text-center border border-dashed border-[#e5e5ea] rounded-2xl">
+                    <p className="text-[13px] font-semibold text-[#6e6e73]">No customer found for “{customerLookupQuery.trim()}”.</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const typedDigits = qDigits.length >= 3;
+                        setNewCustomerFormName(typedDigits ? posCustomerName : customerLookupQuery.trim());
+                        setNewCustomerFormPhone(typedDigits ? customerLookupQuery.trim() : posCustomerPhone);
+                        setNewCustomerFormError('');
+                        close();
+                        setIsNewCustomerModalOpen(true);
+                      }}
+                      className="mt-3 px-5 py-2 rounded-full bg-[#1d1d1f] text-white text-[12px] font-bold"
+                    >+ Register new customer</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
       {/* GENERATE BARCODE MODAL */}
       {isGenerateBarcodeModalOpen && activeBarcodeProduct && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -5807,50 +5700,90 @@ export default function EcommerceAdminPanel() {
       )}
 
       {/* PRINT BARCODE MODAL */}
-      {isPrintBarcodeModalOpen && activeBarcodeProduct && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-[36px] p-8 w-full max-w-sm shadow-2xl relative overflow-hidden">
-            <button
-              onClick={() => setIsPrintBarcodeModalOpen(false)}
-              className="absolute top-6 right-6 p-2 bg-[#f5f5f7] hover:bg-[#e5e5ea] rounded-full transition-colors text-[#1d1d1f]"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-            </button>
-            <h2 className="text-2xl font-black text-[#1d1d1f] tracking-tight mb-2">Print Tags</h2>
-            <p className="text-[14px] text-[#6e6e73] font-semibold mb-6">Send to thermal printer</p>
+      {isPrintBarcodeModalOpen && activeBarcodeProduct && (() => {
+        const prod = activeBarcodeProduct;
+        const { w, h } = barcodeLabelDims;
+        const labelData: LabelData = {
+          store: STORE_INFO.name,
+          name: prod.name,
+          code: prod.sku,
+          left: prod.sizes[0] && prod.sizes[0] !== STANDARD ? `SIZE: ${prod.sizes[0]}` : `SKU: ${prod.sku}`,
+          right: `PRICE: Rs.${prod.price.toLocaleString('en-IN')}`,
+        };
+        const presets = [{ w: 50, h: 25 }, { w: 40, h: 30 }, { w: 38, h: 25 }, { w: 75, h: 50 }, { w: 100, h: 50 }];
+        const isPreset = presets.some((p) => p.w === w && p.h === h);
+        const previewScale = Math.min(380 / w, 190 / h); // px per mm, keeps the real aspect ratio
+        const pickSize = (dims: { w: number; h: number }) => { setBarcodeLabelDims(dims); setBarcodeDimInput({ w: String(dims.w), h: String(dims.h) }); };
+        // Typed sizes apply live once they are a sensible label size (20–150 mm).
+        const typeSize = (side: 'w' | 'h', value: string) => {
+          setBarcodeDimInput({ ...barcodeDimInput, [side]: value });
+          const mm = Math.round(Number(value));
+          if (mm >= 20 && mm <= 150) setBarcodeLabelDims({ ...barcodeLabelDims, [side]: mm });
+        };
+        return (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 print:hidden">
+            <div className="bg-white rounded-[24px] p-5 sm:p-7 w-full max-w-2xl shadow-2xl relative max-h-[94vh] overflow-y-auto text-[#1d1d1f]">
+              <button
+                onClick={() => setIsPrintBarcodeModalOpen(false)}
+                aria-label="Close"
+                className="absolute top-5 right-5 p-2 bg-[#f5f5f7] hover:bg-[#e5e5ea] rounded-full transition-colors text-[#1d1d1f]"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+              <p className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-[#86868b]">Product label</p>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1">Barcode labels</h2>
+              <p className="text-[14px] text-[#6e6e73] font-semibold mb-5 pr-10">{prod.name}</p>
 
-            <div className="flex flex-col items-center justify-center py-6">
-              {barcodePrintStatus === 'idle' ? (
+              <div className="bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl p-4 sm:p-6 flex flex-col items-center gap-3">
+                <BarcodeLabel widthMm={w} heightMm={h} data={labelData} className="max-w-full h-auto shadow-md ring-1 ring-[#d2d2d7] rounded-sm" style={{ width: w * previewScale }} />
+                <p className="text-[12px] font-bold text-[#6e6e73]">Actual size: {w} × {h} mm · preview scaled to fit</p>
+              </div>
+
+              <div className="mt-5">
+                <p className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Label size</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {presets.map((p) => (
+                    <button key={`${p.w}x${p.h}`} type="button" onClick={() => pickSize(p)} className={`px-4 py-2 rounded-full border text-sm font-bold ${p.w === w && p.h === h ? 'bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white border-transparent' : 'bg-white text-[#1d1d1f] border-[#e5e5ea] hover:border-[#ea580c]'}`}>{p.w} × {p.h} mm</button>
+                  ))}
+                  <span className={`px-4 py-2 rounded-full border text-sm font-bold ${isPreset ? 'border-[#e5e5ea] text-[#86868b]' : 'bg-[#fff2e8] text-[#ea580c] border-[#ea580c]'}`}>Custom</span>
+                </div>
+                <div className="grid grid-cols-3 gap-3 mt-3">
+                  <label className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Width (mm)<input type="number" min={20} max={150} value={barcodeDimInput.w} onChange={(e) => typeSize('w', e.target.value)} onBlur={() => pickSize(barcodeLabelDims)} className="mt-2 block w-full px-3 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-sm font-bold text-[#1d1d1f] outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20" /></label>
+                  <label className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Height (mm)<input type="number" min={20} max={150} value={barcodeDimInput.h} onChange={(e) => typeSize('h', e.target.value)} onBlur={() => pickSize(barcodeLabelDims)} className="mt-2 block w-full px-3 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-sm font-bold text-[#1d1d1f] outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20" /></label>
+                  <label className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#86868b]">Labels<input type="number" min={1} max={500} value={barcodeLabelCount} onChange={(e) => setBarcodeLabelCount(Math.max(1, Math.min(500, Number(e.target.value) || 1)))} className="mt-2 block w-full px-3 py-3 bg-[#f5f5f7] border border-[#e5e5ea] rounded-xl text-sm font-bold text-[#1d1d1f] outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/20" /></label>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-3">{[1, 10, 50, 100].map((qty) => <button key={qty} type="button" onClick={() => setBarcodeLabelCount(qty)} className={`px-4 py-1.5 rounded-full border text-sm font-bold ${barcodeLabelCount === qty ? 'bg-[#1d1d1f] text-white border-[#1d1d1f]' : 'bg-white text-[#1d1d1f] border-[#e5e5ea]'}`}>{qty}</button>)}</div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row justify-between gap-3 mt-6">
                 <button
+                  type="button"
                   onClick={() => {
-                    setBarcodePrintStatus('printing');
-                    setTimeout(() => setBarcodePrintStatus('success'), 2000);
+                    downloadLabelsPdf(w, h, labelData, barcodeLabelCount);
+                    notify(`Downloaded ${barcodeLabelCount} ${barcodeLabelCount === 1 ? 'label' : 'labels'} (${w} × ${h} mm PDF)`);
                   }}
-                  className="px-8 py-4 bg-[#1d1d1f] hover:bg-black text-white rounded-full font-black text-[15px] shadow-lg shadow-black/20 transition-all active:scale-95 flex items-center gap-2"
+                  className="px-5 py-3 rounded-full border border-[#ea580c] text-[#ea580c] font-bold inline-flex gap-2 items-center justify-center hover:bg-[#fff2e8]"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-                  Start Printing
+                  <PanelIcon name="file" />Download PDF ({barcodeLabelCount})
                 </button>
-              ) : barcodePrintStatus === 'printing' ? (
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="w-16 h-16 bg-[#f5f5f7] rounded-xl flex items-center justify-center animate-bounce">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
-                  </div>
-                  <p className="text-[13px] font-bold text-[#1d1d1f] animate-pulse">Connecting to printer...</p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-2">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                  </div>
-                  <h3 className="text-xl font-bold text-[#1d1d1f]">Print Successful!</h3>
-                  <p className="text-[13px] text-[#6e6e73] font-medium text-center">Your labels have been sent to the thermal printer.</p>
-                </div>
-              )}
+                <button type="button" onClick={() => window.print()} className="px-6 py-3 rounded-full bg-gradient-to-r from-[#ea580c] to-[#f97316] text-white font-bold inline-flex gap-2 items-center justify-center shadow-md"><PanelIcon name="receipt" />Print {barcodeLabelCount} {barcodeLabelCount === 1 ? 'label' : 'labels'}</button>
+              </div>
+              <p className="text-center text-[12px] text-[#86868b] mt-4">Download saves a PDF with one {w} × {h} mm page per label. When printing, choose your label printer and print at 100% / actual size.</p>
             </div>
+            {createPortal(
+              <div id="barcode-print-sheet">
+                <style>{`@media print { @page { size: ${w}mm ${h}mm; margin: 0; } }`}</style>
+                {Array.from({ length: barcodeLabelCount }, (_, index) => (
+                  <BarcodeLabel key={index} widthMm={w} heightMm={h} data={labelData} className="barcode-print-label" style={{ width: `${w}mm`, height: `${h}mm` }} />
+                ))}
+              </div>,
+              document.body,
+            )}
           </div>
-        </div>
-      )}
+        );
+      })()}
+
+      {playingVideo && <VideoPlayerModal video={playingVideo} onClose={() => setPlayingVideo(null)}><span className="text-[13px] text-white/70">{playingVideo.views.toLocaleString('en-IN')} views · shown on the storefront home page and on the product page</span></VideoPlayerModal>}
 
       {/* Admin toast */}
       {adminToast && (

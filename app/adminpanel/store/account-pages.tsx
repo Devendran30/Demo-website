@@ -326,7 +326,7 @@ export function OrderPage({ order }: { order: Order }) {
         </ol>
       )}
 
-      {order.shipment && !cancelled && (
+      {order.shipment?.awb && order.shipment.status !== 'Cancelled' && !cancelled && (
         <div className="mb-8 p-6 rounded-[24px] border border-[#E3E8EF] bg-[#FFFFFF] flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Icon name="truck" size={24} stroke={1.3} />
