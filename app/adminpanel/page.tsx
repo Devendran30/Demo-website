@@ -1867,7 +1867,7 @@ export default function EcommerceAdminPanel() {
                     )}
                   </div>
 
-                  <form id="product-form" onSubmit={handleSaveProduct} className="grid grid-cols-1 xl:grid-cols-2 gap-6 text-sm items-start">
+                  <form id="product-form" onSubmit={handleSaveProduct} className="grid grid-cols-1 xl:grid-cols-2 gap-6 text-sm">
                     {/* ===== Product details ===== */}
                     <section className={`${K.card} min-w-0`}>
                       <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Product details</h2>
@@ -1928,52 +1928,56 @@ export default function EcommerceAdminPanel() {
                       </div>
                     </section>
 
-                    <div className="space-y-6 min-w-0">
-                      {/* ===== Sizes & inventory ===== */}
-                      <section className={K.card}>
-                        <div className="flex items-baseline justify-between gap-3">
-                          <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Sizes &amp; inventory</h2>
-                          <button type="button" onClick={() => setActiveTab('attributes')} className={`text-xs whitespace-nowrap ${K.link}`}>Manage options →</button>
+                    {/* ===== Sizes & inventory ===== */}
+                    <section className={`${K.card} min-w-0`}>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Sizes &amp; inventory</h2>
+                        <button type="button" onClick={() => setActiveTab('attributes')} className={`text-xs whitespace-nowrap ${K.link}`}>Manage options →</button>
+                      </div>
+                      <div>
+                        <p className={K.label}>Available Sizes</p>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {sizeOptions.map((sz) => (
+                            <button key={sz.id} type="button" title={sz.name} aria-pressed={newProdSizes.includes(sz.code)} onClick={() => setNewProdSizes(toggleInList(newProdSizes, sz.code))} className={K.chip(newProdSizes.includes(sz.code), 'accent')}>
+                              {sz.code}
+                            </button>
+                          ))}
                         </div>
-                        <div>
-                          <p className={K.label}>Available Sizes</p>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {sizeOptions.map((sz) => (
-                              <button key={sz.id} type="button" title={sz.name} aria-pressed={newProdSizes.includes(sz.code)} onClick={() => setNewProdSizes(toggleInList(newProdSizes, sz.code))} className={K.chip(newProdSizes.includes(sz.code), 'accent')}>
-                                {sz.code}
-                              </button>
-                            ))}
-                          </div>
+                      </div>
+                      <KaavuStockFields sizes={chosenSizes} colors={chosenColors} values={newProdVariantStock} onChange={setNewProdVariantStock} colorHex={colorHex} />
+                      <p className="text-xs text-[#6F7E92]">
+                        Each size and colour has its own stock. Checkout deducts only the size and colour the shopper picks. Total: <strong className="text-[#0E1A2B]">{totalStock}</strong> · {stockStatus(totalStock)}
+                      </p>
+                      <div>
+                        <p className={K.label}>Tags</p>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {tagOptions.map((tag) => (
+                            <button key={tag.id} type="button" aria-pressed={newProdTags.includes(tag.name)} onClick={() => setNewProdTags(toggleInList(newProdTags, tag.name))} className={K.chip(newProdTags.includes(tag.name), 'soft')}>
+                              {tag.name}
+                            </button>
+                          ))}
                         </div>
-                        <KaavuStockFields sizes={chosenSizes} colors={chosenColors} values={newProdVariantStock} onChange={setNewProdVariantStock} colorHex={colorHex} />
-                        <p className="text-xs text-[#6F7E92]">
-                          Each size and colour has its own stock. Checkout deducts only the size and colour the shopper picks. Total: <strong className="text-[#0E1A2B]">{totalStock}</strong> · {stockStatus(totalStock)}
-                        </p>
-                        <div>
-                          <p className={K.label}>Tags</p>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {tagOptions.map((tag) => (
-                              <button key={tag.id} type="button" aria-pressed={newProdTags.includes(tag.name)} onClick={() => setNewProdTags(toggleInList(newProdTags, tag.name))} className={K.chip(newProdTags.includes(tag.name), 'soft')}>
-                                {tag.name}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </section>
+                      </div>
+                    </section>
 
-                      {/* ===== Product page details ===== */}
-                      <section className={K.card}>
-                        <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Product page details</h2>
-                        <div>
-                          <label htmlFor="prod-highlights" className={K.label}>Key highlights (one per line)</label>
-                          <textarea id="prod-highlights" rows={4} value={newProdHighlights} onChange={(e) => setNewProdHighlights(e.target.value)} placeholder={'Adaptive noise cancelling\n40-hour battery\nFolds into a travel case'} className={K.input} />
-                        </div>
-                        <div>
-                          <label htmlFor="prod-specs" className={K.label}>Specifications (Label: Value per line)</label>
-                          <textarea id="prod-specs" rows={4} value={newProdSpecs} onChange={(e) => setNewProdSpecs(e.target.value)} placeholder={'Battery: 40 hours\nBluetooth: 5.3\nWeight: 254 g'} className={`${K.input} font-mono`} />
-                        </div>
-                      </section>
-                    </div>
+                    {/* ===== Product page details: highlights under the details, specifications under the stock ===== */}
+                    <section className={`${K.card} min-w-0 flex flex-col`}>
+                      <div>
+                        <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Key highlights</h2>
+                        <p className="text-xs text-[#6F7E92] mt-1">Shown as a checklist on the product page. One per line.</p>
+                      </div>
+                      <label htmlFor="prod-highlights" className="sr-only">Key highlights (one per line)</label>
+                      <textarea id="prod-highlights" rows={5} value={newProdHighlights} onChange={(e) => setNewProdHighlights(e.target.value)} placeholder={'Adaptive noise cancelling\n40-hour battery\nFolds into a travel case'} className={`${K.input} flex-1 min-h-[140px] resize-none`} />
+                    </section>
+
+                    <section className={`${K.card} min-w-0 flex flex-col`}>
+                      <div>
+                        <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Specifications</h2>
+                        <p className="text-xs text-[#6F7E92] mt-1">Shown as a table on the product page. One per line, as Label: Value.</p>
+                      </div>
+                      <label htmlFor="prod-specs" className="sr-only">Specifications (Label: Value per line)</label>
+                      <textarea id="prod-specs" rows={5} value={newProdSpecs} onChange={(e) => setNewProdSpecs(e.target.value)} placeholder={'Battery: 40 hours\nBluetooth: 5.3\nWeight: 254 g'} className={`${K.input} font-mono flex-1 min-h-[140px] resize-none`} />
+                    </section>
 
                     {/* ===== Colors & photography ===== */}
                     <section className={`${K.card} xl:col-span-2 min-w-0`}>

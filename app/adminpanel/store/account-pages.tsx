@@ -10,7 +10,7 @@ import {
   T, Icon, Photo, Button, PageTitle, EmptyState, QtyStepper, TotalsList, Reveal, SectionHeading,
   useStore, useBag, useCatalog, useAccount, bagStore, promoStore, myOrdersStore, setBagQty, navigate, formatDate, variantLabel, inr, STORE_INFO,
 } from './store-kit';
-import { Field, openAuth } from './auth-pages';
+import { Field } from './auth-pages';
 import { RazorpayCheckout, MethodGlyph } from './razorpay-standard-checkout';
 
 // =============================================================================
@@ -417,15 +417,6 @@ export function CheckoutPage() {
         <CheckoutSteps current={paying ? 2 : 1} />
       </header>
 
-      {!account && (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 p-5 rounded-[22px] bg-gradient-to-r from-[#0E1A2B] to-[#1F3A66] text-white">
-          <p className="text-[14.5px] flex items-center gap-3"><span className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center"><Icon name="user" size={17} /></span><span><span className="font-bold">Have an account?</span> <span className="text-white/75">Sign in for faster checkout and live order tracking.</span></span></p>
-          <div className="flex gap-2">
-            <button type="button" onClick={() => openAuth('signin', 'checkout')} className="h-10 px-5 rounded-full bg-white text-[#0E1A2B] text-[13.5px] font-bold hover:bg-[#EAF1FF]">Sign in</button>
-            <button type="button" onClick={() => openAuth('signup', 'checkout')} className="h-10 px-5 rounded-full border border-white/30 text-[13.5px] font-bold hover:bg-white/10">Create account</button>
-          </div>
-        </div>
-      )}
       {account && (
         <p className="mb-6 inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[#2F6BFF]/10 text-[14px] font-semibold text-[#2F6BFF]">
           <Icon name="check" size={16} /> Signed in as {account.email} — your details are filled in
