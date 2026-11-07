@@ -5,7 +5,7 @@ import type { FormEvent, ReactNode } from 'react';
 import { couponsStore, ordersStore, subCategoriesStore, couponState, productPhotos, FREE_DELIVERY_FROM, themeVars, useStoreDetails } from '../demo-data';
 import {
   T, Icon, Photo, useStore, useCatalog, useBag, useRoute, useScrolledPast, useAccount, toastStore, wishlistStore, myOrdersStore, sessionStore, showToast,
-  navigate, rememberScroll, scrollMemory, navigation, shopHref, inr, useStoreTheme, layoutVars,
+  navigate, rememberScroll, scrollMemory, navigation, shopHref, inr, useStoreTheme, layoutVars, STORE_CSS,
 } from './store-kit';
 import { HomePage, ShopPage, ProductPage, DealsPage, WishlistPage } from './catalog-pages';
 import { ThemedHomePage } from './theme-homes';
@@ -26,7 +26,7 @@ function AnnouncementBar() {
       .filter((c) => c.showInHeader && couponState(c) === 'Live')
       .map((c) => `Use ${c.code} — ${c.discountType === 'Percentage' ? `${c.discountValue}% off` : `${inr(c.discountValue)} off`} on orders over ${inr(c.minPurchase)}`),
     `Complimentary delivery on orders over ${inr(FREE_DELIVERY_FROM)}`,
-    '7-day returns · One-year warranty',
+    '7-day returns · Thoughtful jewellery care',
   ];
   const run = (hidden: boolean) => (
     <div aria-hidden={hidden} className="flex shrink-0 items-center">
@@ -102,8 +102,12 @@ function Logo({ light = false }: { light?: boolean }) {
   if (theme.layout === 'atelier') {
     return (
       <span className="flex items-center gap-2.5">
-        {image ?? <span className="w-8 h-8 rounded-[9px] bg-[var(--st-ink)] text-white flex items-center justify-center text-[15px] font-semibold">{first[0]}</span>}
-        <span className={`text-[16px] sm:text-[17px] font-semibold tracking-[-0.03em] whitespace-nowrap ${ink}`}>{storeInfo.name}</span>
+        {image ?? (
+          <span className="w-10 h-10 shrink-0 rounded-full p-px bg-gradient-to-br from-[var(--st-accent-light)] via-[var(--st-accent-light)]/30 to-[var(--st-accent-light)]">
+            <span className="w-full h-full rounded-full bg-[var(--st-ink)] flex items-center justify-center font-display italic text-[20px] font-semibold text-[var(--st-accent-light)]">{first[0]}</span>
+          </span>
+        )}
+        <span className={`font-display text-[21px] sm:text-[23px] font-semibold tracking-[0.01em] whitespace-nowrap ${ink}`}>{storeInfo.name}</span>
       </span>
     );
   }
@@ -131,7 +135,7 @@ function Logo({ light = false }: { light?: boolean }) {
     ? 'rounded-[10px] bg-[var(--st-accent)]'
     : theme.layout === 'lifestyle'
       ? 'rounded-full bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-accent-2)]'
-      : 'rounded-[12px] bg-gradient-to-br from-[var(--st-accent)] via-[var(--st-ink-3)] to-[var(--st-ink)] shadow-[0_8px_20px_-8px_rgba(47,107,255,0.7)] ring-1 ring-white/20';
+      : 'rounded-[12px] bg-gradient-to-br from-[var(--st-accent)] via-[var(--st-ink-3)] to-[var(--st-ink)] shadow-[0_8px_20px_-8px_color-mix(in_srgb,var(--st-accent)_70%,transparent)] ring-1 ring-white/20';
   return (
     <span className="flex items-center gap-3">
       {image ?? (
@@ -191,7 +195,7 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search headphones, cameras, colours…"
+            placeholder="Search necklaces, earrings, rings…"
             aria-label="Search products"
             className={`flex-1 bg-transparent outline-none ${T.display} text-[30px] sm:text-[40px] placeholder:text-[#A9B4C2]`}
           />
@@ -215,7 +219,7 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
                 <button onClick={submit} className="mt-8 text-[11.5px] uppercase tracking-[0.2em] border-b border-[var(--st-ink)]/40 hover:border-[var(--st-ink)] pb-1">See all results for “{query.trim()}”</button>
               </>
             ) : (
-              <p className="text-[15px] text-[#5B6B80]">No pieces match “{query.trim()}”. Try a category, like <button onClick={() => setQuery('audio')} className="border-b border-current">audio</button>.</p>
+              <p className="text-[15px] text-[#5B6B80]">No pieces match “{query.trim()}”. Try a category, like <button onClick={() => setQuery('necklaces')} className="border-b border-current">necklaces</button>.</p>
             )}
           </div>
         )}
@@ -252,7 +256,9 @@ function SiteHeader({ page, params }: { page: string; params: URLSearchParams })
   const scrolled = useScrolledPast(40);
   // Default theme: on the home page the header floats over the hero photo until you scroll or open a menu.
   const overlay = variant === 'overlay' && page === 'home' && !scrolled && !megaOpen && !searchOpen;
-  const iconLink = `relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors ${overlay ? 'hover:bg-white/10' : 'hover:bg-[#EDF1F6] hover:text-[var(--st-accent)]'}`;
+  // Atelier's header is always midnight, so it uses the light-on-dark controls.
+  const onDark = overlay || variant === 'slim';
+  const iconLink = `relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors ${onDark ? 'hover:bg-white/10' : 'hover:bg-[#EDF1F6] hover:text-[var(--st-accent)]'}`;
   const navItem = variant === 'centered'
     ? 'px-1 py-2 text-[11.5px] font-medium uppercase tracking-[0.24em] border-b border-transparent hover:border-[var(--st-ink)] transition-colors'
     : theme.layout === 'volt'
@@ -280,27 +286,27 @@ function SiteHeader({ page, params }: { page: string; params: URLSearchParams })
       className={`sticky top-0 z-40 transition-[border-color,color] duration-500 ${variant === 'floating'
         ? 'px-3 sm:px-6 pt-3 text-[var(--st-ink)]'
         : variant === 'slim'
-          ? 'border-b border-black/[0.08] text-[var(--st-ink)]'
+          ? 'text-white'
           : theme.layout === 'volt' ? 'border-b-[3px] border-[var(--st-ink)] text-[var(--st-ink)]' : `border-b ${overlay ? 'border-white/10 text-white' : 'border-[#E3E8EF] text-[var(--st-ink)] shadow-[0_10px_30px_-25px_rgba(14,26,43,0.5)]'}`}`}
       onMouseLeave={() => setMegaOpen(false)}
     >
       {/* Frosted background on its own layer: a backdrop-filter on <header> would trap the fixed side menu inside it. */}
-      {variant !== 'floating' && <span aria-hidden="true" className={`absolute inset-0 -z-10 transition-opacity duration-500 ${theme.layout === 'volt' ? 'bg-[var(--st-page)]' : variant === 'slim' ? 'bg-[rgba(251,251,253,0.8)] backdrop-blur-xl backdrop-saturate-150' : 'bg-white/85 backdrop-blur-xl'} ${overlay ? 'opacity-0' : 'opacity-100'}`} />}
+      {variant !== 'floating' && <span aria-hidden="true" className={`absolute inset-0 -z-10 transition-opacity duration-500 ${theme.layout === 'volt' ? 'bg-[var(--st-page)]' : variant === 'slim' ? 'bg-[var(--st-deep)]/95 backdrop-blur-xl border-b border-[var(--st-accent-light)]/25' : 'bg-white/85 backdrop-blur-xl'} ${overlay ? 'opacity-0' : 'opacity-100'}`} />}
       {variant === 'slim' ? (
-        // Atelier: a slim frosted bar with small, quiet links
-        <div className={`${T.shell} flex items-center justify-between gap-4 h-[52px]`}>
-          <a href="#/" onClick={closeAll} aria-label={`${storeInfo.name} home`} className="shrink-0"><Logo /></a>
+        // Atelier: a slim midnight bar with champagne engraved-capital links
+        <div className={`${T.shell} flex items-center justify-between gap-4 h-[64px]`}>
+          <a href="#/" onClick={closeAll} aria-label={`${storeInfo.name} home`} className="shrink-0"><Logo light /></a>
           <nav aria-label="Main" className="hidden lg:flex flex-1 items-center justify-center gap-8">
-            <a href="#/" onMouseEnter={() => setMegaOpen(false)} aria-current={activeNav === 'home' ? 'page' : undefined} className={`text-[13px] transition-colors ${activeNav === 'home' ? 'font-semibold text-[var(--st-ink)]' : 'text-[var(--st-ink)]/75 hover:text-[var(--st-ink)]'}`}>Home</a>
-            <button onMouseEnter={() => setMegaOpen(true)} onFocus={() => setMegaOpen(true)} onClick={() => { closeAll(); navigate('#/shop'); }} aria-expanded={megaOpen} className={`text-[13px] transition-colors ${page === 'shop' && activeNav !== 'new' ? 'font-semibold text-[var(--st-ink)]' : 'text-[var(--st-ink)]/75 hover:text-[var(--st-ink)]'}`}>Shop</button>
+            <a href="#/" onMouseEnter={() => setMegaOpen(false)} aria-current={activeNav === 'home' ? 'page' : undefined} className={`[font-family:var(--font-cinzel)] text-[11.5px] uppercase tracking-[0.2em] transition-colors ${activeNav === 'home' ? 'font-semibold text-[var(--st-accent-light)]' : 'text-white/75 hover:text-[var(--st-accent-light)]'}`}>Home</a>
+            <button onMouseEnter={() => setMegaOpen(true)} onFocus={() => setMegaOpen(true)} onClick={() => { closeAll(); navigate('#/shop'); }} aria-expanded={megaOpen} className={`[font-family:var(--font-cinzel)] text-[11.5px] uppercase tracking-[0.2em] transition-colors ${page === 'shop' && activeNav !== 'new' ? 'font-semibold text-[var(--st-accent-light)]' : 'text-white/75 hover:text-[var(--st-accent-light)]'}`}>Shop</button>
             {NAV_LINKS.filter((link) => link.page !== 'home').map((link) => (
-              <a key={link.page} href={link.href} onMouseEnter={() => setMegaOpen(false)} aria-current={activeNav === link.page ? 'page' : undefined} className={`text-[13px] transition-colors ${activeNav === link.page ? 'font-semibold text-[var(--st-ink)]' : 'text-[var(--st-ink)]/75 hover:text-[var(--st-ink)]'}`}>{link.label}</a>
+              <a key={link.page} href={link.href} onMouseEnter={() => setMegaOpen(false)} aria-current={activeNav === link.page ? 'page' : undefined} className={`[font-family:var(--font-cinzel)] text-[11.5px] uppercase tracking-[0.2em] transition-colors ${activeNav === link.page ? 'font-semibold text-[var(--st-accent-light)]' : 'text-white/75 hover:text-[var(--st-accent-light)]'}`}>{link.label}</a>
             ))}
           </nav>
           <div className="flex items-center gap-0.5 -mr-2 [&>*]:w-9 [&>*]:h-9">
             <button onClick={() => { setSearchOpen(!searchOpen); setMegaOpen(false); }} aria-label="Search" aria-expanded={searchOpen} className={iconLink}><Icon name="search" size={18} /></button>
-            <AccountMenu overlay={false} />
-            <a href="#/wishlist" aria-label={`Wishlist, ${wishlist.length} items`} className={iconLink}><Icon name="heart" size={18} /><CountBadge count={wishlist.length} /></a>
+            <AccountMenu overlay />
+            <a href="#/wishlist" aria-label={`Wishlist, ${wishlist.length} items`} className={`${iconLink} hidden sm:flex`}><Icon name="heart" size={18} /><CountBadge count={wishlist.length} /></a>
             <a href="#/bag" aria-label={`Bag, ${bagCount} items`} className={iconLink}><Icon name="bag" size={18} /><CountBadge count={bagCount} /></a>
             <button onClick={() => setMenuOpen(true)} aria-label="Open menu" aria-expanded={menuOpen} className={`${iconLink} lg:hidden`}><Icon name="menu" size={18} /></button>
           </div>
@@ -468,7 +474,7 @@ function SiteHeader({ page, params }: { page: string; params: URLSearchParams })
 
       {searchOpen && <SearchPanel onClose={() => setSearchOpen(false)} />}
 
-      {/* Phones and tablets: a side menu with the same links as the desktop header */}
+      {/* Compact screens use a side menu with the same links as the desktop header */}
       {menuOpen && (
         <div className="lg:hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Menu">
           <button className="absolute inset-0 bg-[var(--st-deep)]/50 backdrop-blur-sm fade" aria-label="Close menu" onClick={() => setMenuOpen(false)} />
@@ -550,7 +556,7 @@ function SiteHeader({ page, params }: { page: string; params: URLSearchParams })
                   <p className="px-1 mb-3 text-[13px] text-[#5B6B80]">Track orders and check out faster.</p>
                   <div className="grid grid-cols-2 gap-2">
                     <button onClick={() => { closeAll(); openAuth('signin'); }} className="h-12 rounded-full bg-white border border-[#CFD8E3] text-[14.5px] font-bold hover:border-[var(--st-ink)] transition-colors">Sign in</button>
-                    <button onClick={() => { closeAll(); openAuth('signup'); }} className="h-12 rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[14.5px] font-bold shadow-[0_12px_26px_-12px_rgba(47,107,255,0.8)]">Sign up</button>
+                    <button onClick={() => { closeAll(); openAuth('signup'); }} className="h-12 rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[14.5px] font-bold shadow-[0_12px_26px_-12px_color-mix(in_srgb,var(--st-accent)_80%,transparent)]">Sign up</button>
                   </div>
                 </>
               )}
@@ -626,7 +632,7 @@ function AccountMenu({ overlay }: { overlay: boolean }) {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={`Account menu for ${account.name}`}
-        className={`flex items-center gap-2.5 h-9 sm:h-10 pl-0.5 sm:pl-1 pr-0.5 sm:pr-3.5 rounded-full border transition-all ${overlay ? 'border-white/20 bg-white/10 hover:bg-white/15' : 'border-[#E3E8EF] bg-white hover:border-[var(--st-accent)]/40 hover:shadow-[0_8px_20px_-12px_rgba(47,107,255,0.6)]'}`}
+        className={`flex items-center gap-2.5 h-9 sm:h-10 pl-0.5 sm:pl-1 pr-0.5 sm:pr-3.5 rounded-full border transition-all ${overlay ? 'border-white/20 bg-white/10 hover:bg-white/15' : 'border-[#E3E8EF] bg-white hover:border-[var(--st-accent)]/40 hover:shadow-[0_8px_20px_-12px_color-mix(in_srgb,var(--st-accent)_60%,transparent)]'}`}
       >
         <span className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[12px] font-extrabold flex items-center justify-center">
           {initials}
@@ -645,7 +651,7 @@ function AccountMenu({ overlay }: { overlay: boolean }) {
           <div className="on-dark relative overflow-hidden bg-gradient-to-br from-[var(--st-ink)] via-[var(--st-ink-2)] to-[var(--st-deep)] text-white p-5">
             <span aria-hidden="true" className="pointer-events-none absolute -top-16 -right-10 w-48 h-48 rounded-full bg-[var(--st-accent)]/40 blur-[60px]" />
             <div className="relative flex items-center gap-3.5">
-              <span className="w-14 h-14 rounded-[18px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-accent-2)] text-[18px] font-extrabold flex items-center justify-center shadow-[0_10px_24px_-8px_rgba(47,107,255,0.8)]">{initials}</span>
+              <span className="w-14 h-14 rounded-[18px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-accent-2)] text-[18px] font-extrabold flex items-center justify-center shadow-[0_10px_24px_-8px_color-mix(in_srgb,var(--st-accent)_80%,transparent)]">{initials}</span>
               <div className="min-w-0">
                 <p className="text-[17px] font-extrabold tracking-[-0.02em] truncate">{account.name}</p>
                 <p className="text-[12.5px] text-white/60 truncate">{account.email}</p>
@@ -833,7 +839,7 @@ function usePageTitle(title: string) {
   }, [title, name]);
 }
 
-export default function ElectronicsStoreWebsite() {
+export default function JewelleryStoreWebsite() {
   const { path, params } = useRoute();
   const { productById, categoryBySlug } = useCatalog();
   const account = useAccount();
@@ -842,7 +848,7 @@ export default function ElectronicsStoreWebsite() {
   const firstRender = useRef(true);
   const [page = 'home', slug] = path;
 
-  let title = 'Considered Electronics';
+  let title = 'Considered Jewellery';
   let content: ReactNode;
   switch (page) {
     case 'home':
@@ -934,71 +940,7 @@ export default function ElectronicsStoreWebsite() {
       className="store-root min-h-screen flex flex-col bg-[var(--st-page)] text-[var(--st-ink)] antialiased selection:bg-[var(--st-accent)] selection:text-white"
       style={{ ...themeVars(theme.colors), ...layoutVars(look), fontFamily: 'var(--st-font-body), -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', colorScheme: 'light' }}
     >
-      <style>{`
-        .rise { animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-        .rise-1 { animation-delay: 0.12s; } .rise-2 { animation-delay: 0.24s; } .rise-3 { animation-delay: 0.36s; }
-        @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-        .kenburns { animation: kenburns 9s ease-out both; }
-        @keyframes kenburns { from { transform: scale(1.1); } to { transform: scale(1); } }
-        .progress { animation: progress 6.5s linear both; }
-        @keyframes progress { from { width: 0; } to { width: 100%; } }
-        .marquee { animation: marquee 38s linear infinite; }
-        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        .fade { animation: fade 0.6s ease both; }
-        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-        .drop { animation: drop 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-        @keyframes drop { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
-        .drawer { animation: drawer 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-        @keyframes drawer { from { transform: translateX(-100%); } to { transform: none; } }
-        .hero-left { animation: hero-left 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        @keyframes hero-left { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: none; } }
-        .hero-right { animation: hero-right 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
-        @keyframes hero-right { from { opacity: 0; transform: translateX(80px) scale(0.96); } to { opacity: 1; transform: none; } }
-        .hero-pop { animation: hero-pop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both, float 6s ease-in-out 1.2s infinite; }
-        @keyframes hero-pop { from { opacity: 0; transform: translateY(24px) scale(0.85); } to { opacity: 1; transform: none; } }
-        .progress-7 { animation: progress 7s linear both; }
-        .drift { animation: drift 16s ease-in-out infinite alternate; }
-        @keyframes drift { from { transform: translate(0, 0); } to { transform: translate(120px, 60px); } }
-        .map-ping { transform-origin: 205px 118px; animation: map-ping 2.4s ease-out infinite; }
-        @keyframes map-ping { from { transform: scale(0.6); opacity: 0.6; } to { transform: scale(2.6); opacity: 0; } }
-        .float { animation: float 6s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .store-root .font-display { font-family: var(--st-font-display), sans-serif; font-weight: var(--st-display-weight); letter-spacing: var(--st-display-tracking); text-transform: var(--st-display-case); }
-        /* Highlighted words in headlines: an electric-blue sweep on light, a blue-to-silver sweep on navy. */
-        .store-root em { font-style: normal; background-image: linear-gradient(100deg, var(--st-accent) 10%, var(--st-accent-2) 90%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .store-root .on-dark em { background-image: linear-gradient(100deg, var(--st-accent-light) 0%, #E3E9F2 85%); }
-        /* Theme Setup: each layout's own headline accents, shapes and buttons. */
-        .store-root[data-layout="marketplace"] em, .store-root[data-layout="aster"] em { background: none; color: var(--st-accent); }
-        .store-root[data-layout="boutique"] em { background: none; color: var(--st-accent); font-style: italic; }
-        .store-root[data-layout="boutique"] .on-dark em, .store-root[data-layout="aster"] .on-dark em, .store-root[data-layout="marketplace"] .on-dark em { color: var(--st-accent-light); }
-        .store-root[data-layout="volt"] em { background: linear-gradient(transparent 14%, var(--st-accent-light) 14%, var(--st-accent-light) 94%, transparent 94%); color: var(--st-ink); -webkit-background-clip: border-box; background-clip: border-box; padding: 0 0.12em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-        .store-root[data-shape="sharp"] :is([class*="rounded-["], .rounded-md, .rounded-lg, .rounded-xl, .rounded-2xl, .rounded-3xl) { border-radius: 0 !important; }
-        .store-root[data-shape="sharp"] .rounded-full:not([class*=" w-1"],[class^="w-1"],[class*=":w-1"],[class*=" w-2"],[class^="w-2"],[class*=":w-2"],[class*=" w-3"],[class^="w-3"],[class*=":w-3"],[class*=" w-4"],[class^="w-4"],[class*=":w-4"],[class*=" w-5"],[class^="w-5"],[class*=":w-5"],[class*=" w-6"],[class^="w-6"],[class*=":w-6"],[class*=" w-7"],[class^="w-7"],[class*=":w-7"],[class*=" w-8"],[class^="w-8"],[class*=":w-8"],[class*=" w-9"],[class^="w-9"],[class*=":w-9"],[class*=" w-["],[class^="w-["],[class*=":w-["]) { border-radius: 0 !important; }
-        .store-root[data-shape="soft"] :is([class*="rounded-["], .rounded-2xl, .rounded-3xl) { border-radius: 10px !important; }
-        .store-root[data-shape="soft"] .rounded-full:not([class*=" w-1"],[class^="w-1"],[class*=":w-1"],[class*=" w-2"],[class^="w-2"],[class*=":w-2"],[class*=" w-3"],[class^="w-3"],[class*=":w-3"],[class*=" w-4"],[class^="w-4"],[class*=":w-4"],[class*=" w-5"],[class^="w-5"],[class*=":w-5"],[class*=" w-6"],[class^="w-6"],[class*=":w-6"],[class*=" w-7"],[class^="w-7"],[class*=":w-7"],[class*=" w-8"],[class^="w-8"],[class*=":w-8"],[class*=" w-9"],[class^="w-9"],[class*=":w-9"],[class*=" w-["],[class^="w-["],[class*=":w-["]) { border-radius: 8px !important; }
-        .store-root[data-layout="boutique"] .st-btn { text-transform: uppercase; letter-spacing: 0.2em; font-size: 11.5px; font-weight: 500; box-shadow: none !important; }
-        .store-root[data-layout="volt"] .st-btn { text-transform: uppercase; font-weight: 700; box-shadow: 4px 4px 0 var(--st-ink) !important; border: 2px solid var(--st-ink); }
-        .store-root[data-layout="volt"] .on-dark .st-btn { box-shadow: 4px 4px 0 var(--st-accent-light) !important; border-color: var(--st-accent-light); }
-        .store-root[data-layout="volt"] .st-btn:hover { transform: translate(-2px, -2px); }
-        .store-root[data-layout="aster"] .st-btn { font-weight: 500; box-shadow: none !important; }
-        .store-root[data-layout="marketplace"] .st-btn { height: 46px; box-shadow: none !important; }
-        .store-root[data-layout="volt"] .marquee-fast { animation: marquee 18s linear infinite; }
-        .store-root[data-layout="atelier"] em { background: none; color: #86868B; }
-        .store-root[data-layout="atelier"] .on-dark em { color: #86868B; }
-        .store-root[data-layout="atelier"] .st-btn { height: 44px; font-weight: 500; box-shadow: none !important; }
-        .store-root[data-layout="aurora"] .st-btn { font-weight: 600; }
-        .aurora-a { animation: aurora-a 18s ease-in-out infinite alternate; }
-        .aurora-b { animation: aurora-b 22s ease-in-out infinite alternate; }
-        .aurora-c { animation: aurora-c 26s ease-in-out infinite alternate; }
-        @keyframes aurora-a { to { transform: translate(140px, 60px) scale(1.15); } }
-        @keyframes aurora-b { to { transform: translate(-160px, 80px) scale(0.9); } }
-        @keyframes aurora-c { to { transform: translate(120px, -90px) scale(1.2); } }
-        .drawer-right { animation: drawer-right 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-        .modal-in { animation: modal-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        @keyframes modal-in { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: none; } }
-        @keyframes drawer-right { from { transform: translateX(100%); } to { transform: none; } }
-        @media (prefers-reduced-motion: reduce) { .rise, .kenburns, .progress, .fade, .drop, .drawer, .drawer-right, .float, .modal-in, .hero-left, .hero-right, .hero-pop, .drift, .progress-7, .aurora-a, .aurora-b, .aurora-c { animation: none; } .marquee { animation-duration: 120s; } }
-      `}</style>
+      <style>{STORE_CSS}</style>
       <a href="#store-main" onClick={(e) => { e.preventDefault(); main.current?.focus(); }} className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3 focus:px-4 focus:py-2 focus:bg-[var(--st-ink)] focus:text-white">Skip to content</a>
       <AnnouncementBar />
       <SiteHeader page={page} params={params} />

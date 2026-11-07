@@ -2,8 +2,8 @@
 
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { bannersStore, instagramStore, percentOff, productPhotos, type Product, type ThemeLayout, useStoreDetails, } from '../demo-data';
-import { T, Icon, Photo, Button, TextLink, ProductCard, useStore, useCatalog, navigate, shopHref, inr } from './store-kit';
-import { bannerSlides, fallbackSlides, useMidnightCountdown, Carousel, REVIEWS } from './catalog-pages';
+import { T, Icon, Photo, Button, TextLink, ProductCard, DecoCorners, useStore, useCatalog, navigate, shopHref, inr } from './store-kit';
+import { bannerSlides, fallbackSlides, BannerImage, useMidnightCountdown, Carousel, REVIEWS } from './catalog-pages';
 
 // Home pages for the themes in Admin → Theme Setup. Each one is laid out differently; the default
 // theme keeps the original HomePage in catalog-pages.tsx.
@@ -96,7 +96,7 @@ function MarketplaceHome() {
   const [slide, setSlide] = useSlideIndex(d.slides.length, 5000);
   const current = d.slides[slide];
   const promos = [d.categories[1], d.categories[3]].filter(Boolean);
-  const banners = [d.categories[4], d.categories[5]].filter(Boolean);
+  const banners = [d.categories[2], d.categories[4]].filter(Boolean);
   const box = 'bg-white rounded-[10px] border border-[#E3E8EF]';
 
   return (
@@ -116,7 +116,7 @@ function MarketplaceHome() {
         {current && (
           <div className="on-dark relative min-h-[230px] sm:min-h-[340px] lg:min-h-[400px] rounded-[10px] overflow-hidden bg-[var(--st-ink-2)] text-white">
             {d.slides.map((s, i) => (
-              <Photo key={s.id} src={s.image} alt="" width={1400} eager={i === 0} className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === slide ? 'opacity-100' : 'opacity-0'}`} />
+              <BannerImage key={s.id} image={s.image} mobileImage={s.mobileImage} width={1400} eager={i === 0} className={`absolute inset-0 transition-opacity duration-700 ${i === slide ? 'opacity-100' : 'opacity-0'}`} />
             ))}
             <span className="absolute inset-0 bg-gradient-to-r from-[var(--st-deep)]/85 via-[var(--st-deep)]/40 to-transparent" />
             <div key={current.id} className="fade relative h-full flex flex-col justify-center p-6 sm:p-10 max-w-md">
@@ -147,7 +147,7 @@ function MarketplaceHome() {
 
       {/* Promises */}
       <section className={`${box} grid grid-cols-2 lg:grid-cols-4`}>
-        {[['truck', 'Free delivery', `On orders over ${inr(4999)}`], ['refresh', 'Easy returns', 'Within 7 days'], ['shield', '1-year warranty', 'On every product'], ['card', 'Secure payment', 'UPI, cards & COD']].map(([icon, title, text], i) => (
+        {[['truck', 'Free delivery', `On orders over ${inr(4999)}`], ['refresh', 'Easy returns', 'Within 7 days'], ['spark', 'Care guidance', 'With every piece'], ['card', 'Secure payment', 'UPI, cards & COD']].map(([icon, title, text], i) => (
           <div key={title} className={`flex items-center gap-3 p-4 sm:p-5 ${i % 2 ? 'border-l' : ''} ${i > 1 ? 'border-t lg:border-t-0' : ''} ${i === 2 ? 'lg:border-l' : ''} border-[#E3E8EF]`}>
             <span className="shrink-0 w-11 h-11 rounded-full bg-[var(--st-accent-soft)] text-[var(--st-accent)] flex items-center justify-center"><Icon name={icon} size={20} /></span>
             <span className="min-w-0"><span className="block text-[14px] font-semibold text-[var(--st-ink)]">{title}</span><span className="block text-[12.5px] leading-snug text-[#6F7E92]">{text}</span></span>
@@ -159,7 +159,7 @@ function MarketplaceHome() {
       {d.byDiscount.length > 0 && (
         <section className={`${box} overflow-hidden`}>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 sm:px-5 py-3.5 bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white">
-            <h2 className="flex items-center gap-2 text-[19px] sm:text-[21px] font-extrabold tracking-[-0.02em]"><Icon name="bolt" size={20} /> Flash Deal</h2>
+            <h2 className="flex items-center gap-2 text-[19px] sm:text-[21px] font-extrabold tracking-[-0.02em]"><Icon name="bolt" size={20} /> Jewellery edit</h2>
             <span className="flex items-center gap-2 text-[13px] font-medium">Ends in <Countdown className="min-w-[30px] px-1.5 py-1 rounded-[4px] bg-white text-[var(--st-accent)] text-[14px] font-bold text-center tabular-nums" /></span>
             <a href="#/deals" className="ml-auto text-[13.5px] font-semibold hover:underline">View all ›</a>
           </div>
@@ -184,7 +184,7 @@ function MarketplaceHome() {
 
       {/* Featured */}
       <section>
-        <MarketHeading title="Featured products" icon="spark" href="#/shop" />
+        <MarketHeading title="Featured jewellery" icon="spark" href="#/shop" />
         <Grid products={d.featured.slice(0, 10)} className="grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" />
       </section>
 
@@ -275,9 +275,9 @@ function LifestyleHome() {
         <span aria-hidden="true" className="absolute bottom-10 right-[45%] w-40 h-40 rounded-full bg-white/10" />
         <div className={`${T.shell} relative grid lg:grid-cols-2 gap-10 items-center pt-10 pb-24 sm:pt-16 sm:pb-32`}>
           <div>
-            <span className="rise inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 text-[13px] font-semibold"><Icon name="spark" size={15} /> New season drop</span>
-            <h1 className="rise rise-1 font-display mt-5 text-[42px] sm:text-[66px] leading-[1.02]">Shop smart,<br />live <span className="text-[#FFE27A]">bright.</span></h1>
-            <p className="rise rise-2 mt-5 text-[16px] sm:text-[17px] text-white/85 max-w-md">{storeInfo.tagline}. Gadgets that make every day a little more fun.</p>
+            <span className="rise inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 text-[13px] font-semibold"><Icon name="spark" size={15} /> New season · new favourites</span>
+            <h1 className="rise rise-1 font-display mt-5 text-[42px] sm:text-[66px] leading-[1.02]">Wear your story,<br /><span className="text-[#FFE27A]">shine on.</span></h1>
+            <p className="rise rise-2 mt-5 text-[16px] sm:text-[17px] text-white/85 max-w-md">{storeInfo.tagline}. Jewellery made for your everyday and most special moments.</p>
             <div className="rise rise-3 mt-8 flex flex-wrap gap-3">
               <Button href="#/shop" variant="light">Start shopping <Icon name="arrow" size={16} /></Button>
               <Button href="#/deals" variant="ghost">See offers</Button>
@@ -314,7 +314,7 @@ function LifestyleHome() {
 
       <div className={`${T.shell} space-y-14 sm:space-y-20 pt-14 sm:pt-16`}>
         <section>
-          <LifeHeading eyebrow="Explore" title="Most visited categories" action={{ label: 'All categories', href: '#/shop' }} />
+          <LifeHeading eyebrow="Explore" title="Explore the collections" action={{ label: 'All categories', href: '#/shop' }} />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {d.categories.slice(0, 6).map((c) => (
               <a key={c.id} href={shopHref({ cat: c.slug })} className="on-dark group relative aspect-[4/5] overflow-hidden rounded-[24px] bg-[var(--st-ink-2)] text-white">
@@ -400,7 +400,7 @@ function BoutiqueHome() {
       {current && (
         <section className="on-dark relative h-[78vh] min-h-[520px] max-h-[860px] overflow-hidden bg-[var(--st-ink-2)] text-white">
           {d.slides.map((s, i) => (
-            <Photo key={s.id} src={s.image} alt="" width={1800} eager={i === 0} className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ${i === slide ? 'opacity-100 kenburns' : 'opacity-0'}`} />
+            <BannerImage key={s.id} image={s.image} mobileImage={s.mobileImage} width={1800} eager={i === 0} className={`absolute inset-0 transition-opacity duration-[1400ms] ${i === slide ? 'opacity-100 kenburns' : 'opacity-0'}`} />
           ))}
           <span className="absolute inset-0 bg-gradient-to-t from-[var(--st-deep)]/70 via-[var(--st-deep)]/20 to-[var(--st-deep)]/10" />
           <div key={current.id} className="relative h-full flex flex-col items-center justify-end text-center px-6 pb-20 sm:pb-24">
@@ -421,7 +421,7 @@ function BoutiqueHome() {
 
       <section className={`${T.shell} py-16 sm:py-24 text-center`}>
         <p className={T.eyebrow}>Maison {storeInfo.name}</p>
-        <p className="mt-6 font-display text-[26px] sm:text-[42px] leading-[1.3] max-w-4xl mx-auto text-[var(--st-ink)]">Objects of sound, sight and play — <em>chosen slowly</em>, made to be kept for years.</p>
+        <p className="mt-6 font-display text-[26px] sm:text-[42px] leading-[1.3] max-w-4xl mx-auto text-[var(--st-ink)]">Jewellery chosen slowly — <em>made to be treasured</em> for years.</p>
       </section>
 
       <section className={T.shell}>
@@ -455,8 +455,8 @@ function BoutiqueHome() {
             </div>
             <div className="flex flex-col justify-center px-8 py-14 sm:px-16 lg:px-24">
               <p className={T.eyebrow}>Lookbook · {pad(i + 1)}</p>
-              <h2 className="font-display mt-4 text-[38px] sm:text-[54px] leading-[1.05]">{i ? <>Evenings, <em>played well</em></> : <>The art of <em>capture</em></>}</h2>
-              <p className="mt-5 text-[16px] leading-relaxed text-[#5B6B80] max-w-md">{c.blurb}. {i ? 'Consoles and controllers that look as good on the shelf as they feel in your hands.' : 'Cameras and drones for the moments you will want to keep, in the detail they deserve.'}</p>
+              <h2 className="font-display mt-4 text-[38px] sm:text-[54px] leading-[1.05]">{i ? <>Made for <em>celebrations</em></> : <>The art of <em>layering</em></>}</h2>
+              <p className="mt-5 text-[16px] leading-relaxed text-[#5B6B80] max-w-md">{c.blurb}. {i ? 'Thoughtful finishing and graceful details for memorable celebrations.' : 'Delicate pieces, made to be worn and treasured for years to come.'}</p>
               <a href={shopHref({ cat: c.slug })} className={`mt-9 self-start ${link} border-[var(--st-ink)] text-[var(--st-ink)]`}>Discover {c.name}</a>
             </div>
           </section>
@@ -465,7 +465,7 @@ function BoutiqueHome() {
 
       {d.posts.length > 0 && (
         <section className="pt-20 sm:pt-28">
-          <p className={`${T.eyebrow} text-center`}>@demowebsite</p>
+          <p className={`${T.eyebrow} text-center`}>@demojewellery</p>
           <h2 className="font-display mt-3 mb-10 text-center text-[32px] sm:text-[46px]">Seen in <em>real life</em></h2>
           <div className="grid grid-cols-3 lg:grid-cols-6">
             {d.posts.slice(0, 6).map((post) => (
@@ -506,7 +506,7 @@ function VoltHeading({ kicker, title, href }: { kicker: string; title: ReactNode
   );
 }
 
-const VOLT_TICKER = ['Free delivery over ₹4,999', '48h dispatch', '7-day returns', '1-year warranty', 'Genuine gear only', 'UPI · Cards · COD'];
+const VOLT_TICKER = ['Free delivery over ₹4,999', '48h dispatch', '7-day returns', 'Jewellery care guidance', 'Thoughtfully chosen pieces', 'UPI · Cards · COD'];
 
 function VoltHome() {
   const storeInfo = useStoreDetails();
@@ -527,15 +527,15 @@ function VoltHome() {
       <section className="border-b-[3px] border-[var(--st-ink)] overflow-hidden">
         <div className={`${T.shell} grid lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-center py-10 sm:py-16`}>
           <div>
-            <span className="inline-block -rotate-2 px-3 py-1.5 bg-[var(--st-accent-light)] border-2 border-[var(--st-ink)] shadow-[3px_3px_0_var(--st-ink)] text-[13px] font-bold uppercase">⚡ Drop 03 is live</span>
-            <h1 className="font-display mt-6 text-[58px] sm:text-[104px] leading-[0.92]">Gear that<br /><em>goes hard.</em></h1>
-            <p className="mt-6 text-[17px] sm:text-[18px] font-medium max-w-md">{storeInfo.tagline}. No filler, no fluff — just kit that works.</p>
+            <span className="inline-block -rotate-2 px-3 py-1.5 bg-[var(--st-accent-light)] border-2 border-[var(--st-ink)] shadow-[3px_3px_0_var(--st-ink)] text-[13px] font-bold uppercase">⚡ New season · jewellery edit</span>
+            <h1 className="font-display mt-6 text-[58px] sm:text-[104px] leading-[0.92]">Jewellery that<br /><em>stands out.</em></h1>
+            <p className="mt-6 text-[17px] sm:text-[18px] font-medium max-w-md">{storeInfo.tagline}. No filler, no fuss — just pieces with personality.</p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Button href="#/shop" variant="accent">Shop the drop <Icon name="arrow" size={16} /></Button>
+              <Button href="#/shop" variant="accent">Shop the collection <Icon name="arrow" size={16} /></Button>
               <Button href="#/deals" variant="light">Deals</Button>
             </div>
             <div className="mt-10 grid grid-cols-3 max-w-md border-2 border-[var(--st-ink)] bg-white">
-              {[[String(d.products.length), 'Products'], [`${d.avgRating.toFixed(1)}★`, 'Avg rating'], ['48H', 'Dispatch']].map(([value, label], i) => (
+              {[[String(d.products.length), 'Pieces'], [`${d.avgRating.toFixed(1)}★`, 'Avg rating'], ['48H', 'Dispatch']].map(([value, label], i) => (
                 <div key={label} className={`p-3 sm:p-4 ${i ? 'border-l-2 border-[var(--st-ink)]' : ''}`}>
                   <p className="text-[24px] sm:text-[30px] font-bold leading-none tracking-[-0.04em]">{value}</p>
                   <p className="mt-1 text-[11px] font-bold uppercase text-[#6F7E92]">{label}</p>
@@ -565,7 +565,7 @@ function VoltHome() {
 
       <div className={`${T.shell} space-y-16 sm:space-y-24 py-14 sm:py-20`}>
         <section>
-          <VoltHeading kicker="01" title="Pick your lane" href="#/shop" />
+          <VoltHeading kicker="01" title="Find your style" href="#/shop" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {d.categories.map((c, i) => (
               <a key={c.id} href={shopHref({ cat: c.slug })} className="group flex flex-col justify-between gap-6 min-h-[150px] sm:min-h-[190px] p-4 sm:p-5 bg-white border-2 border-[var(--st-ink)] shadow-[5px_5px_0_var(--st-ink)] transition-all duration-200 hover:bg-[var(--st-accent-light)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[8px_8px_0_var(--st-ink)]">
@@ -578,13 +578,13 @@ function VoltHome() {
             ))}
             <a href="#/shop" className="flex flex-col justify-between gap-6 min-h-[150px] sm:min-h-[190px] p-4 sm:p-5 bg-[var(--st-ink)] text-[var(--st-accent-light)] border-2 border-[var(--st-ink)] shadow-[5px_5px_0_var(--st-accent)]">
               <span className="text-[13px] font-bold">{pad(d.categories.length + 1)}</span>
-              <span className="font-display text-[21px] sm:text-[30px] leading-[0.95]">All gear ({d.products.length}) →</span>
+              <span className="font-display text-[21px] sm:text-[30px] leading-[0.95]">All jewellery ({d.products.length}) →</span>
             </a>
           </div>
         </section>
 
         <section>
-          <VoltHeading kicker="02" title="Hot right now" href={shopHref({ sort: 'rating' })} />
+          <VoltHeading kicker="02" title="Loved right now" href={shopHref({ sort: 'rating' })} />
           <Grid products={d.bestsellers.slice(0, 8)} className="grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-7" />
         </section>
 
@@ -611,7 +611,7 @@ function VoltHome() {
         )}
 
         <section>
-          <VoltHeading kicker="04" title="Word on the street" />
+          <VoltHeading kicker="04" title="Kind words" />
           <div className="grid md:grid-cols-3 gap-6">
             {REVIEWS.map((r, i) => (
               <figure key={r.name} className={`p-6 bg-white border-2 border-[var(--st-ink)] shadow-[6px_6px_0_var(--st-ink)] ${['-rotate-1', 'rotate-1', '-rotate-[0.5deg]'][i % 3]}`}>
@@ -633,7 +633,7 @@ function VoltHome() {
 
 const PRINCIPLES = [
   ['Chosen slowly', 'Every piece is used for a month before it earns a place here.'],
-  ['Built to last', 'A one-year warranty on everything, and parts and repairs after that.'],
+  ['Made to treasure', 'Thoughtful finishing and simple care guidance to help each piece last.'],
   ['Here to help', 'Real people answer every message, seven days a week.'],
 ];
 
@@ -646,9 +646,9 @@ function AsterHome() {
     <div className={T.shell}>
       <section className="grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-20 items-center pt-8 sm:pt-14 pb-16 sm:pb-24 border-b border-[#E3E8EF]">
         <div className="order-2 lg:order-1">
-          <p className="rise text-[13px] text-[#8A97A8]">New season — {d.products.length} considered objects</p>
+          <p className="rise text-[13px] text-[#8A97A8]">New season — {d.products.length} considered pieces</p>
           <h1 className="rise rise-1 font-display mt-6 text-[56px] sm:text-[96px] leading-[0.95]">Less, but <em>better.</em></h1>
-          <p className="rise rise-2 mt-8 text-[17px] leading-relaxed text-[#5B6B80] max-w-md">Electronics stripped back to what matters: good materials, honest specs and nothing you&apos;ll throw away next year.</p>
+          <p className="rise rise-2 mt-8 text-[17px] leading-relaxed text-[#5B6B80] max-w-md">Jewellery made with thoughtful materials, timeless details and care in every finish.</p>
           <div className="rise rise-3 mt-10 flex flex-wrap items-center gap-8">
             <Button href="#/shop" variant="ink">Browse the collection</Button>
             <TextLink href="#/about">Our approach</TextLink>
@@ -728,153 +728,230 @@ function AsterHome() {
 }
 
 // =============================================================================
-// Atelier: a flagship-store product stage, two-up showcase tiles, a "latest" shelf and a dark spotlight
+// Atelier: a night boutique: midnight bands with art-deco fans, sunburst rays and a diamond lattice,
+// an arched lookbook and gold-cornered jewel cards
 // =============================================================================
 
-/** Atelier headlines: the first sentence in ink, the second in grey. */
-function AtelierHeading({ lead, rest }: { lead: string; rest: string }) {
-  return <h2 className="font-display text-[30px] sm:text-[48px] leading-[1.08] max-w-4xl">{lead} <em>{rest}</em></h2>;
+/** Engraved capitals used for Atelier's small labels. */
+const ENGRAVED = '[font-family:var(--font-cinzel)] uppercase tracking-[0.3em]';
+
+/** A small label between two gilded hairlines; `start` lines it up on the left from large screens. */
+function AtelierEyebrow({ children, light = false, start = false }: { children: ReactNode; light?: boolean; start?: boolean }) {
+  const line = light ? 'bg-[var(--st-accent-light)]/60' : 'bg-[var(--st-accent)]/40';
+  return (
+    <p className={`flex items-center justify-center gap-3 text-[11px] sm:text-[12px] ${ENGRAVED} ${start ? 'lg:justify-start' : ''} ${light ? 'text-[var(--st-accent-light)]' : 'text-[var(--st-accent)]'}`}>
+      <span aria-hidden="true" className={`h-px w-8 sm:w-12 ${line}`} />
+      <span aria-hidden="true" className="text-[8px]">◆</span>
+      {children}
+      <span aria-hidden="true" className="text-[8px]">◆</span>
+      <span aria-hidden="true" className={`h-px w-8 sm:w-12 ${line}`} />
+    </p>
+  );
+}
+
+/** Atelier headlines: the first sentence plain, the second in italic. */
+function AtelierHeading({ eyebrow, lead, rest, light = false }: { eyebrow: string; lead: string; rest: string; light?: boolean }) {
+  return (
+    <div className="text-center">
+      <AtelierEyebrow light={light}>{eyebrow}</AtelierEyebrow>
+      <h2 className={`font-display mt-4 text-[34px] sm:text-[54px] leading-[1.04] max-w-4xl mx-auto ${light ? 'text-white' : 'text-[var(--st-ink)]'}`}>{lead} <em>{rest}</em></h2>
+    </div>
+  );
 }
 
 function AtelierHome() {
   const d = useHomeData();
   const storeInfo = useStoreDetails();
   const hero = d.featured[0];
-  const tiles = d.featured.slice(1, 5);
-  const shelf = (d.newArrivals.length ? d.newArrivals : d.inStock).slice(0, 8);
-  const spot = d.featured.find((p) => p.specs.length >= 4 && p.id !== hero?.id) ?? d.featured[0];
-  const buy = 'inline-flex items-center h-10 px-5 rounded-full bg-[var(--st-accent)] text-white text-[15px] font-medium transition-colors hover:bg-[var(--st-accent-dark)]';
-  const more = 'inline-flex items-center text-[15px] sm:text-[17px] hover:underline underline-offset-4';
+  const looks = d.featured.slice(1, 4);
+  // Spotlight and "latest" show pieces not already used above, when there are some.
+  const shown = new Set([hero?.id, ...looks.map((p) => p.id)]);
+  const spot = [...d.featured, ...d.inStock].find((p) => p.specs.length >= 4 && !shown.has(p.id)) ?? d.featured[0];
+  const fresh = (d.newArrivals.length ? d.newArrivals : d.inStock).filter((p) => p.id !== spot?.id);
+  const shelf = (fresh.length ? fresh : d.inStock).slice(0, 8);
+  const heroOff = hero ? percentOff(hero) : 0;
+  const night = 'on-dark relative overflow-hidden bg-[radial-gradient(110%_80%_at_50%_0%,var(--st-ink-3),var(--st-ink)_45%,var(--st-deep))] text-white';
+  const button = 'inline-flex items-center justify-center h-12 px-8 rounded-full text-[12.5px] font-semibold uppercase tracking-[0.16em] transition-colors';
+  const gilded = `${button} bg-[var(--st-accent-light)] text-[var(--st-ink)] shadow-[0_14px_34px_-16px_var(--st-accent-light)] hover:bg-white`;
+  const midnight = `${button} bg-[var(--st-ink)] text-[var(--st-accent-light)] ring-1 ring-[var(--st-accent-light)]/50 hover:bg-[var(--st-accent-dark)]`;
+  const more = 'inline-flex items-center text-[12.5px] uppercase tracking-[0.16em] hover:underline underline-offset-[6px]';
   const blurb = (p: Product) => p.highlights[0] ?? p.description;
 
   return (
     <>
       {hero && (
-        <section className="pt-10 sm:pt-16 text-center">
-          <div className={T.shell}>
-            <p className="rise text-[15px] sm:text-[17px] font-semibold text-[#BF4800]">New</p>
-            <h1 className="rise rise-1 font-display mt-2 text-[42px] sm:text-[80px] leading-[1.02] max-w-5xl mx-auto">{hero.name}</h1>
-            <p className="rise rise-2 mt-4 text-[19px] sm:text-[26px] leading-snug text-[#6E6E73] max-w-2xl mx-auto">{blurb(hero)}</p>
-            <div className="rise rise-3 mt-6 flex items-center justify-center gap-6">
-              <a href={`#/product/${hero.id}`} className={buy}>Buy</a>
-              <a href={`#/product/${hero.id}`} className={`${more} text-[var(--st-accent)]`}>Learn more ›</a>
+        <section className={night}>
+          <span aria-hidden="true" className="atl-fan absolute inset-0 opacity-[0.08]" />
+          <div className={`${T.shell} relative grid lg:grid-cols-[1.05fr_1fr] items-center gap-14 lg:gap-16 pt-14 sm:pt-20 pb-16 sm:pb-24`}>
+            <div className="text-center lg:text-left">
+              <div className="rise"><AtelierEyebrow light start>{hero.isNewArrival ? 'New arrival' : 'The signature piece'}</AtelierEyebrow></div>
+              <h1 className="rise rise-1 font-display mt-6 text-[48px] sm:text-[84px] leading-[0.96]">{hero.name}</h1>
+              <p className="rise rise-2 mt-6 font-display italic text-[21px] sm:text-[27px] leading-snug text-white/70 max-w-xl mx-auto lg:mx-0">{hero.description}</p>
+              <p className={`rise rise-2 mt-7 text-[11.5px] ${ENGRAVED} text-[var(--st-accent-light)]`}>From {inr(hero.price)}{hero.mrp && hero.mrp > hero.price ? ` · save ${inr(hero.mrp - hero.price)}` : ''}</p>
+              <div className="rise rise-3 mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4">
+                <a href={`#/product/${hero.id}`} className={gilded}>Buy now</a>
+                <a href="#/shop" className={`${more} text-white/80`}>The collection ›</a>
+              </div>
             </div>
-            <p className="mt-3 text-[14px] text-[#86868B]">From {inr(hero.price)}{hero.mrp && hero.mrp > hero.price ? ` · save ${inr(hero.mrp - hero.price)}` : ''}</p>
-          </div>
-          <div className="mt-10 sm:mt-14 px-3 sm:px-6">
-            <a href={`#/product/${hero.id}`} aria-label={hero.name} className="group relative block mx-auto max-w-[1600px] aspect-[4/3] sm:aspect-[21/9] rounded-[28px] sm:rounded-[40px] overflow-hidden bg-gradient-to-b from-white to-[#E8E8ED]">
-              <Photo src={productPhotos(hero)[0]} alt="" width={1800} eager className="absolute inset-0 h-full w-full object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-[1.03]" />
-            </a>
+            <div className="relative mx-auto w-full max-w-[300px] sm:max-w-[440px]">
+              <span aria-hidden="true" className="atl-rays atl-spin absolute -inset-[35%] opacity-40" />
+              <a href={`#/product/${hero.id}`} aria-label={hero.name} className="group relative block aspect-[4/5] rounded-t-full p-[5px] bg-gradient-to-b from-[var(--st-accent-light)] via-[var(--st-accent-light)]/25 to-[var(--st-accent-light)] shadow-[0_50px_90px_-40px_black]">
+                <span className="relative block h-full w-full rounded-t-full overflow-hidden bg-[var(--st-deep)] ring-[4px] ring-[var(--st-ink)]">
+                  <Photo src={productPhotos(hero)[0]} alt="" width={1000} eager className="absolute inset-0 h-full w-full object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-[1.05]" />
+                </span>
+              </a>
+              <span className="absolute -left-3 sm:-left-10 bottom-8 sm:bottom-12 w-[92px] h-[92px] sm:w-[112px] sm:h-[112px] rounded-full bg-[var(--st-ink)] ring-1 ring-[var(--st-accent-light)] flex flex-col items-center justify-center shadow-[0_20px_40px_-20px_black]">
+                <span aria-hidden="true" className="atl-spin absolute inset-1.5 rounded-full border border-dashed border-[var(--st-accent-light)]/60" />
+                <span className="font-display italic text-[28px] sm:text-[34px] leading-none text-[var(--st-accent-light)]">{heroOff > 0 ? `${heroOff}%` : 'New'}</span>
+                <span className={`mt-1.5 text-[8px] sm:text-[9px] ${ENGRAVED} text-white/70`}>{heroOff > 0 ? 'off today' : 'arrival'}</span>
+              </span>
+            </div>
           </div>
         </section>
       )}
 
-      {tiles.length > 0 && (
-        <section className="px-3 sm:px-6 pt-3 sm:pt-4">
-          <div className="mx-auto max-w-[1600px] grid md:grid-cols-2 gap-3 sm:gap-4">
-            {tiles.map((p, i) => {
-              const dark = i === 1 || i === 2;
+      <div className="relative overflow-hidden bg-[var(--st-deep)] border-y border-[var(--st-accent-light)]/25 py-4">
+        <div className="marquee flex w-max">
+          {[false, true].map((hidden) => (
+            <div key={String(hidden)} aria-hidden={hidden} className="flex shrink-0 items-center">
+              {[...d.categories, ...d.categories].map((c, i) => (
+                <span key={`${c.id}-${i}`} className={`flex items-center gap-8 pl-8 text-[12.5px] ${ENGRAVED} text-[var(--st-accent-light)]`}>{c.name}<span aria-hidden="true" className="text-[8px]">◆</span></span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <section className="on-dark relative overflow-hidden bg-[var(--st-ink)] text-white py-16 sm:py-24">
+        <span aria-hidden="true" className="atl-lattice absolute inset-0 opacity-[0.07]" />
+        <div className={`${T.shell} relative`}>
+          <AtelierHeading light eyebrow="The collections" lead="Shop by category." rest="Find the piece that is yours." />
+          <div className="mt-12 -mx-5 px-5 sm:mx-0 sm:px-0 flex sm:justify-center gap-5 sm:gap-8 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {d.categories.map((c) => (
+              <a key={c.id} href={shopHref({ cat: c.slug })} className="group shrink-0 w-[124px] sm:w-[160px] text-center">
+                <span className="block w-full aspect-[3/4] rounded-t-full p-px bg-gradient-to-b from-[var(--st-accent-light)] via-[var(--st-accent-light)]/20 to-[var(--st-accent-light)]">
+                  <span className="block h-full w-full rounded-t-full overflow-hidden bg-[var(--st-deep)] ring-[3px] ring-[var(--st-ink)]">
+                    <Photo src={c.image} alt="" width={320} className="h-full w-full object-cover opacity-90 transition-all duration-700 group-hover:scale-110 group-hover:opacity-100" />
+                  </span>
+                </span>
+                <span className="mt-4 block font-display text-[20px] font-semibold leading-tight">{c.name}</span>
+                <span className={`mt-1 block text-[9.5px] ${ENGRAVED} text-[var(--st-accent-light)]`}>{d.countIn(c.name)} {d.countIn(c.name) === 1 ? 'piece' : 'pieces'}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {looks.length > 0 && (
+        <section className={`${T.shell} pt-16 sm:pt-28`}>
+          <AtelierHeading eyebrow="The lookbook" lead="Signature pieces." rest="Each one finished by hand." />
+          <div className="mt-12 sm:mt-20 space-y-16 sm:space-y-24">
+            {looks.map((p, i) => {
+              const flip = i % 2 === 1;
               return (
-                <a key={p.id} href={`#/product/${p.id}`} className={`group relative overflow-hidden rounded-[28px] sm:rounded-[36px] min-h-[540px] sm:min-h-[640px] flex flex-col items-center text-center pt-12 sm:pt-14 ${dark ? 'on-dark bg-black text-white' : 'bg-white text-[var(--st-ink)]'}`}>
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#86868B]">{p.subCategory || p.category}</p>
-                  <h2 className="font-display mt-3 px-6 text-[32px] sm:text-[44px] leading-[1.05] max-w-lg">{p.name}</h2>
-                  <p className={`mt-3 px-8 text-[16px] sm:text-[19px] leading-snug max-w-md ${dark ? 'text-white/65' : 'text-[#6E6E73]'}`}>{blurb(p)}</p>
-                  <span className="mt-5 flex items-center gap-5">
-                    <span className={buy}>Buy</span>
-                    <span className={`${more} ${dark ? 'text-[var(--st-accent-light)]' : 'text-[var(--st-accent)]'}`}>Learn more ›</span>
-                  </span>
-                  <span className="absolute inset-x-6 sm:inset-x-10 bottom-0 top-[55%] rounded-t-[24px] overflow-hidden">
-                    <Photo src={productPhotos(p)[0]} alt="" width={1000} className="h-full w-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.05]" />
-                  </span>
-                </a>
+                <article key={p.id} className="grid md:grid-cols-2 items-center gap-10 md:gap-16">
+                  <a href={`#/product/${p.id}`} aria-label={p.name} className={`group relative block mx-auto w-[82%] max-w-[420px] ${flip ? 'md:order-2' : ''}`}>
+                    <span aria-hidden="true" className={`absolute inset-0 translate-y-4 ${flip ? '-translate-x-4' : 'translate-x-4'} rounded-t-full border border-[var(--st-accent)]/35`} />
+                    <span className="relative block aspect-[4/5] rounded-t-full overflow-hidden bg-[var(--st-accent-soft)] shadow-[0_40px_70px_-45px_var(--st-ink)]">
+                      <Photo src={productPhotos(p)[0]} alt="" width={900} className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.05]" />
+                    </span>
+                  </a>
+                  <div className={`text-center ${flip ? 'md:order-1 md:text-right' : 'md:text-left'}`}>
+                    <p className="font-display italic text-[60px] sm:text-[96px] leading-none text-[var(--st-accent)]/20">No. {String(i + 1).padStart(2, '0')}</p>
+                    <p className={`mt-3 text-[11px] ${ENGRAVED} text-[var(--st-accent)]`}>{p.subCategory || p.category}</p>
+                    <h3 className="font-display mt-3 text-[36px] sm:text-[52px] leading-[1.02] text-[var(--st-ink)]">{p.name}</h3>
+                    <p className={`mt-4 font-display italic text-[19px] sm:text-[23px] leading-snug text-[var(--st-ink)]/65 max-w-md mx-auto ${flip ? 'md:mr-0' : 'md:ml-0'}`}>{blurb(p)}</p>
+                    <p className="mt-5 text-[15px] text-[var(--st-ink)]/65">From <span className="font-semibold text-[var(--st-ink)]">{inr(p.price)}</span></p>
+                    <div className={`mt-7 flex flex-wrap items-center justify-center gap-x-7 gap-y-3 ${flip ? 'md:justify-end' : 'md:justify-start'}`}>
+                      <a href={`#/product/${p.id}`} className={midnight}>Buy now</a>
+                      <a href={`#/product/${p.id}`} className={`${more} text-[var(--st-accent)]`}>Discover ›</a>
+                    </div>
+                  </div>
+                </article>
               );
             })}
           </div>
         </section>
       )}
 
-      <section className={`${T.shell} pt-16 sm:pt-24`}>
-        <AtelierHeading lead="Shop by category." rest="The best way to find what you love." />
-        <div className="mt-8 -mx-5 px-5 sm:mx-0 sm:px-0 flex gap-4 sm:gap-6 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {d.categories.map((c) => (
-            <a key={c.id} href={shopHref({ cat: c.slug })} className="group shrink-0 w-[112px] sm:w-[128px] text-center">
-              <span className="block w-full aspect-square rounded-[26px] overflow-hidden bg-white shadow-[0_10px_30px_-20px_rgba(0,0,0,0.35)]">
-                <Photo src={c.image} alt="" width={300} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      {spot && (
+        <section className={`${night} mt-20 sm:mt-28`}>
+          <span aria-hidden="true" className="atl-fan absolute inset-0 opacity-[0.06]" />
+          <div className={`${T.shell} relative grid lg:grid-cols-2 items-center gap-14 py-16 sm:py-24`}>
+            <div className="relative mx-auto w-full max-w-[300px] sm:max-w-[480px]">
+              <span aria-hidden="true" className="atl-rays atl-spin absolute -inset-[30%] opacity-35" />
+              <span className="relative block aspect-square rounded-full p-3 sm:p-4 border border-[var(--st-accent-light)]/50">
+                <span className="relative block h-full w-full rounded-full overflow-hidden bg-[var(--st-deep)] ring-1 ring-[var(--st-accent-light)]">
+                  <Photo src={productPhotos(spot)[0]} alt={spot.name} width={1000} className="absolute inset-0 h-full w-full object-cover" />
+                </span>
               </span>
-              <span className="mt-3 block text-[14px] font-semibold leading-tight text-[var(--st-ink)]">{c.name}</span>
-              <span className="mt-0.5 block text-[12px] text-[#86868B]">{d.countIn(c.name)} {d.countIn(c.name) === 1 ? 'product' : 'products'}</span>
-            </a>
-          ))}
-        </div>
-      </section>
+            </div>
+            <div className="text-center lg:text-left">
+              <AtelierEyebrow light start>Spotlight</AtelierEyebrow>
+              <h2 className="font-display mt-5 text-[42px] sm:text-[68px] leading-[1]">{spot.name}</h2>
+              <p className="mt-5 font-display italic text-[20px] sm:text-[24px] leading-snug text-white/65 max-w-xl mx-auto lg:mx-0">{spot.description}</p>
+              <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-7 max-w-lg mx-auto lg:mx-0 text-left">
+                {spot.specs.slice(0, 4).map(([label, value]) => (
+                  <div key={label} className="border-t border-[var(--st-accent-light)]/30 pt-4">
+                    <dt className={`text-[10px] ${ENGRAVED} text-[var(--st-accent-light)]`}>{label}</dt>
+                    <dd className="mt-2 font-display text-[22px] sm:text-[28px] leading-tight text-white">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4">
+                <a href={`#/product/${spot.id}`} className={gilded}>Buy now · {inr(spot.price)}</a>
+                <a href={`#/product/${spot.id}`} className={`${more} text-white/80`}>Discover ›</a>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {shelf.length > 0 && (
-        <section className={`${T.shell} pt-14 sm:pt-20`}>
-          <AtelierHeading lead="The latest." rest="Take a look at what’s new right now." />
-          <div className="mt-8 -mx-5 px-5 sm:mx-0 sm:px-0 flex gap-5 overflow-x-auto snap-x snap-mandatory pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <section className={`${T.shell} pt-16 sm:pt-28`}>
+          <AtelierHeading eyebrow="Just arrived" lead="The latest." rest="New from our workshop." />
+          <div className="mt-12 -mx-5 px-5 sm:mx-0 sm:px-0 flex gap-5 overflow-x-auto snap-x snap-mandatory pb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {shelf.map((p) => (
-              <a key={p.id} href={`#/product/${p.id}`} className="group snap-start shrink-0 w-[80%] sm:w-[360px] h-[470px] sm:h-[500px] rounded-[28px] bg-white overflow-hidden flex flex-col shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-500 hover:scale-[1.015] hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.3)]">
-                <span className="block p-7 pb-0">
-                  <span className="block text-[12px] font-semibold uppercase tracking-[0.14em] text-[#BF4800]">{p.isNewArrival ? 'New' : p.category}</span>
-                  <span className="mt-2 block font-display text-[26px] leading-[1.1] text-[var(--st-ink)]">{p.name}</span>
-                  <span className="mt-2 block text-[15px] text-[#6E6E73]">From {inr(p.price)}</span>
+              <a key={p.id} href={`#/product/${p.id}`} className="group relative snap-start shrink-0 w-[76%] sm:w-[300px] rounded-[6px] bg-[var(--st-ink)] p-4 text-center text-white shadow-[0_30px_50px_-35px_var(--st-ink)] transition-transform duration-500 hover:-translate-y-1">
+                <DecoCorners className="inset-2" />
+                <span className="relative block aspect-square rounded-[3px] overflow-hidden bg-[var(--st-deep)]">
+                  <Photo src={productPhotos(p)[0]} alt="" width={600} className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 </span>
-                <span className="relative mt-auto block h-[56%]">
-                  <Photo src={productPhotos(p)[0]} alt="" width={700} className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                </span>
+                <span className={`mt-5 block text-[9.5px] ${ENGRAVED} text-[var(--st-accent-light)]`}>{p.isNewArrival ? 'New' : p.category}</span>
+                <span className="mt-2 block font-display text-[24px] leading-[1.1] line-clamp-2 min-h-[53px]">{p.name}</span>
+                <span className="mt-2 mb-3 block text-[14px] text-white/60">From {inr(p.price)}</span>
               </a>
             ))}
           </div>
         </section>
       )}
 
-      <section className={`${T.shell} pt-10 sm:pt-14`}>
-        <AtelierHeading lead="All the favourites." rest="Chosen again and again by our customers." />
-        <div className="mt-8"><Grid products={d.bestsellers.slice(0, 8)} className="grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5" /></div>
+      <section className={`${T.shell} pt-10 sm:pt-16`}>
+        <AtelierHeading eyebrow="Most loved" lead="All the favourites." rest="Chosen again and again." />
+        <div className="mt-12"><Grid products={d.bestsellers.slice(0, 8)} className="grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5" /></div>
       </section>
 
-      <section className={`${T.shell} pt-16 sm:pt-24`}>
-        <AtelierHeading lead={`The ${storeInfo.name} difference.`} rest="Even more reasons to shop with us." />
-        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {([
-            ['truck', 'Free delivery', `On every order over ${inr(4999)}, packed with care and tracked to your door.`],
-            ['refresh', '7-day returns', 'Changed your mind? Send it back in its box within a week.'],
-            ['shield', 'One-year warranty', 'Every product is covered against manufacturing defects.'],
-            ['chat', 'Talk to a specialist', 'Real people who use the products answer every question.'],
-          ] as const).map(([icon, title, text]) => (
-            <div key={title} className="flex flex-col min-h-[230px] rounded-[28px] bg-white p-7 transition-transform duration-500 hover:scale-[1.02]">
-              <span className="text-[var(--st-accent)]"><Icon name={icon} size={30} stroke={1.5} /></span>
-              <h3 className="mt-auto pt-10 font-display text-[22px] leading-tight text-[var(--st-ink)]">{title}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-[#6E6E73]">{text}</p>
-            </div>
-          ))}
+      <section className="on-dark relative mt-20 sm:mt-28 overflow-hidden bg-[var(--st-ink)] text-white">
+        <span aria-hidden="true" className="atl-lattice absolute inset-0 opacity-[0.07]" />
+        <div className={`${T.shell} relative py-16 sm:py-24`}>
+          <AtelierHeading light eyebrow="Our promise" lead={`The ${storeInfo.name} difference.`} rest="Reasons to shop with us." />
+          <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {([
+              ['I', 'Free delivery', `On every order over ${inr(4999)}, packed in a keepsake box and tracked to your door.`],
+              ['II', '7-day returns', 'Changed your mind? Send it back in its box within a week.'],
+              ['III', 'Jewellery care', 'Every piece comes with a polishing cloth and simple care guidance.'],
+              ['IV', 'Talk to a specialist', 'Real people who know every piece answer every question.'],
+            ] as const).map(([numeral, title, text]) => (
+              <div key={title} className="relative rounded-[6px] bg-white/[0.03] px-6 py-10 text-center ring-1 ring-[var(--st-accent-light)]/20">
+                <DecoCorners className="inset-2" />
+                <span className="font-display italic text-[44px] leading-none text-[var(--st-accent-light)]">{numeral}</span>
+                <h3 className="mt-5 font-display text-[25px] leading-tight">{title}</h3>
+                <p className="mt-3 text-[14.5px] leading-relaxed text-white/60">{text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
-
-      {spot && (
-        <section className="on-dark mt-16 sm:mt-24 bg-black text-white">
-          <div className={`${T.shell} py-16 sm:py-24 text-center`}>
-            <p className="text-[15px] sm:text-[17px] font-semibold text-[var(--st-accent-light)]">Spotlight</p>
-            <h2 className="font-display mt-2 text-[40px] sm:text-[72px] leading-[1.02] max-w-4xl mx-auto">{spot.name}</h2>
-            <p className="mt-4 text-[18px] sm:text-[22px] leading-snug text-white/60 max-w-2xl mx-auto">{spot.description}</p>
-            <div className="relative mt-10 sm:mt-14 mx-auto max-w-4xl aspect-[16/10] rounded-[28px] sm:rounded-[36px] overflow-hidden bg-[#111]">
-              <Photo src={productPhotos(spot)[0]} alt={spot.name} width={1400} className="absolute inset-0 h-full w-full object-cover" />
-            </div>
-            <dl className="mt-12 sm:mt-16 grid grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6 max-w-5xl mx-auto">
-              {spot.specs.slice(0, 4).map(([label, value]) => (
-                <div key={label}>
-                  <dt className="text-[14px] text-white/50">{label}</dt>
-                  <dd className="mt-2 font-display text-[26px] sm:text-[38px] leading-none bg-gradient-to-b from-white to-white/55 bg-clip-text text-transparent">{value}</dd>
-                </div>
-              ))}
-            </dl>
-            <div className="mt-12 flex items-center justify-center gap-6">
-              <a href={`#/product/${spot.id}`} className={buy}>Buy</a>
-              <a href={`#/product/${spot.id}`} className={`${more} text-[var(--st-accent-light)]`}>Learn more ›</a>
-            </div>
-          </div>
-        </section>
-      )}
     </>
   );
 }
@@ -940,11 +1017,11 @@ function AuroraHome() {
             <span className="h-6 px-2.5 rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[11px] font-bold flex items-center">NEW</span>
             {d.newArrivals.length} fresh arrivals this week <Icon name="arrow" size={14} />
           </a>
-          <h1 className="rise rise-1 font-display mt-7 text-[44px] sm:text-[86px] leading-[0.98] max-w-5xl mx-auto">Tech that makes <em>every day</em> brighter.</h1>
-          <p className="rise rise-2 mt-6 text-[17px] sm:text-[20px] leading-relaxed text-[#4B5568] max-w-2xl mx-auto">{storeInfo.tagline}. Hand-picked, tested and delivered fast.</p>
+          <h1 className="rise rise-1 font-display mt-7 text-[44px] sm:text-[86px] leading-[0.98] max-w-5xl mx-auto">Jewellery that makes <em>every day</em> brighter.</h1>
+          <p className="rise rise-2 mt-6 text-[17px] sm:text-[20px] leading-relaxed text-[#4B5568] max-w-2xl mx-auto">{storeInfo.tagline}. Carefully selected and delivered with care.</p>
           <form onSubmit={search} role="search" className={`rise rise-3 mt-9 mx-auto max-w-xl flex items-center gap-2 p-2 rounded-full ${glass}`}>
             <span className="pl-3 text-[#8A97A8]"><Icon name="search" size={19} /></span>
-            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search headphones, watches, cameras…" aria-label="Search products" className="flex-1 min-w-0 h-11 bg-transparent outline-none text-[15px] text-[var(--st-ink)] placeholder:text-[#8A97A8]" />
+            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search necklaces, earrings, rings…" aria-label="Search products" className="flex-1 min-w-0 h-11 bg-transparent outline-none text-[15px] text-[var(--st-ink)] placeholder:text-[#8A97A8]" />
             <button type="submit" className="h-11 px-6 rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[14px] font-semibold shadow-[0_10px_24px_-12px_var(--st-accent-2)] hover:brightness-110">Search</button>
           </form>
           <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-[13.5px] font-medium text-[#4B5568]">

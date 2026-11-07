@@ -255,7 +255,7 @@ function BrandPanel({ compact = false }: { compact?: boolean }) {
         <p className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-[12px] font-semibold">
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--st-accent-2)] shadow-[0_0_10px_var(--st-accent-2)]" /> Members get more
         </p>
-        <h2 className={`${T.display} mt-6 ${compact ? 'text-[34px]' : 'text-[44px]'} leading-[1.04] max-w-sm`}>Your gadgets, <em>beautifully organised.</em></h2>
+        <h2 className={`${T.display} mt-6 ${compact ? 'text-[34px]' : 'text-[44px]'} leading-[1.04] max-w-sm`}>Your favourite pieces, <em>beautifully kept.</em></h2>
         <ul className="mt-7 space-y-3.5 max-w-sm">
           {[
             ['box', 'Track every order live'],
@@ -377,7 +377,7 @@ export function AccountPage() {
         <span aria-hidden="true" className="pointer-events-none absolute -top-24 right-0 w-[460px] h-[360px] rounded-full bg-[var(--st-accent)]/30 blur-[110px]" />
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div className="flex items-center gap-5">
-            <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-[22px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-accent-2)] flex items-center justify-center text-[24px] sm:text-[28px] font-extrabold shadow-[0_14px_34px_-12px_rgba(47,107,255,0.8)]">{initials}</span>
+            <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-[22px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-accent-2)] flex items-center justify-center text-[24px] sm:text-[28px] font-extrabold shadow-[0_14px_34px_-12px_color-mix(in_srgb,var(--st-accent)_80%,transparent)]">{initials}</span>
             <div>
               <p className="text-[13px] font-semibold text-[var(--st-accent-light)]">Member since {formatDate(account.createdAt).split(', ').slice(1).join(', ')}</p>
               <h1 className={`${T.display} text-[32px] sm:text-[44px] leading-[1.05] mt-1`}>Hello, <em>{account.name.split(/\s+/)[0]}</em></h1>

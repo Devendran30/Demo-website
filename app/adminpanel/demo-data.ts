@@ -363,13 +363,13 @@ export function useStore<T>(store: Store<T>) {
 
 // The shop's own details, printed on invoices and shown in the storefront footer.
 export const STORE_INFO = {
-  name: 'Demo Website',
-  tagline: 'Considered electronics, delivered across India',
+  name: 'Demo Jewellery',
+  tagline: 'Hand-finished jewellery, made for every day and every occasion',
   email: 'demo.support@example.com',
   phone: '+91 00000 00000',
   address: '3rd Floor, 100 Feet Road, Indiranagar, Bengaluru, Karnataka 560038',
   gstin: '29ABCDE1234F1Z5',
-  returnPolicy: 'Unused items in their original box can be returned within 7 days of delivery. Every gadget carries a one-year warranty against manufacturing defects.',
+  returnPolicy: 'Unused jewellery in its original packaging can be returned within 7 days of delivery. Please keep each piece away from water, perfume and harsh chemicals.',
 };
 
 // The store's name, logo, contact details and footer text, edited in Admin → Store Details.
@@ -392,13 +392,13 @@ export interface StoreDetails {
 }
 export const DEFAULT_STORE_DETAILS: StoreDetails = {
   ...STORE_INFO,
-  footerAbout: 'Headphones, smartwatches, cameras, gaming and smart home gadgets, tested by our team before they reach you.',
+  footerAbout: 'Thoughtfully selected necklaces, earrings, rings and bracelets, finished with care and made to be treasured.',
   footerNote: 'A demo store: products and prices are samples, and no real payments are processed.',
   logoUrl: '',
   showNameWithLogo: true,
   whatsapp: STORE_INFO.phone,
   hours: 'Mon–Sun, 9am–9pm',
-  social: { instagram: 'https://instagram.com/demowebsite', facebook: '', youtube: '', x: '' },
+  social: { instagram: 'https://instagram.com/demojewellery', facebook: '', youtube: '', x: '' },
 };
 
 export const FREE_DELIVERY_FROM = 4999;
@@ -642,209 +642,101 @@ export function returnToStock(lines: StockLine[]) {
 // =============================================================================
 
 const U = (id: string, width = 800) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=${width}`;
-const BACKPACK_PHOTO = '1553062407-98eeb64c6a62';
+const UM = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=85&w=900&h=1200`;
 
 /** A few hero product shots, used for decorative collages on the storefront. */
-export const PHOTO_URLS = [U(PHOTOS.headphonesStudio, 600), U(PHOTOS.watchBlack, 600), U(PHOTOS.cameraMirrorless, 600)];
+export const PHOTO_URLS = [U(PHOTOS.layeredNecklaces, 600), U(PHOTOS.roseGoldDrops, 600), U(PHOTOS.solitaire, 600)];
 
 const SEED_SIZES: SizeOption[] = [
-  { id: 'sz-1', name: '41 mm Case', code: '41mm' },
-  { id: 'sz-2', name: '45 mm Case', code: '45mm' },
-  { id: 'sz-3', name: 'Full Size Layout', code: 'Full Size' },
-  { id: 'sz-4', name: 'Tenkeyless Layout', code: 'TKL' },
-  { id: 'sz-5', name: '15-inch Laptop', code: '15 inch' },
-  { id: 'sz-6', name: '17-inch Laptop', code: '17 inch' },
+  { id: 'sz-1', name: 'Ring Size 6', code: '6' },
+  { id: 'sz-2', name: 'Ring Size 7', code: '7' },
+  { id: 'sz-3', name: 'Ring Size 8', code: '8' },
+  { id: 'sz-4', name: 'Bangle Size 2.4', code: '2.4' },
+  { id: 'sz-5', name: 'Bangle Size 2.6', code: '2.6' },
+  { id: 'sz-6', name: 'Bangle Size 2.8', code: '2.8' },
 ];
 
 const SEED_COLORS: ColorOption[] = [
-  { id: 'col-1', name: 'Midnight Black', hex: '#1d1d1f' },
-  { id: 'col-2', name: 'Silver Mist', hex: '#c7c7cc' },
-  { id: 'col-3', name: 'Starlight', hex: '#efe4d2' },
-  { id: 'col-4', name: 'Space Grey', hex: '#6e6e73' },
-  { id: 'col-5', name: 'Arctic White', hex: '#f5f5f7' },
-  { id: 'col-6', name: 'Tan Brown', hex: '#a0522d' },
-  { id: 'col-7', name: 'Ocean Blue', hex: '#2563eb' },
-  { id: 'col-8', name: 'Sunset Orange', hex: '#f97316' },
+  { id: 'col-1', name: 'Yellow Gold', hex: '#C9A44C' },
+  { id: 'col-2', name: 'Rose Gold', hex: '#B76E79' },
+  { id: 'col-3', name: 'Silver', hex: '#C7C7CC' },
+  { id: 'col-4', name: 'Antique Gold', hex: '#927443' },
+  { id: 'col-5', name: 'White Gold', hex: '#E6E4DF' },
+  { id: 'col-6', name: 'Pearl', hex: '#F3EBDD' },
+  { id: 'col-7', name: 'Emerald', hex: '#28745B' },
+  { id: 'col-8', name: 'Ruby', hex: '#9B263B' },
 ];
 
 const SEED_TAGS: TagOption[] = [
   { id: 'tag-1', name: 'Bestseller' },
   { id: 'tag-2', name: 'New Launch' },
   { id: 'tag-3', name: 'Premium' },
-  { id: 'tag-4', name: 'Work From Home' },
+  { id: 'tag-4', name: 'Handcrafted' },
   { id: 'tag-5', name: 'Gifting' },
-  { id: 'tag-6', name: 'Fitness' },
+  { id: 'tag-6', name: 'Bridal' },
 ];
 
 const SEED_CATEGORIES: CategoryItem[] = [
-  { id: 'c-1', name: 'Audio', slug: 'audio', icon: '🎧', image: U(PHOTOS.headphonesStudio), blurb: 'Headphones, earbuds and speakers', status: 'Active' },
-  { id: 'c-2', name: 'Wearables', slug: 'wearables', icon: '⌚', image: U(PHOTOS.watchBlack), blurb: 'Watches that keep up', status: 'Active' },
-  { id: 'c-4', name: 'Computing', slug: 'computing', icon: '⌨️', image: U(PHOTOS.mouseDark), blurb: 'Keyboards, mice, displays and chargers', status: 'Active' },
-  { id: 'c-5', name: 'Cameras & Drones', slug: 'cameras', icon: '📷', image: U(PHOTOS.droneRiver), blurb: 'From the ground and the air', status: 'Active' },
-  { id: 'c-6', name: 'Gaming', slug: 'gaming', icon: '🎮', image: U(PHOTOS.controller), blurb: 'Consoles, pads and VR', status: 'Active' },
-  { id: 'c-7', name: 'Smart Home', slug: 'smart-home', icon: '🏠', image: U(PHOTOS.smartSpeaker), blurb: 'A home that listens', status: 'Active' },
-  { id: 'c-8', name: 'Bags & Accessories', slug: 'bags', icon: '🎒', image: U(BACKPACK_PHOTO), blurb: 'Carry your kit in style', status: 'Active' },
+  { id: 'c-1', name: 'Necklaces', slug: 'necklaces', icon: '📿', image: U(PHOTOS.layeredNecklaces), blurb: 'Delicate chains, statement pendants and heirloom-inspired designs', status: 'Active' },
+  { id: 'c-2', name: 'Earrings', slug: 'earrings', icon: '✨', image: U(PHOTOS.goldHoops), blurb: 'Everyday studs, graceful drops and festive jhumkas', status: 'Active' },
+  { id: 'c-4', name: 'Rings', slug: 'rings', icon: '💍', image: U(PHOTOS.stackedRings), blurb: 'Solitaire, halo and keepsake rings in considered sizes', status: 'Active' },
+  { id: 'c-5', name: 'Bracelets & Bangles', slug: 'bracelets', icon: '◉', image: U(PHOTOS.handsStacked), blurb: 'Polished cuffs, delicate links and traditional bangles', status: 'Active' },
+  { id: 'c-6', name: 'Bridal & Occasion', slug: 'bridal', icon: '✿', image: U(PHOTOS.templeNecklace), blurb: 'Jewellery for celebrations, ceremonies and gifting', status: 'Active' },
 ];
 
 const SEED_SUB_CATEGORIES: SubCategoryItem[] = [
-  ['Headphones', 'Audio'], ['Earbuds', 'Audio'], ['Speakers', 'Audio'],
-  ['Smartwatches', 'Wearables'], ['Fitness Bands', 'Wearables'],
-  ['Keyboards & Mice', 'Computing'], ['Monitors', 'Computing'], ['Chargers & Power', 'Computing'],
-  ['Cameras', 'Cameras & Drones'], ['Drones', 'Cameras & Drones'],
-  ['Consoles & Controllers', 'Gaming'], ['VR', 'Gaming'],
-  ['Smart Speakers', 'Smart Home'], ['Security', 'Smart Home'],
-  ['Backpacks', 'Bags & Accessories'],
+  ['Chains & Pendants', 'Necklaces'], ['Statement Necklaces', 'Necklaces'],
+  ['Stud Earrings', 'Earrings'], ['Drops & Jhumkas', 'Earrings'],
+  ['Solitaire Rings', 'Rings'], ['Statement Rings', 'Rings'],
+  ['Bracelets', 'Bracelets & Bangles'], ['Bangles', 'Bracelets & Bangles'],
+  ['Bridal Sets', 'Bridal & Occasion'], ['Festive Jewellery', 'Bridal & Occasion'],
 ].map(([name, parentCategory], i) => ({ id: `sc-${i + 1}`, name, parentCategory, status: 'Active' as const }));
 
 const SEED_SUB_SUB_CATEGORIES: SubSubCategoryItem[] = [
-  { id: 'ssc-1', name: 'Over-Ear Headphones', parentSubCategory: 'Headphones', parentCategory: 'Audio', status: 'Active' },
-  { id: 'ssc-2', name: 'In-Ear TWS Earbuds', parentSubCategory: 'Earbuds', parentCategory: 'Audio', status: 'Active' },
-  { id: 'ssc-3', name: 'Mechanical RGB Keyboards', parentSubCategory: 'Keyboards & Mice', parentCategory: 'Computing', status: 'Active' },
-  { id: 'ssc-4', name: 'Waterproof Laptop Backpacks', parentSubCategory: 'Backpacks', parentCategory: 'Bags & Accessories', status: 'Active' },
+  { id: 'ssc-1', name: 'Temple & Heritage', parentSubCategory: 'Statement Necklaces', parentCategory: 'Necklaces', status: 'Active' },
+  { id: 'ssc-2', name: 'Pearl & Kundan', parentSubCategory: 'Stud Earrings', parentCategory: 'Earrings', status: 'Active' },
+  { id: 'ssc-3', name: 'Halo & Solitaire', parentSubCategory: 'Solitaire Rings', parentCategory: 'Rings', status: 'Active' },
+  { id: 'ssc-4', name: 'Traditional Sets', parentSubCategory: 'Bridal Sets', parentCategory: 'Bridal & Occasion', status: 'Active' },
 ];
 
-// The admin's own four products, with their hand-set stock per size and color.
+// Sample jewellery products; the size and colour variants remain managed through the same admin controls.
 const ADMIN_PRODUCTS: Product[] = [
   {
-    id: 'wireless-nc-headphones-pro',
-    name: 'Wireless Noise-Cancelling Headphones Pro',
-    description: 'Over-ear wireless headphones with adaptive noise cancelling, 40-hour battery life and plush memory-foam cushions.',
-    sku: 'WNC-HP-01',
-    barcode: '8901234567890',
-    category: 'Audio',
-    subCategory: 'Headphones',
-    subSubCategory: 'Over-Ear Headphones',
-    price: 14999,
-    mrp: 19999,
-    stock: 45,
-    status: 'In Stock',
-    image: U(PHOTOS.headphonesYellow),
-    images: [U(PHOTOS.headphonesYellow), U(PHOTOS.headphonesStudio)],
-    sizes: [],
-    colors: ['Midnight Black', 'Silver Mist'],
-    variantStock: { [STANDARD]: { 'Midnight Black': 30, 'Silver Mist': 15 } },
-    colorImages: { 'Silver Mist': [U(PHOTOS.headphonesStudio)] },
-    tags: ['Bestseller', 'Premium'],
-    isNewArrival: false,
-    isFeatured: true,
-    rating: 4.8,
-    reviews: 1284,
-    highlights: ['Adaptive hybrid noise cancelling', '40 hours of playback, 10 minutes charge for 5 hours', 'Connects to two devices at once', 'Folds flat into a hard travel case'],
-    specs: [['Driver', '40 mm dynamic'], ['Bluetooth', '5.3 multipoint'], ['Battery', '40 hours'], ['Weight', '254 g']],
+    id: 'wireless-nc-headphones-pro', name: 'Mehr Pearl Strand Necklace', description: 'A single strand of lustrous pearls finished with a slim gold clasp, made to be worn every day.', sku: 'MEH-NK-01', barcode: '8901234567890', category: 'Necklaces', subCategory: 'Chains & Pendants', price: 24999, mrp: 29999, stock: 45, status: 'In Stock', image: U(PHOTOS.pearlNecklace), images: [U(PHOTOS.pearlNecklace), U(PHOTOS.pearlPendant)], sizes: [], colors: ['Pearl', 'Yellow Gold'], variantStock: { [STANDARD]: { Pearl: 30, 'Yellow Gold': 15 } }, colorImages: {}, tags: ['Bestseller', 'Premium'], isNewArrival: false, isFeatured: true, rating: 4.8, reviews: 1284, highlights: ['Hand-knotted freshwater pearls', 'Lightweight for all-day wear', 'Slim gold box clasp', 'Presented in a keepsake box'], specs: [['Style', 'Pearl strand'], ['Pearl', 'Freshwater, 7–8 mm'], ['Length', '18 in'], ['Care', 'Wipe with a soft cloth']],
   },
   {
-    id: 'ultra-slim-smartwatch-7',
-    name: 'Ultra Slim Smartwatch Series 7',
-    description: 'Always-on AMOLED smartwatch with heart-rate, SpO2 and sleep tracking, 5 ATM water resistance and 7-day battery.',
-    sku: 'SMRT-WT-07',
-    barcode: '8909876543211',
-    category: 'Wearables',
-    subCategory: 'Smartwatches',
-    price: 21999,
-    mrp: 24999,
-    stock: 8,
-    status: 'Low Stock',
-    image: U(PHOTOS.watchWhite),
-    images: [U(PHOTOS.watchWhite)],
-    sizes: ['41mm', '45mm'],
-    colors: ['Midnight Black', 'Starlight'],
-    variantStock: { '41mm': { 'Midnight Black': 3, Starlight: 2 }, '45mm': { 'Midnight Black': 3, Starlight: 0 } },
-    colorImages: { 'Midnight Black': [U(PHOTOS.watchBlack)] },
-    tags: ['New Launch', 'Fitness'],
-    isNewArrival: true,
-    isFeatured: true,
-    rating: 4.6,
-    reviews: 742,
-    highlights: ['Always-on AMOLED display', 'Heart rate, SpO2 and sleep tracking', 'Swim-proof to 50 metres', 'Up to 7 days per charge'],
-    specs: [['Display', '1.9" AMOLED'], ['Water resistance', '5 ATM'], ['Battery', 'Up to 7 days'], ['Sensors', 'HR, SpO2, GPS']],
+    id: 'ultra-slim-smartwatch-7', name: 'Nila Sapphire Drop Earrings', description: 'Deep blue sapphire-hued stones framed in sparkling halos, made for evenings and celebrations.', sku: 'MIR-ER-02', barcode: '8901234567891', category: 'Earrings', subCategory: 'Drops & Jhumkas', price: 9499, mrp: 12999, stock: 18, status: 'In Stock', image: U(PHOTOS.sapphireEarrings), images: [U(PHOTOS.sapphireEarrings)], sizes: [], colors: ['White Gold', 'Yellow Gold'], variantStock: { [STANDARD]: { 'White Gold': 10, 'Yellow Gold': 8 } }, colorImages: {}, tags: ['Bestseller', 'Gifting'], isNewArrival: true, isFeatured: true, rating: 4.7, reviews: 612, highlights: ['Sapphire-hued centre stones', 'Hypoallergenic posts', 'Secure push-back fastening', 'Gift-ready presentation'], specs: [['Style', 'Statement drop'], ['Stone', 'Lab-created sapphire'], ['Closure', 'Push back'], ['Pair', 'Sold as a pair']],
   },
   {
-    id: 'ergonomic-mechanical-keyboard',
-    name: 'Ergonomic Mechanical Keyboard RGB',
-    description: 'Hot-swappable mechanical keyboard with tactile switches, per-key RGB lighting and a detachable wrist rest.',
-    sku: 'MEC-KB-99',
-    barcode: '8904561237894',
-    category: 'Computing',
-    subCategory: 'Keyboards & Mice',
-    subSubCategory: 'Mechanical RGB Keyboards',
-    price: 7499,
-    mrp: 8999,
-    stock: 62,
-    status: 'In Stock',
-    image: U(PHOTOS.keyboard),
-    images: [U(PHOTOS.keyboard)],
-    sizes: ['Full Size', 'TKL'],
-    colors: ['Space Grey', 'Arctic White'],
-    variantStock: { 'Full Size': { 'Space Grey': 25, 'Arctic White': 12 }, TKL: { 'Space Grey': 15, 'Arctic White': 10 } },
-    colorImages: {},
-    tags: ['Work From Home', 'Bestseller'],
-    isNewArrival: false,
-    isFeatured: false,
-    rating: 4.9,
-    reviews: 2210,
-    highlights: ['Hot-swappable tactile switches', 'Per-key RGB lighting', 'Detachable magnetic wrist rest', 'Works over USB-C or Bluetooth'],
-    specs: [['Switches', 'Tactile, hot-swap'], ['Connection', 'USB-C, Bluetooth 5.1'], ['Battery', '200 hours'], ['Keycaps', 'Double-shot PBT']],
+    id: 'ergonomic-mechanical-keyboard-rgb', name: 'Gulab Pink Stone Ring', description: 'A soft pink oval stone held in a fine gold setting on a comfortable polished band.', sku: 'GUL-RG-03', barcode: '8901234567892', category: 'Rings', subCategory: 'Statement Rings', price: 11999, mrp: 14999, stock: 12, status: 'In Stock', image: U(PHOTOS.pinkStoneRing), images: [U(PHOTOS.pinkStoneRing), U(PHOTOS.gemRings)], sizes: ['6', '7', '8'], colors: ['Yellow Gold', 'Rose Gold'], variantStock: { '6': { 'Yellow Gold': 2, 'Rose Gold': 2 }, '7': { 'Yellow Gold': 2, 'Rose Gold': 2 }, '8': { 'Yellow Gold': 2, 'Rose Gold': 2 } }, colorImages: {}, tags: ['Premium', 'Gifting'], isNewArrival: false, isFeatured: true, rating: 4.6, reviews: 402, highlights: ['Pink oval centre stone', 'Comfort-fit band', 'Available in sizes 6, 7 and 8', 'Polished keepsake box'], specs: [['Style', 'Cocktail ring'], ['Finish', 'Gold tone'], ['Stone', 'Pink quartz'], ['Care', 'Store separately']],
   },
   {
-    id: 'minimalist-leather-backpack',
-    name: 'Minimalist Matte Leather Backpack',
-    description: 'Water-resistant matte leather backpack with a padded laptop sleeve, hidden anti-theft pocket and USB charging port.',
-    sku: 'LTHR-BP-04',
-    barcode: '8907894561230',
-    category: 'Bags & Accessories',
-    subCategory: 'Backpacks',
-    subSubCategory: 'Waterproof Laptop Backpacks',
-    price: 4999,
-    mrp: 6499,
-    stock: 0,
-    status: 'Out of Stock',
-    image: U(BACKPACK_PHOTO),
-    images: [U(BACKPACK_PHOTO)],
-    sizes: ['15 inch', '17 inch'],
-    colors: ['Midnight Black', 'Tan Brown'],
-    variantStock: { '15 inch': { 'Midnight Black': 0, 'Tan Brown': 0 }, '17 inch': { 'Midnight Black': 0, 'Tan Brown': 0 } },
-    colorImages: {},
-    tags: ['Gifting'],
-    isNewArrival: false,
-    isFeatured: false,
-    rating: 4.5,
-    reviews: 318,
-    highlights: ['Water-resistant matte leather', 'Padded sleeve for laptops up to 17"', 'Hidden anti-theft back pocket', 'Built-in USB charging port'],
-    specs: [['Material', 'Matte PU leather'], ['Capacity', '22 litres'], ['Laptop sleeve', 'Up to 17"'], ['Weight', '980 g']],
+    id: 'minimalist-matte-leather-backpack', name: 'Ira Textured Gold Bangles', description: 'A polished pair of bangles with subtle engraved texture and a secure clasp.', sku: 'IRA-BG-04', barcode: '8901234567893', category: 'Bracelets & Bangles', subCategory: 'Bangles', price: 8999, mrp: 11999, stock: 0, status: 'Out of Stock', image: U(PHOTOS.bangles), images: [U(PHOTOS.bangles)], sizes: ['2.4', '2.6', '2.8'], colors: ['Yellow Gold'], variantStock: { '2.4': { 'Yellow Gold': 0 }, '2.6': { 'Yellow Gold': 0 }, '2.8': { 'Yellow Gold': 0 } }, colorImages: {}, tags: ['Gifting'], isNewArrival: false, isFeatured: false, rating: 4.5, reviews: 318, highlights: ['Matching pair', 'Textured polished finish', 'Traditional sizes', 'Keepsake pouch included'], specs: [['Style', 'Bangle pair'], ['Finish', 'Gold tone'], ['Sizes', '2.4, 2.6 and 2.8'], ['Closure', 'Hinged clasp']],
   },
 ];
 
 const CATEGORY_NAMES: Record<string, string> = {
-  audio: 'Audio',
-  wearables: 'Wearables',
-  computing: 'Computing',
-  cameras: 'Cameras & Drones',
-  gaming: 'Gaming',
-  'smart-home': 'Smart Home',
+  necklaces: 'Necklaces',
+  earrings: 'Earrings',
+  rings: 'Rings',
+  bracelets: 'Bracelets & Bangles',
+  bridal: 'Bridal & Occasion',
 };
 
-// Where each storefront product sits in the admin, and the options it comes in. The store sells gadgets
-// only, so the seed's phones, tablets and laptops are left out by not being listed here.
+// Jewellery variants use ring and bangle sizes plus wearable metal finishes.
 const SEED_META: Record<string, { sku: string; sub: string; subSub?: string; sizes?: string[]; colors?: string[] }> = {
-  'studio-one-headphones': { sku: 'STU-HP-02', sub: 'Headphones', subSub: 'Over-Ear Headphones', colors: ['Midnight Black', 'Silver Mist'] },
-  'pulse-buds-pro': { sku: 'PLS-EB-03', sub: 'Earbuds', subSub: 'In-Ear TWS Earbuds', colors: ['Midnight Black', 'Arctic White'] },
-  'wave-capsule-speaker': { sku: 'WAV-SP-04', sub: 'Speakers', colors: ['Midnight Black', 'Ocean Blue', 'Sunset Orange'] },
-  'resonance-bookshelf-pair': { sku: 'RES-SP-05', sub: 'Speakers', colors: ['Tan Brown', 'Midnight Black'] },
-  'orbit-smartwatch': { sku: 'ORB-WT-06', sub: 'Smartwatches', sizes: ['41mm', '45mm'], colors: ['Midnight Black', 'Silver Mist'] },
-  'vital-active-watch': { sku: 'VTL-WT-08', sub: 'Fitness Bands', sizes: ['41mm', '45mm'], colors: ['Ocean Blue', 'Sunset Orange'] },
-  'phantom-gaming-mouse': { sku: 'PHM-MS-17', sub: 'Keyboards & Mice', colors: ['Midnight Black', 'Arctic White'] },
-  'vista-27-monitor': { sku: 'VST-MN-18', sub: 'Monitors' },
-  'volt-gan-charger': { sku: 'VLT-CH-19', sub: 'Chargers & Power', colors: ['Arctic White', 'Midnight Black'] },
-  'alpha-m-camera': { sku: 'ALM-CM-20', sub: 'Cameras' },
-  'retro-compact-camera': { sku: 'RTR-CM-21', sub: 'Cameras', colors: ['Silver Mist', 'Midnight Black'] },
-  'instasnap-camera': { sku: 'INS-CM-22', sub: 'Cameras', colors: ['Ocean Blue', 'Arctic White', 'Sunset Orange'] },
-  'skyhawk-drone': { sku: 'SKH-DR-23', sub: 'Drones' },
-  'nimbus-mini-drone': { sku: 'NMB-DR-24', sub: 'Drones' },
-  'arena-pad-controller': { sku: 'ARN-GC-25', sub: 'Consoles & Controllers', colors: ['Midnight Black', 'Arctic White'] },
-  'arena-console': { sku: 'ARN-CS-26', sub: 'Consoles & Controllers' },
-  'immerse-vr-headset': { sku: 'IMR-VR-27', sub: 'VR' },
-  'hearth-smart-speaker': { sku: 'HRT-SS-28', sub: 'Smart Speakers', colors: ['Arctic White', 'Space Grey'] },
-  'keyless-smart-lock': { sku: 'KYL-LK-29', sub: 'Security' },
+  'studio-one-headphones': { sku: 'HER-NK-05', sub: 'Statement Necklaces', colors: ['Yellow Gold', 'Rose Gold'] },
+  'pulse-buds-pro': { sku: 'MIR-ER-06', sub: 'Drops & Jhumkas', colors: ['Rose Gold', 'Yellow Gold'] },
+  'wave-capsule-speaker': { sku: 'ZIY-BR-07', sub: 'Bridal Sets', subSub: 'Traditional Sets', colors: ['Yellow Gold', 'Antique Gold'] },
+  'resonance-bookshelf-pair': { sku: 'SAA-BR-08', sub: 'Bracelets', colors: ['Yellow Gold', 'Rose Gold'] },
+  'orbit-smartwatch': { sku: 'AUR-RG-09', sub: 'Solitaire Rings', subSub: 'Halo & Solitaire', sizes: ['6', '7', '8'], colors: ['Yellow Gold', 'Rose Gold'] },
+  'vital-active-watch': { sku: 'MEH-ER-10', sub: 'Stud Earrings', colors: ['Yellow Gold', 'Rose Gold'] },
+  'nova-classic-watch': { sku: 'TAR-NK-11', sub: 'Chains & Pendants', colors: ['Silver', 'White Gold'] },
+  'phantom-gaming-mouse': { sku: 'KAV-ER-12', sub: 'Stud Earrings', subSub: 'Pearl & Kundan', colors: ['Yellow Gold', 'Pearl'] },
+  'vista-27-monitor': { sku: 'RUH-NK-13', sub: 'Chains & Pendants', colors: ['Rose Gold'] },
+  'volt-gan-charger': { sku: 'LEE-BR-14', sub: 'Bracelets', colors: ['White Gold'] },
+  'alpha-m-camera': { sku: 'NOO-RG-15', sub: 'Solitaire Rings', subSub: 'Halo & Solitaire', sizes: ['6', '7', '8'], colors: ['White Gold'] },
+  'retro-compact-camera': { sku: 'ANI-BR-16', sub: 'Bracelets', colors: ['Yellow Gold', 'Rose Gold'] },
 };
 
 const STORE_PRODUCTS: Product[] = SEED_PRODUCTS.filter((seed) => SEED_META[seed.id]).map((seed, index) => {
@@ -871,7 +763,7 @@ const STORE_PRODUCTS: Product[] = SEED_PRODUCTS.filter((seed) => SEED_META[seed.
     stock: seed.stock,
     status: stockStatus(seed.stock),
     image: U(seed.photo),
-    images: [U(seed.photo)],
+    images: [seed.photo, ...(seed.gallery ?? [])].map((id) => U(id)),
     sizes,
     colors,
     variantStock: splitStock(seed.stock, sizes, colors),
@@ -919,12 +811,12 @@ const order = (o: Omit<Order, 'subtotal' | 'discount' | 'delivery' | 'promo' | '
 };
 
 const SEED_ORDERS: Order[] = [
-  order({ id: 'ord-106', orderNumber: 'ORD-98216', customerName: 'Demo Customer 01', email: 'demo.customer01@example.com', phone: '+91 00000 00001', shippingAddress: 'Demo House 01, Demo Layout', city: 'Bengaluru', state: 'Karnataka', postalCode: '560066', date: '2026-11-03', time: '19:42', items: [line(BUDS, STANDARD, 'Arctic White')], paymentMethod: 'Credit Card', paymentStatus: 'Pending', orderStatus: 'Pending', source: 'Website' }),
-  order({ id: 'ord-105', orderNumber: 'ORD-98215', customerName: 'Demo Customer 02', email: 'demo.customer02@example.com', phone: '+91 00000 00002', shippingAddress: 'Demo House 02, Demo Layout', city: 'Bengaluru', state: 'Karnataka', postalCode: '560038', date: '2026-11-02', time: '11:05', items: [line(KEYBOARD, 'Full Size', 'Space Grey')], paymentMethod: 'UPI', paymentId: 'pay_QX81mK2vLr7T', paymentStatus: 'Paid', orderStatus: 'Pending', source: 'Website' }),
-  order({ id: 'ord-101', orderNumber: 'ORD-98214', customerName: 'Demo Customer 03', email: 'demo.customer03@example.com', phone: '+91 00000 00003', shippingAddress: 'Demo House 03, Demo Layout', city: 'Mumbai', state: 'Maharashtra', postalCode: '400050', date: '2026-11-01', time: '16:20', items: [line(HEADPHONES, STANDARD, 'Midnight Black')], paymentMethod: 'UPI', paymentId: 'pay_QX7a9Hc3Np2D', paymentStatus: 'Paid', orderStatus: 'Processing', source: 'Website' }),
-  order({ id: 'ord-102', orderNumber: 'ORD-98213', customerName: 'Demo Customer 04', email: 'demo.customer04@example.com', phone: '+91 00000 00004', shippingAddress: 'Demo House 04, Demo Layout', city: 'Chennai', state: 'Tamil Nadu', postalCode: '600017', date: '2026-10-31', time: '10:12', items: [line(HEADPHONES, STANDARD, 'Silver Mist'), line(KEYBOARD, 'TKL', 'Arctic White')], paymentMethod: 'Credit Card', paymentId: 'pay_QX5tY4bWm8Kc', paymentStatus: 'Paid', orderStatus: 'Shipped', source: 'Website', shipment: { courier: 'Delhivery', awb: '1490223655213', pickup: 'Bengaluru Warehouse', weightKg: 1.4, dimensions: '30 × 25 × 12 cm', status: 'In Transit', createdAt: '2026-11-01T09:30:00+05:30', srOrderId: 734120558, srShipmentId: 731998204, remoteStatus: 'IN TRANSIT', deliveryState: 'Tamil Nadu' } }),
-  order({ id: 'ord-103', orderNumber: 'ORD-98212', customerName: 'Demo Customer 05', email: 'demo.customer05@example.com', phone: '+91 00000 00005', shippingAddress: 'Demo House 05, Demo Layout', city: 'Pune', state: 'Maharashtra', postalCode: '411005', date: '2026-10-30', time: '13:48', items: [line(BACKPACK, '15 inch', 'Tan Brown')], paymentMethod: 'Cash on Delivery', paymentStatus: 'Pending', orderStatus: 'Processing', source: 'Website' }),
-  order({ id: 'ord-104', orderNumber: 'ORD-98211', customerName: 'Demo Customer 06', email: 'demo.customer06@example.com', phone: '+91 00000 00006', shippingAddress: 'Demo House 06, Demo Layout', city: 'Kolkata', state: 'West Bengal', postalCode: '700045', date: '2026-10-28', time: '18:30', items: [line(SMARTWATCH, '45mm', 'Midnight Black')], paymentMethod: 'Net Banking', paymentId: 'pay_QX2pR6dZs1Ve', paymentStatus: 'Paid', orderStatus: 'Delivered', source: 'Website', shipment: { courier: 'Blue Dart', awb: '7730091846521', pickup: 'Bengaluru Warehouse', weightKg: 0.6, dimensions: '18 × 12 × 9 cm', status: 'Delivered', createdAt: '2026-10-29T10:00:00+05:30', srOrderId: 733870412, srShipmentId: 731745690, remoteStatus: 'DELIVERED', deliveryState: 'West Bengal' } }),
+  order({ id: 'ord-106', orderNumber: 'ORD-98216', customerName: 'Demo Customer 01', email: 'demo.customer01@example.com', phone: '+91 00000 00001', shippingAddress: 'Demo House 01, Demo Layout', city: 'Bengaluru', state: 'Karnataka', postalCode: '560066', date: '2026-11-03', time: '19:42', items: [line(BUDS, STANDARD, 'Rose Gold')], paymentMethod: 'Credit Card', paymentStatus: 'Pending', orderStatus: 'Pending', source: 'Website' }),
+  order({ id: 'ord-105', orderNumber: 'ORD-98215', customerName: 'Demo Customer 02', email: 'demo.customer02@example.com', phone: '+91 00000 00002', shippingAddress: 'Demo House 02, Demo Layout', city: 'Bengaluru', state: 'Karnataka', postalCode: '560038', date: '2026-11-02', time: '11:05', items: [line(KEYBOARD, '7', 'Yellow Gold')], paymentMethod: 'UPI', paymentId: 'pay_QX81mK2vLr7T', paymentStatus: 'Paid', orderStatus: 'Pending', source: 'Website' }),
+  order({ id: 'ord-101', orderNumber: 'ORD-98214', customerName: 'Demo Customer 03', email: 'demo.customer03@example.com', phone: '+91 00000 00003', shippingAddress: 'Demo House 03, Demo Layout', city: 'Mumbai', state: 'Maharashtra', postalCode: '400050', date: '2026-11-01', time: '16:20', items: [line(HEADPHONES, STANDARD, 'Pearl')], paymentMethod: 'UPI', paymentId: 'pay_QX7a9Hc3Np2D', paymentStatus: 'Paid', orderStatus: 'Processing', source: 'Website' }),
+  order({ id: 'ord-102', orderNumber: 'ORD-98213', customerName: 'Demo Customer 04', email: 'demo.customer04@example.com', phone: '+91 00000 00004', shippingAddress: 'Demo House 04, Demo Layout', city: 'Chennai', state: 'Tamil Nadu', postalCode: '600017', date: '2026-10-31', time: '10:12', items: [line(HEADPHONES, STANDARD, 'Pearl'), line(KEYBOARD, '8', 'Rose Gold')], paymentMethod: 'Credit Card', paymentId: 'pay_QX5tY4bWm8Kc', paymentStatus: 'Paid', orderStatus: 'Shipped', source: 'Website', shipment: { courier: 'Delhivery', awb: '1490223655213', pickup: 'Bengaluru Warehouse', weightKg: 1.4, dimensions: '30 × 25 × 12 cm', status: 'In Transit', createdAt: '2026-11-01T09:30:00+05:30', srOrderId: 734120558, srShipmentId: 731998204, remoteStatus: 'IN TRANSIT', deliveryState: 'Tamil Nadu' } }),
+  order({ id: 'ord-103', orderNumber: 'ORD-98212', customerName: 'Demo Customer 05', email: 'demo.customer05@example.com', phone: '+91 00000 00005', shippingAddress: 'Demo House 05, Demo Layout', city: 'Pune', state: 'Maharashtra', postalCode: '411005', date: '2026-10-30', time: '13:48', items: [line(BACKPACK, '2.6', 'Yellow Gold')], paymentMethod: 'Cash on Delivery', paymentStatus: 'Pending', orderStatus: 'Processing', source: 'Website' }),
+  order({ id: 'ord-104', orderNumber: 'ORD-98211', customerName: 'Demo Customer 06', email: 'demo.customer06@example.com', phone: '+91 00000 00006', shippingAddress: 'Demo House 06, Demo Layout', city: 'Kolkata', state: 'West Bengal', postalCode: '700045', date: '2026-10-28', time: '18:30', items: [line(SMARTWATCH, STANDARD, 'White Gold')], paymentMethod: 'Net Banking', paymentId: 'pay_QX2pR6dZs1Ve', paymentStatus: 'Paid', orderStatus: 'Delivered', source: 'Website', shipment: { courier: 'Blue Dart', awb: '7730091846521', pickup: 'Bengaluru Warehouse', weightKg: 0.6, dimensions: '18 × 12 × 9 cm', status: 'Delivered', createdAt: '2026-10-29T10:00:00+05:30', srOrderId: 733870412, srShipmentId: 731745690, remoteStatus: 'DELIVERED', deliveryState: 'West Bengal' } }),
 ];
 
 const SEED_CUSTOMERS: Customer[] = [
@@ -938,46 +830,49 @@ const SEED_CUSTOMERS: Customer[] = [
 ];
 
 const SEED_COUPONS: Coupon[] = [
-  { id: 'cp-1', code: 'MEGAFEST20', description: 'Mega Festive Sale — 20% off on all gadgets', discountType: 'Percentage', discountValue: 20, maxDiscount: 3000, minPurchase: 1999, usageLimit: 500, validFrom: '2026-10-01', validTill: '2026-12-31', usageCount: 142, showInHeader: true, status: 'Active' },
+  { id: 'cp-1', code: 'MEGAFEST20', description: 'Festive Jewellery Edit — 20% off selected pieces', discountType: 'Percentage', discountValue: 20, maxDiscount: 3000, minPurchase: 1999, usageLimit: 500, validFrom: '2026-10-01', validTill: '2026-12-31', usageCount: 142, showInHeader: true, status: 'Active' },
   { id: 'cp-2', code: 'WELCOME500', description: 'Flat ₹500 off on your first order', discountType: 'Fixed', discountValue: 500, minPurchase: 2500, validFrom: '2026-01-01', validTill: '2027-03-31', usageCount: 389, showInHeader: true, status: 'Active' },
   { id: 'cp-3', code: 'EARLYBIRD', description: 'Early bird offer on new launches', discountType: 'Percentage', discountValue: 15, maxDiscount: 1500, minPurchase: 999, usageLimit: 100, validFrom: '2026-07-15', validTill: '2026-08-15', usageCount: 65, showInHeader: false, status: 'Expired' },
 ];
 
 const SEED_BANNERS: HeroBanner[] = [
-  { id: 'bn-1', title: 'Sound, refined.', subtitle: 'Adaptive noise cancelling and a 40-hour battery. Now from ₹14,999.', imageUrl: U(PHOTOS.headphonesStudio, 1800), mobileImageUrl: '', ctaText: 'Shop Audio', ctaLink: '#/shop?cat=audio', isActive: true, textAlign: 'left', textColor: '#ffffff' },
-  { id: 'bn-2', title: 'Made for the desk.', subtitle: 'Mechanical keyboards in Full Size and TKL, built to last a decade.', imageUrl: U(PHOTOS.keyboard, 1800), mobileImageUrl: '', ctaText: 'Explore Computing', ctaLink: '#/shop?cat=computing', isActive: true, textAlign: 'center', textColor: '#ffffff' },
-  { id: 'bn-3', title: 'Time, well kept.', subtitle: 'Smartwatches in 41mm and 45mm, with a week of battery.', imageUrl: U(PHOTOS.watchBlack, 1800), mobileImageUrl: '', ctaText: 'Shop Wearables', ctaLink: '#/shop?cat=wearables', isActive: true, textAlign: 'right', textColor: '#ffffff' },
-  { id: 'bn-4', title: 'Above it all.', subtitle: '4K drones that fold into your palm.', imageUrl: U(PHOTOS.droneRiver, 1800), mobileImageUrl: '', ctaText: 'Shop Drones', ctaLink: '#/shop?cat=cameras', isActive: false, textAlign: 'left', textColor: '#ffffff' },
+  { id: 'bn-1', title: 'Made to be treasured.', subtitle: 'Hand-finished gold jewellery for every day and every occasion.', imageUrl: U(PHOTOS.necklaceModel, 1800), mobileImageUrl: UM(PHOTOS.necklaceModel), ctaText: 'Explore Necklaces', ctaLink: '#/shop?cat=necklaces', isActive: true, textAlign: 'left', textColor: '#ffffff' },
+  { id: 'bn-2', title: 'A little light, always.', subtitle: 'Sculpted hoops and handcrafted earrings with thoughtful detail.', imageUrl: U(PHOTOS.twistedHoops, 1800), mobileImageUrl: UM(PHOTOS.twistedHoops), ctaText: 'Shop Earrings', ctaLink: '#/shop?cat=earrings', isActive: true, textAlign: 'center', textColor: '#ffffff' },
+  { id: 'bn-3', title: 'Mark the moment.', subtitle: 'Rings and keepsakes designed for the stories you carry.', imageUrl: U(PHOTOS.weddingBands, 1800), mobileImageUrl: UM(PHOTOS.weddingBands), ctaText: 'Discover Rings', ctaLink: '#/shop?cat=rings', isActive: true, textAlign: 'right', textColor: '#ffffff' },
+  { id: 'bn-4', title: 'For every celebration.', subtitle: 'Heirloom-inspired pieces for your most memorable days.', imageUrl: U(PHOTOS.templeNecklace, 1800), mobileImageUrl: UM(PHOTOS.templeNecklace), ctaText: 'Explore Bridal', ctaLink: '#/shop?cat=bridal', isActive: false, textAlign: 'left', textColor: '#ffffff' },
 ];
 
 const SEED_INSTAGRAM: InstagramPost[] = [
-  { id: 'ig-1', postUrl: 'https://instagram.com/p/demo-headphones', imageUrl: U(PHOTOS.headphonesYellow, 600), caption: 'Silence the noise, keep the music. #Headphones' },
-  { id: 'ig-2', postUrl: 'https://instagram.com/p/demo-smartwatch', imageUrl: U(PHOTOS.watchColor, 600), caption: 'Your day, on your wrist. #Smartwatch' },
-  { id: 'ig-3', postUrl: 'https://instagram.com/p/demo-keyboard', imageUrl: U(PHOTOS.keyboard, 600), caption: 'Desk setup goals ⌨️ #MechanicalKeyboard #WFH' },
-  { id: 'ig-4', postUrl: 'https://instagram.com/p/demo-drone', imageUrl: U(PHOTOS.droneRiver, 600), caption: 'Sunday views from 120 metres up. #Drone' },
-  { id: 'ig-5', postUrl: 'https://instagram.com/p/demo-instant', imageUrl: U(PHOTOS.cameraInstant, 600), caption: 'Print the moment. #InstantCamera' },
-  { id: 'ig-6', postUrl: 'https://instagram.com/p/demo-gaming', imageUrl: U(PHOTOS.controller, 600), caption: 'Game night, sorted. 🎮 #Gaming' },
+  { id: 'ig-1', postUrl: 'https://instagram.com/demojewellery', imageUrl: U(PHOTOS.necklaceEditorial, 600), caption: 'A little heritage, made for today. #DemoJewellery' },
+  { id: 'ig-2', postUrl: 'https://instagram.com/demojewellery', imageUrl: U(PHOTOS.hoopsBox, 600), caption: 'Gold hoops for all your lovely little moments. #Jewellery' },
+  { id: 'ig-3', postUrl: 'https://instagram.com/demojewellery', imageUrl: U(PHOTOS.ringTray, 600), caption: 'A keepsake made to last. #Rings' },
+  { id: 'ig-4', postUrl: 'https://instagram.com/demojewellery', imageUrl: U(PHOTOS.sapphireBands, 600), caption: 'Something blue, forever. #Bridal' },
+  { id: 'ig-5', postUrl: 'https://instagram.com/demojewellery', imageUrl: U(PHOTOS.hoopsStone, 600), caption: 'Everyday gold, styled simply. #Earrings' },
+  { id: 'ig-6', postUrl: 'https://instagram.com/demojewellery', imageUrl: U(PHOTOS.gemRings, 600), caption: 'Colour that catches the light. #Rings' },
 ];
 
 // =============================================================================
 // Shared Stores
 // =============================================================================
 
-// Bump the version when the sample data changes shape, so browsers load the new samples.
+// Keep account and payment settings stable while the jewellery demo catalog starts fresh.
 const KEY = (name: string) => `demo.v2.${name}`;
+const SAMPLE_KEY = (name: string) => `demo.v3.${name}`;
+// The catalog moved to v4 when every piece got its own photos, so earlier saved samples are replaced.
+const CATALOG_KEY = (name: string) => `demo.v4.${name}`;
 
-export const productsStore = createStore(KEY('products'), SEED_PRODUCTS_ALL, Array.isArray);
-export const categoriesStore = createStore(KEY('categories'), SEED_CATEGORIES, Array.isArray);
-export const subCategoriesStore = createStore(KEY('subCategories'), SEED_SUB_CATEGORIES, Array.isArray);
-export const subSubCategoriesStore = createStore(KEY('subSubCategories'), SEED_SUB_SUB_CATEGORIES, Array.isArray);
-export const sizeOptionsStore = createStore(KEY('sizes'), SEED_SIZES, Array.isArray);
-export const colorOptionsStore = createStore(KEY('colors'), SEED_COLORS, Array.isArray);
-export const tagOptionsStore = createStore(KEY('tags'), SEED_TAGS, Array.isArray);
-export const couponsStore = createStore(KEY('coupons'), SEED_COUPONS, Array.isArray);
-export const ordersStore = createStore(KEY('orders'), SEED_ORDERS, Array.isArray);
-export const customersStore = createStore(KEY('customers'), SEED_CUSTOMERS, Array.isArray);
-export const bannersStore = createStore(KEY('banners'), SEED_BANNERS, Array.isArray);
-export const instagramStore = createStore(KEY('instagram'), SEED_INSTAGRAM, Array.isArray);
+export const productsStore = createStore(CATALOG_KEY('products'), SEED_PRODUCTS_ALL, Array.isArray);
+export const categoriesStore = createStore(CATALOG_KEY('categories'), SEED_CATEGORIES, Array.isArray);
+export const subCategoriesStore = createStore(CATALOG_KEY('subCategories'), SEED_SUB_CATEGORIES, Array.isArray);
+export const subSubCategoriesStore = createStore(CATALOG_KEY('subSubCategories'), SEED_SUB_SUB_CATEGORIES, Array.isArray);
+export const sizeOptionsStore = createStore(CATALOG_KEY('sizes'), SEED_SIZES, Array.isArray);
+export const colorOptionsStore = createStore(CATALOG_KEY('colors'), SEED_COLORS, Array.isArray);
+export const tagOptionsStore = createStore(CATALOG_KEY('tags'), SEED_TAGS, Array.isArray);
+export const couponsStore = createStore(CATALOG_KEY('coupons'), SEED_COUPONS, Array.isArray);
+export const ordersStore = createStore(CATALOG_KEY('orders'), SEED_ORDERS, Array.isArray);
+export const customersStore = createStore(CATALOG_KEY('customers'), SEED_CUSTOMERS, Array.isArray);
+export const bannersStore = createStore(CATALOG_KEY('banners'), SEED_BANNERS, Array.isArray);
+export const instagramStore = createStore(CATALOG_KEY('instagram'), SEED_INSTAGRAM, Array.isArray);
 // Product videos made in Admin → Videos and shown on the storefront (same storage key as before).
 export interface EcommerceVideo {
   id: string;
@@ -995,34 +890,34 @@ export const DEMO_VIDEO_URL = 'https://interactive-examples.mdn.mozilla.net/medi
 // The original sample link no longer serves video, so saved demo data falls back to the working clip.
 const DEAD_SAMPLE_VIDEO = 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4';
 
-export const videosStore = createStore<EcommerceVideo[]>('demo.admin.videos', [
+export const videosStore = createStore<EcommerceVideo[]>('demo.admin.videos.v4', [
   {
     id: 'vid-1',
-    title: 'Unboxing & Sound Test: Wireless Headphones Pro',
-    productName: 'Wireless Noise-Cancelling Headphones Pro',
+    title: 'Ziya Polki Choker: Craft & Detail',
+    productName: 'Ziya Polki Choker Set',
     duration: '01:45',
     views: 12450,
-    thumbnail: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400',
+    thumbnail: U(PHOTOS.templeNecklace, 400),
     videoUrl: DEMO_VIDEO_URL,
     dateAdded: '2026-08-20',
   },
   {
     id: 'vid-2',
-    title: 'Water Resistance & Fitness Tracking Test',
-    productName: 'Ultra Slim Smartwatch Series 7',
+    title: 'Rose Gold Care Guide',
+    productName: 'Mira Rose Gold Drop Earrings',
     duration: '00:58',
     views: 8930,
-    thumbnail: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=400',
+    thumbnail: U(PHOTOS.roseGoldDrops, 400),
     videoUrl: DEMO_VIDEO_URL,
     dateAdded: '2026-08-18',
   },
   {
     id: 'vid-3',
-    title: 'Mechanical Switch Sound Profile & Typing ASMR',
-    productName: 'Ergonomic Mechanical Keyboard RGB',
+    title: 'How We Set Every Solitaire',
+    productName: 'Aurelia Solitaire Ring',
     duration: '02:15',
     views: 24100,
-    thumbnail: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=400',
+    thumbnail: U(PHOTOS.solitaire, 400),
     videoUrl: DEMO_VIDEO_URL,
     dateAdded: '2026-08-10',
   },
@@ -1059,7 +954,7 @@ export interface PaymentGateway {
 }
 export const DEFAULT_PAYMENT_GATEWAY: PaymentGateway = {
   keyId: '',
-  merchantName: 'Demo Website',
+  merchantName: 'Demo Jewellery',
   methods: { razorpay: true, cod: true },
   verifiedAt: '',
 };
@@ -1099,9 +994,9 @@ export const THEME_COLOR_KEYS: (keyof ThemeColors)[] = ['accent', 'accent2', 'ac
 
 export const BUILT_IN_THEMES: StoreTheme[] = [
   {
-    id: 'default', name: 'Default Theme', version: '2.4', layout: 'signature',
-    tagline: 'Full-bleed photo hero, glass header and bold sans type',
-    colors: { accent: '#2F6BFF', accent2: '#5A8BFF', accentDark: '#1F55E0', accentLight: '#8FB0FF', accentSoft: '#EAF1FF', accentLine: '#C9D9FF', ink: '#0E1A2B', ink2: '#16263D', ink3: '#22344F', deep: '#0B1524', page: '#F6F8FB' },
+    id: 'default', name: 'Default Theme', version: '3.0', layout: 'signature',
+    tagline: 'A polished photo hero, bento collections and soft product cards',
+    colors: { accent: '#A47A22', accent2: '#D9B865', accentDark: '#86631A', accentLight: '#E9D29A', accentSoft: '#F3EBDA', accentLine: '#E2D3B0', ink: '#0F2A24', ink2: '#16372F', ink3: '#24493F', deep: '#081A15', page: '#F6F2EA' },
   },
   {
     id: 'marketplace', name: 'Theme Marketplace', version: '3.1', layout: 'marketplace',
@@ -1129,9 +1024,9 @@ export const BUILT_IN_THEMES: StoreTheme[] = [
     colors: { accent: '#3F6B5A', accent2: '#6F9C89', accentDark: '#2F5446', accentLight: '#B5D3C6', accentSoft: '#EDF3F0', accentLine: '#D3E2DB', ink: '#1F2421', ink2: '#2A302C', ink3: '#3B433E', deep: '#151917', page: '#FAFAF8' },
   },
   {
-    id: 'atelier', name: 'Atelier Theme', version: '1.1', layout: 'atelier',
-    tagline: 'Emerald and antique gold: serif headlines, gilded buttons, a regal spotlight',
-    colors: { accent: '#A47A22', accent2: '#D9B865', accentDark: '#86631A', accentLight: '#E9D29A', accentSoft: '#F3EBDA', accentLine: '#E2D3B0', ink: '#0F2A24', ink2: '#16372F', ink3: '#24493F', deep: '#081A15', page: '#F6F2EA' },
+    id: 'atelier', name: 'Atelier Theme', version: '2.0', layout: 'atelier',
+    tagline: 'Midnight sapphire and champagne: a night-boutique home with art-deco patterns',
+    colors: { accent: '#2B4A9B', accent2: '#5A79CF', accentDark: '#1D3577', accentLight: '#E3CC9C', accentSoft: '#EEF1F8', accentLine: '#D6DDEE', ink: '#0B1532', ink2: '#121E45', ink3: '#1C2C5E', deep: '#060B1F', page: '#F8F6F1' },
   },
   {
     id: 'aurora', name: 'Aurora Theme', version: '1.0', layout: 'aurora',
@@ -1144,7 +1039,7 @@ export const isThemeColors = (value: unknown): value is ThemeColors =>
   typeof value === 'object' && value !== null && THEME_COLOR_KEYS.every((key) => /^#[0-9A-Fa-f]{6}$/.test(String((value as Record<string, unknown>)[key])));
 
 export const themeSettingsStore = createStore<{ activeId: string; custom: StoreTheme[] }>(
-  KEY('themes'),
+  SAMPLE_KEY('themes'),
   { activeId: 'default', custom: [] },
   (v) => typeof v === 'object' && v !== null && typeof (v as { activeId: unknown }).activeId === 'string' && Array.isArray((v as { custom: unknown }).custom)
 );
@@ -1165,7 +1060,7 @@ export const themeVars = (colors: ThemeColors) => ({
 }) as CSSProperties;
 
 export const storeDetailsStore = createStore<StoreDetails>(
-  KEY('storeDetails'),
+  SAMPLE_KEY('storeDetails'),
   DEFAULT_STORE_DETAILS,
   (v) => typeof v === 'object' && v !== null && typeof (v as StoreDetails).name === 'string'
 );
@@ -1173,7 +1068,17 @@ export const storeDetailsStore = createStore<StoreDetails>(
 /** The live store details, with defaults for anything saved before a field existed. */
 export function useStoreDetails(): StoreDetails {
   const saved = useStore(storeDetailsStore);
-  return { ...DEFAULT_STORE_DETAILS, ...saved, social: { ...DEFAULT_STORE_DETAILS.social, ...saved.social } };
+  const social = { ...DEFAULT_STORE_DETAILS.social, ...saved.social };
+  // Keep existing demo browser data on the neutral demo identity too.
+  return {
+    ...DEFAULT_STORE_DETAILS,
+    ...saved,
+    name: saved.name === 'Aaranya Jewels' ? DEFAULT_STORE_DETAILS.name : saved.name,
+    social: {
+      ...social,
+      instagram: social.instagram === 'https://instagram.com/aaranyajewels' ? DEFAULT_STORE_DETAILS.social.instagram : social.instagram,
+    },
+  };
 }
 
 const SHARED_STORES = [

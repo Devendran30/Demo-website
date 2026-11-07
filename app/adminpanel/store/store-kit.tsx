@@ -37,6 +37,79 @@ export const LAYOUT_STYLES: Record<ThemeLayout, LayoutStyle> = {
   aurora: { header: 'floating', card: 'glass', shape: 'round', body: 'var(--font-jakarta)', display: 'var(--font-sora)', displayWeight: 600, displayTracking: '-0.045em', displayCase: 'none' },
 };
 
+/** The storefront's animations and per-layout rules; Theme Setup's previews use them too. */
+export const STORE_CSS = `
+        .rise { animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+        .rise-1 { animation-delay: 0.12s; } .rise-2 { animation-delay: 0.24s; } .rise-3 { animation-delay: 0.36s; }
+        @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+        .kenburns { animation: kenburns 9s ease-out both; }
+        @keyframes kenburns { from { transform: scale(1.1); } to { transform: scale(1); } }
+        .progress { animation: progress 6.5s linear both; }
+        @keyframes progress { from { width: 0; } to { width: 100%; } }
+        .marquee { animation: marquee 38s linear infinite; }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .fade { animation: fade 0.6s ease both; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        .drop { animation: drop 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+        @keyframes drop { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+        .drawer { animation: drawer 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+        @keyframes drawer { from { transform: translateX(-100%); } to { transform: none; } }
+        .hero-left { animation: hero-left 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        @keyframes hero-left { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: none; } }
+        .hero-right { animation: hero-right 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
+        @keyframes hero-right { from { opacity: 0; transform: translateX(80px) scale(0.96); } to { opacity: 1; transform: none; } }
+        .hero-pop { animation: hero-pop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both, float 6s ease-in-out 1.2s infinite; }
+        @keyframes hero-pop { from { opacity: 0; transform: translateY(24px) scale(0.85); } to { opacity: 1; transform: none; } }
+        .progress-7 { animation: progress 7s linear both; }
+        .drift { animation: drift 16s ease-in-out infinite alternate; }
+        @keyframes drift { from { transform: translate(0, 0); } to { transform: translate(120px, 60px); } }
+        .map-ping { transform-origin: 205px 118px; animation: map-ping 2.4s ease-out infinite; }
+        @keyframes map-ping { from { transform: scale(0.6); opacity: 0.6; } to { transform: scale(2.6); opacity: 0; } }
+        .float { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .store-root .font-display { font-family: var(--st-font-display), sans-serif; font-weight: var(--st-display-weight); letter-spacing: var(--st-display-tracking); text-transform: var(--st-display-case); }
+        /* Highlighted words in headlines: an electric-blue sweep on light, a blue-to-silver sweep on navy. */
+        .store-root em { font-style: normal; background-image: linear-gradient(100deg, var(--st-accent) 10%, var(--st-accent-2) 90%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .store-root .on-dark em { background-image: linear-gradient(100deg, var(--st-accent-light) 0%, #FBF6EE 85%); }
+        /* Theme Setup: each layout's own headline accents, shapes and buttons. */
+        .store-root[data-layout="marketplace"] em, .store-root[data-layout="aster"] em { background: none; color: var(--st-accent); }
+        .store-root[data-layout="boutique"] em { background: none; color: var(--st-accent); font-style: italic; }
+        .store-root[data-layout="boutique"] .on-dark em, .store-root[data-layout="aster"] .on-dark em, .store-root[data-layout="marketplace"] .on-dark em { color: var(--st-accent-light); }
+        .store-root[data-layout="volt"] em { background: linear-gradient(transparent 14%, var(--st-accent-light) 14%, var(--st-accent-light) 94%, transparent 94%); color: var(--st-ink); -webkit-background-clip: border-box; background-clip: border-box; padding: 0 0.12em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+        .store-root[data-shape="sharp"] :is([class*="rounded-["], .rounded-md, .rounded-lg, .rounded-xl, .rounded-2xl, .rounded-3xl) { border-radius: 0 !important; }
+        .store-root[data-shape="sharp"] .rounded-full:not([class*=" w-1"],[class^="w-1"],[class*=":w-1"],[class*=" w-2"],[class^="w-2"],[class*=":w-2"],[class*=" w-3"],[class^="w-3"],[class*=":w-3"],[class*=" w-4"],[class^="w-4"],[class*=":w-4"],[class*=" w-5"],[class^="w-5"],[class*=":w-5"],[class*=" w-6"],[class^="w-6"],[class*=":w-6"],[class*=" w-7"],[class^="w-7"],[class*=":w-7"],[class*=" w-8"],[class^="w-8"],[class*=":w-8"],[class*=" w-9"],[class^="w-9"],[class*=":w-9"],[class*=" w-["],[class^="w-["],[class*=":w-["]) { border-radius: 0 !important; }
+        .store-root[data-shape="soft"] :is([class*="rounded-["], .rounded-2xl, .rounded-3xl) { border-radius: 10px !important; }
+        .store-root[data-shape="soft"] .rounded-full:not([class*=" w-1"],[class^="w-1"],[class*=":w-1"],[class*=" w-2"],[class^="w-2"],[class*=":w-2"],[class*=" w-3"],[class^="w-3"],[class*=":w-3"],[class*=" w-4"],[class^="w-4"],[class*=":w-4"],[class*=" w-5"],[class^="w-5"],[class*=":w-5"],[class*=" w-6"],[class^="w-6"],[class*=":w-6"],[class*=" w-7"],[class^="w-7"],[class*=":w-7"],[class*=" w-8"],[class^="w-8"],[class*=":w-8"],[class*=" w-9"],[class^="w-9"],[class*=":w-9"],[class*=" w-["],[class^="w-["],[class*=":w-["]) { border-radius: 8px !important; }
+        .store-root[data-layout="boutique"] .st-btn { text-transform: uppercase; letter-spacing: 0.2em; font-size: 11.5px; font-weight: 500; box-shadow: none !important; }
+        .store-root[data-layout="volt"] .st-btn { text-transform: uppercase; font-weight: 700; box-shadow: 4px 4px 0 var(--st-ink) !important; border: 2px solid var(--st-ink); }
+        .store-root[data-layout="volt"] .on-dark .st-btn { box-shadow: 4px 4px 0 var(--st-accent-light) !important; border-color: var(--st-accent-light); }
+        .store-root[data-layout="volt"] .st-btn:hover { transform: translate(-2px, -2px); }
+        .store-root[data-layout="aster"] .st-btn { font-weight: 500; box-shadow: none !important; }
+        .store-root[data-layout="marketplace"] .st-btn { height: 46px; box-shadow: none !important; }
+        .store-root[data-layout="volt"] .marquee-fast { animation: marquee 18s linear infinite; }
+        .store-root[data-layout="atelier"] em { font-style: italic; font-weight: 500; background-image: linear-gradient(100deg, var(--st-accent-dark) 0%, var(--st-accent-2) 100%); }
+        .store-root[data-layout="atelier"] .on-dark em { background-image: linear-gradient(100deg, var(--st-accent-light) 0%, #FFF6E3 100%); }
+        .store-root[data-layout="atelier"] .st-btn { height: 48px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; font-size: 12.5px; box-shadow: none !important; }
+        /* Atelier's art-deco patterns, drawn in the theme's champagne through a mask. */
+        .atl-fan { background-color: var(--st-accent-light); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='24'%3E%3Cpath d='M0 24a24 24 0 0 1 48 0M6 24a18 18 0 0 1 36 0M12 24a12 12 0 0 1 24 0M18 24a6 6 0 0 1 12 0' fill='none' stroke='black' stroke-width='1'/%3E%3C/svg%3E") 0 0 / 48px 24px; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='24'%3E%3Cpath d='M0 24a24 24 0 0 1 48 0M6 24a18 18 0 0 1 36 0M12 24a12 12 0 0 1 24 0M18 24a6 6 0 0 1 12 0' fill='none' stroke='black' stroke-width='1'/%3E%3C/svg%3E") 0 0 / 48px 24px; }
+        .atl-lattice { background-color: var(--st-accent-light); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M16 1 31 16 16 31 1 16Z' fill='none' stroke='black' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='1.5'/%3E%3C/svg%3E") 0 0 / 32px 32px; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M16 1 31 16 16 31 1 16Z' fill='none' stroke='black' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='1.5'/%3E%3C/svg%3E") 0 0 / 32px 32px; }
+        .atl-rays { border-radius: 9999px; background: repeating-conic-gradient(var(--st-accent-light) 0deg 0.7deg, transparent 0.7deg 7.5deg); -webkit-mask: radial-gradient(closest-side, black 25%, transparent); mask: radial-gradient(closest-side, black 25%, transparent); }
+        .atl-spin { animation: atl-spin 120s linear infinite; }
+        @keyframes atl-spin { to { transform: rotate(360deg); } }
+        .store-root[data-layout="aurora"] .st-btn { font-weight: 600; }
+        .aurora-a { animation: aurora-a 18s ease-in-out infinite alternate; }
+        .aurora-b { animation: aurora-b 22s ease-in-out infinite alternate; }
+        .aurora-c { animation: aurora-c 26s ease-in-out infinite alternate; }
+        @keyframes aurora-a { to { transform: translate(140px, 60px) scale(1.15); } }
+        @keyframes aurora-b { to { transform: translate(-160px, 80px) scale(0.9); } }
+        @keyframes aurora-c { to { transform: translate(120px, -90px) scale(1.2); } }
+        .drawer-right { animation: drawer-right 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+        .modal-in { animation: modal-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        @keyframes modal-in { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: none; } }
+        @keyframes drawer-right { from { transform: translateX(100%); } to { transform: none; } }
+        @media (prefers-reduced-motion: reduce) { .rise, .kenburns, .progress, .fade, .drop, .drawer, .drawer-right, .float, .modal-in, .hero-left, .hero-right, .hero-pop, .drift, .progress-7, .aurora-a, .aurora-b, .aurora-c, .atl-spin { animation: none; } .marquee { animation-duration: 120s; } }
+`;
+
 /** The live theme and the design rules of its layout. */
 export function useStoreTheme() {
   const theme = activeTheme(useStore(themeSettingsStore));
@@ -82,10 +155,10 @@ export interface BagLine {
   qty: number;
 }
 
-export const bagStore = createStore<BagLine[]>('store.v2.bag', [], Array.isArray);
-export const wishlistStore = createStore<string[]>('store.wishlist', [], Array.isArray);
-export const promoStore = createStore<string>('store.v2.promo', '', (v) => typeof v === 'string');
-export const myOrdersStore = createStore<string[]>('store.v2.myOrders', [], Array.isArray);
+export const bagStore = createStore<BagLine[]>('store.v3.bag', [], Array.isArray);
+export const wishlistStore = createStore<string[]>('store.v3.wishlist', [], Array.isArray);
+export const promoStore = createStore<string>('store.v3.promo', '', (v) => typeof v === 'string');
+export const myOrdersStore = createStore<string[]>('store.v3.myOrders', [], Array.isArray);
 /** The signed-in shopper's email on this device ('' when signed out). */
 export const sessionStore = createStore<string>('store.v3.session', '', (v) => typeof v === 'string');
 
@@ -322,7 +395,7 @@ export function Button({ href, onClick, children, variant = 'ink', disabled = fa
     ink: 'bg-[var(--st-ink)] text-white hover:bg-[var(--st-ink-3)] shadow-[0_12px_30px_-14px_rgba(14,26,43,0.7)]',
     light: 'bg-white text-[var(--st-ink)] hover:bg-[#EDF1F6] shadow-[0_12px_30px_-14px_rgba(0,0,0,0.5)]',
     outline: 'border border-[#CFD8E3] text-[var(--st-ink)] hover:border-[var(--st-ink)] bg-white/60',
-    accent: 'bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white hover:brightness-110 shadow-[0_14px_34px_-12px_rgba(47,107,255,0.65)]',
+    accent: 'bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white hover:brightness-110 shadow-[0_14px_34px_-12px_color-mix(in_srgb,var(--st-accent)_65%,transparent)]',
     ghost: 'border border-white/30 text-white bg-white/5 backdrop-blur-md hover:bg-white hover:text-[var(--st-ink)]',
   };
   const classes = `st-btn inline-flex items-center justify-center gap-2.5 px-8 h-[52px] rounded-full text-[14px] font-semibold tracking-[-0.005em] transition-all duration-300 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--st-accent)] ${disabled ? 'bg-[#E3E8EF] text-[#8A97A8] cursor-not-allowed' : looks[variant]} ${className}`;
@@ -488,28 +561,42 @@ export function ProductCard(props: CardProps) {
   return <SignatureCard {...props} />;
 }
 
-/** Atelier: a flagship-store tile, the photo on a soft stage, centred type and a Buy / Learn more pair. */
+/** Atelier's art-deco touch: four champagne corner brackets inside a frame. */
+export function DecoCorners({ className = 'inset-3' }: { className?: string }) {
+  const corner = 'absolute w-4 h-4 border-[var(--st-accent-light)]';
+  return (
+    <span aria-hidden="true" className={`pointer-events-none absolute ${className}`}>
+      <span className={`${corner} top-0 left-0 border-t border-l`} />
+      <span className={`${corner} top-0 right-0 border-t border-r`} />
+      <span className={`${corner} bottom-0 left-0 border-b border-l`} />
+      <span className={`${corner} bottom-0 right-0 border-b border-r`} />
+    </span>
+  );
+}
+
+/** Atelier: a jewel-case card with gold corners, the photo under an arch, serif name and a midnight Buy button. */
 function ShowcaseCard({ product, colorHex }: CardProps) {
   const m = useCardModel(product);
   const flag = m.soldOut ? 'Sold out' : product.isNewArrival ? 'New' : m.off >= 20 ? `Save ${m.off}%` : '';
   return (
-    <article className="group relative flex flex-col h-full rounded-[28px] bg-white p-4 sm:p-6 text-center transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.28)]">
-      <a href={m.href} aria-label={product.name} className="relative block aspect-square rounded-[20px] overflow-hidden bg-gradient-to-b from-[#FAFAFC] to-[#E8E8ED]">
-        <Photo src={m.photos[0]} alt="" width={700} className={`absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] ${m.soldOut ? 'opacity-45 grayscale' : ''}`} />
+    <article className="group relative flex flex-col h-full rounded-[6px] bg-white p-3 sm:p-5 text-center ring-1 ring-[var(--st-accent-line)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_var(--st-ink)]">
+      <DecoCorners className="inset-1.5" />
+      <a href={m.href} aria-label={product.name} className="relative block aspect-[4/5] rounded-t-[999px] overflow-hidden bg-[var(--st-accent-soft)]">
+        <Photo src={m.photos[0]} alt="" width={700} className={`absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05] ${m.soldOut ? 'opacity-45 grayscale' : ''}`} />
       </a>
-      <button onClick={() => toggleWishlist(product)} aria-label={m.wishLabel} aria-pressed={m.saved} className={`absolute top-6 right-6 sm:top-8 sm:right-8 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-sm transition-colors ${m.saved ? 'text-[#E30000]' : 'text-[var(--st-ink)] hover:text-[var(--st-accent)]'}`}>
+      <button onClick={() => toggleWishlist(product)} aria-label={m.wishLabel} aria-pressed={m.saved} className={`absolute top-5 right-5 sm:top-7 sm:right-7 w-9 h-9 rounded-full bg-[var(--st-ink)]/85 backdrop-blur flex items-center justify-center transition-colors ${m.saved ? 'text-[var(--st-accent-light)]' : 'text-white hover:text-[var(--st-accent-light)]'}`}>
         <Icon name="heart" size={16} filled={m.saved} />
       </button>
-      <p className={`mt-4 sm:mt-5 min-h-[18px] text-[12px] font-semibold ${m.soldOut ? 'text-[#86868B]' : 'text-[#BF4800]'}`}>{flag}</p>
-      <a href={m.href} className="mt-1 text-[16px] sm:text-[19px] font-semibold leading-snug tracking-[-0.02em] text-[var(--st-ink)] line-clamp-2 min-h-[44px] hover:text-[var(--st-accent)] transition-colors">{product.name}</a>
+      <p className={`mt-4 sm:mt-5 min-h-[16px] [font-family:var(--font-cinzel)] uppercase tracking-[0.24em] text-[10px] ${m.soldOut ? 'text-[var(--st-ink)]/45' : 'text-[var(--st-accent)]'}`}>{flag}</p>
+      <a href={m.href} className="mt-1 font-display text-[19px] sm:text-[23px] font-semibold leading-[1.15] text-[var(--st-ink)] line-clamp-2 min-h-[44px] sm:min-h-[52px] hover:text-[var(--st-accent)] transition-colors">{product.name}</a>
       <div className="mt-2 flex justify-center min-h-[16px]"><Swatches product={product} colorHex={colorHex} max={5} /></div>
-      <p className="mt-3 text-[13.5px] sm:text-[14px] text-[#6E6E73]">From <span className="font-semibold text-[var(--st-ink)]">{inr(product.price)}</span>{m.off > 0 && product.mrp && <s className="ml-1.5 text-[#A1A1A6]">{inr(product.mrp)}</s>}</p>
-      {m.lowStock && <p className="mt-1 text-[12px] text-[#BF4800]">Only {product.stock} left</p>}
+      <p className="mt-3 text-[13.5px] sm:text-[14px] text-[var(--st-ink)]/60">From <span className="font-semibold text-[var(--st-ink)]">{inr(product.price)}</span>{m.off > 0 && product.mrp && <s className="ml-1.5 text-[var(--st-ink)]/40">{inr(product.mrp)}</s>}</p>
+      {m.lowStock && <p className="mt-1 text-[12px] text-[var(--st-accent)]">Only {product.stock} left</p>}
       <div className="mt-auto pt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-        <button onClick={m.quickAdd} disabled={m.soldOut} aria-label={m.addLabel} className="h-9 px-5 rounded-full bg-[var(--st-accent)] text-white text-[14px] font-medium transition-colors hover:bg-[var(--st-accent-dark)] disabled:bg-[#D2D2D7]">
+        <button onClick={m.quickAdd} disabled={m.soldOut} aria-label={m.addLabel} className="h-9 px-5 rounded-full bg-[var(--st-ink)] text-[var(--st-accent-light)] text-[11.5px] font-semibold uppercase tracking-[0.14em] transition-colors hover:bg-[var(--st-accent-dark)] disabled:bg-[var(--st-accent-line)] disabled:text-[var(--st-ink)]/50">
           {m.soldOut ? 'Sold out' : m.choices ? 'Choose' : 'Buy'}
         </button>
-        <a href={m.href} className="text-[14px] text-[var(--st-accent)] hover:underline underline-offset-4">Learn more ›</a>
+        <a href={m.href} className="text-[13px] text-[var(--st-accent)] hover:underline underline-offset-4">Discover ›</a>
       </div>
     </article>
   );
@@ -717,7 +804,7 @@ function SignatureCard({ product, colorHex, category }: CardProps) {
         </a>
 
         {badge && (
-          <span className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[0.02em] pointer-events-none backdrop-blur-md ${soldOut ? 'bg-[var(--st-ink)]/90 text-white' : off >= 20 ? 'bg-[var(--st-accent)] text-white shadow-[0_8px_20px_-8px_rgba(47,107,255,0.8)]' : 'bg-white/90 text-[var(--st-ink)]'}`}>
+          <span className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-[11px] font-bold tracking-[0.02em] pointer-events-none backdrop-blur-md ${soldOut ? 'bg-[var(--st-ink)]/90 text-white' : off >= 20 ? 'bg-[var(--st-accent)] text-white shadow-[0_8px_20px_-8px_color-mix(in_srgb,var(--st-accent)_80%,transparent)]' : 'bg-white/90 text-[var(--st-ink)]'}`}>
             {badge}
           </span>
         )}
@@ -766,7 +853,7 @@ function SignatureCard({ product, colorHex, category }: CardProps) {
               onClick={quickAdd}
               aria-label={hasChoices(product) ? `Choose options for ${product.name}` : `Add ${product.name} to bag`}
               title={hasChoices(product) ? 'Choose options' : 'Add to bag'}
-              className="shrink-0 w-11 h-11 rounded-full bg-[var(--st-ink)] text-white flex items-center justify-center transition-all duration-300 hover:bg-[var(--st-accent)] hover:shadow-[0_12px_26px_-10px_rgba(47,107,255,0.8)] hover:rotate-90 active:scale-95"
+              className="shrink-0 w-11 h-11 rounded-full bg-[var(--st-ink)] text-white flex items-center justify-center transition-all duration-300 hover:bg-[var(--st-accent)] hover:shadow-[0_12px_26px_-10px_color-mix(in_srgb,var(--st-accent)_80%,transparent)] hover:rotate-90 active:scale-95"
             >
               <Icon name={hasChoices(product) ? 'arrow' : 'plus'} size={18} stroke={2} />
             </button>

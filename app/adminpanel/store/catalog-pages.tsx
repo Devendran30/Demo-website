@@ -29,6 +29,22 @@ interface HeroSlide {
   textColor: string;
 }
 
+export function BannerImage({ image, mobileImage, alt = '', width = 1600, eager = false, className = '' }: {
+  image: string;
+  mobileImage: string;
+  alt?: string;
+  width?: number;
+  eager?: boolean;
+  className?: string;
+}) {
+  return (
+    <picture className={className}>
+      {mobileImage && <source media="(max-width: 767px)" srcSet={photoUrl(mobileImage, Math.min(width, 1000))} />}
+      <img src={photoUrl(image, width)} alt={alt} loading={eager ? 'eager' : 'lazy'} className="absolute inset-0 h-full w-full object-cover" />
+    </picture>
+  );
+}
+
 /**
  * Full-bleed hero: the banner photo fills the whole section edge to edge, with the words laid over it.
  * A dark wash keeps the text readable (from the left on desktop, from the bottom on phones); slides crossfade every 7 seconds.
@@ -64,15 +80,14 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
       {/* Background photos, edge to edge */}
       <div aria-hidden="true" className="absolute inset-0">
         {slides.map((s, i) => (
-          <picture key={s.id}>
-            {s.mobileImage && <source media="(max-width: 767px)" srcSet={photoUrl(s.mobileImage, 1000)} />}
-            <img
-              src={photoUrl(s.image, 2000)}
-              alt=""
-              loading={i === 0 ? 'eager' : 'lazy'}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${i === current ? 'opacity-100 kenburns' : 'opacity-0'}`}
-            />
-          </picture>
+          <BannerImage
+            key={s.id}
+            image={s.image}
+            mobileImage={s.mobileImage}
+            width={2000}
+            eager={i === 0}
+            className={`absolute inset-0 transition-opacity duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${i === current ? 'opacity-100 kenburns' : 'opacity-0'}`}
+          />
         ))}
       </div>
 
@@ -95,7 +110,7 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
           {slide.subtitle && <p className="hero-left mt-5 sm:mt-6 text-[16px] sm:text-[18.5px] leading-relaxed text-white/80 max-w-lg" style={{ animationDelay: '180ms' }}>{slide.subtitle}</p>}
           <div className="hero-left mt-7 sm:mt-9 flex flex-wrap gap-3" style={{ animationDelay: '270ms' }}>
             {slide.ctaText && <Button href={slide.ctaLink || '#/shop'} variant="accent">{slide.ctaText} <Icon name="arrow" size={16} /></Button>}
-            <Button href="#/shop" variant="ghost">View all products</Button>
+            <Button href="#/shop" variant="ghost">View all jewellery</Button>
           </div>
           <div className="hero-left mt-8 sm:mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" style={{ animationDelay: '360ms' }}>
             <div className="flex items-center gap-3">
@@ -155,8 +170,8 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
         <div className="hero-pop hidden lg:flex absolute top-[124px] right-6 xl:right-10 items-center gap-3 px-4 py-3 rounded-[18px] bg-white text-[var(--st-ink)] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)]" style={{ animationDelay: '700ms' }}>
           <span className="w-9 h-9 rounded-full bg-[var(--st-accent)]/10 text-[var(--st-accent)] flex items-center justify-center"><Icon name="shield" size={18} /></span>
           <span className="leading-tight">
-            <span className="block text-[13px] font-extrabold">1-year warranty</span>
-            <span className="block text-[11.5px] text-[#6F7E92]">on every product</span>
+            <span className="block text-[13px] font-extrabold">Thoughtful jewellery care</span>
+            <span className="block text-[11.5px] text-[#6F7E92]">with every piece</span>
           </span>
         </div>
       </div>
@@ -168,14 +183,14 @@ export const bannerSlides = (banners: HeroBanner[]): HeroSlide[] =>
   banners.map((b) => ({ id: b.id, title: b.title, subtitle: b.subtitle, image: b.imageUrl, mobileImage: b.mobileImageUrl, ctaText: b.ctaText, ctaLink: b.ctaLink, textColor: b.textColor }));
 
 export const fallbackSlides = (product?: Product): HeroSlide[] =>
-  product ? [{ id: 'static', title: 'Fewer things. Better ones.', subtitle: 'Considered electronics, chosen for how well they work and how long they last.', image: product.image, mobileImage: '', ctaText: 'Shop the collection', ctaLink: '#/shop', textColor: '#ffffff' }] : [];
+  product ? [{ id: 'static', title: 'Fewer things. Better ones.', subtitle: 'Thoughtfully finished jewellery, chosen for the moments you will treasure.', image: product.image, mobileImage: '', ctaText: 'Shop the collection', ctaLink: '#/shop', textColor: '#ffffff' }] : [];
 
 const PERKS = [
-  ['shield', 'Genuine, sealed products'],
+  ['shield', 'Quality-checked jewellery'],
   ['bolt', 'Dispatched within 48 hours'],
   ['truck', 'Free delivery over ₹4,999'],
   ['refresh', '7-day easy returns'],
-  ['spark', 'One-year warranty on everything'],
+  ['spark', 'Care guidance with every piece'],
   ['card', 'Secure UPI, card & COD'],
   ['chat', 'Real people, 7 days a week'],
 ];
@@ -264,8 +279,8 @@ function DealOfTheDay({ product }: { product: Product }) {
 }
 
 const WHY_US = [
-  ['shield', 'Only genuine products', 'Sourced from brands and authorised distributors, sealed in the original box with full warranty.'],
-  ['flask', 'Tested before it’s listed', 'Every product spends 30 days with our team before it earns a place in the store.'],
+  ['shield', 'Thoughtfully chosen pieces', 'Reviewed for finish, comfort and thoughtful details before joining the collection.'],
+  ['spark', 'Finished with care', 'We review materials, finish and comfort before every piece earns a place in the collection.'],
   ['bolt', '48-hour dispatch', 'Orders leave our Bengaluru warehouse within two days, with live tracking to your door.'],
   ['chat', 'Experts, not scripts', 'Real people who use the products answer every question — 7 days a week.'],
 ];
@@ -274,7 +289,7 @@ const STEPS_HOW = [
   ['search', 'Discover', 'Browse a small, carefully chosen range — no endless scrolling.'],
   ['bag', 'Order securely', 'Pay by UPI, card or cash on delivery. Prices include GST.'],
   ['truck', 'Track live', 'Follow your parcel from packing to your door, right from your account.'],
-  ['heart', 'Enjoy for years', 'A one-year warranty and 7-day returns, with help whenever you need it.'],
+  ['heart', 'Care for years', 'Every piece comes with simple care guidance and 7-day returns, with help whenever you need it.'],
 ];
 
 export function Carousel({ products, colorHex, categoryOf }: { products: Product[] } & Pick<ReturnType<typeof useCatalog>, 'colorHex' | 'categoryOf'>) {
@@ -373,9 +388,9 @@ function lastTileSpan(index: number, count: number) {
 }
 
 export const REVIEWS = [
-  { name: 'Aarav M.', city: 'Mumbai', productId: 'wireless-nc-headphones-pro', text: 'The noise cancelling is unreal, and the packaging felt like opening a gift. Worth every rupee.' },
-  { name: 'Priya S.', city: 'Chennai', productId: 'ergonomic-mechanical-keyboard', text: 'Ordered the TKL at night and it was at my door in two days. Beautifully made — it feels like an heirloom.' },
-  { name: 'Ananya R.', city: 'Kolkata', productId: 'ultra-slim-smartwatch-7', text: 'Finally a store that doesn’t drown you in choice. Everything here is simply good, and it shows.' },
+  { name: 'Aarav M.', city: 'Mumbai', productId: 'wireless-nc-headphones-pro', text: 'The pearl strand feels beautifully made, and the packaging felt like opening a gift. Worth every rupee.' },
+  { name: 'Priya S.', city: 'Chennai', productId: 'ergonomic-mechanical-keyboard-rgb', text: 'The pink stone ring is beautifully made and feels like a piece I can pass down.' },
+  { name: 'Ananya R.', city: 'Kolkata', productId: 'ultra-slim-smartwatch-7', text: 'The sapphire drops are beautifully finished, and the service was thoughtful from start to finish.' },
 ];
 
 export function HomePage() {
@@ -395,7 +410,7 @@ export function HomePage() {
   const byDiscount = [...inStock].sort((a, b) => percentOff(b) - percentOff(a));
   const spotlight = byDiscount[0];
   const deal = byDiscount[1] ?? byDiscount[0];
-  const editorial = ['Cameras & Drones', 'Gaming'].map((name) => categories.find((c) => c.name === name)).filter((c) => c?.image).slice(0, 2);
+  const editorial = ['Bridal & Occasion', 'Bracelets & Bangles'].map((name) => categories.find((c) => c.name === name)).filter((c) => c?.image).slice(0, 2);
   const avgRating = products.length ? products.reduce((sum, p) => sum + p.rating, 0) / products.length : 0;
   const reviewCount = products.reduce((sum, p) => sum + p.reviews, 0);
   const [email, setEmail] = useState('');
@@ -413,7 +428,7 @@ export function HomePage() {
         <Reveal from="scale" className="max-w-5xl mx-auto text-center">
           <p className={`${T.eyebrow} mb-5`}>The {storeInfo.name} way</p>
           <p className="text-[28px] sm:text-[46px] font-semibold leading-[1.18] tracking-[-0.035em] text-[var(--st-ink)]">
-            We choose <em className="text-[var(--st-accent)]">fewer pieces</em>, and choose them well — sound, screens and smart things made to be <em>used for years</em>, not replaced in months.
+            We choose <em className="text-[var(--st-accent)]">fewer pieces</em>, and choose them well — timeless designs made to be <em>worn for years</em>, treasured and passed along.
           </p>
         </Reveal>
         <Reveal delay={150} className="mt-8 sm:mt-10 grid grid-cols-2 lg:grid-cols-4 border-y border-[#E3E8EF]">
@@ -421,10 +436,10 @@ export function HomePage() {
             [String(products.length), 'Pieces, each one chosen'],
             [`${avgRating.toFixed(1)}★`, `From ${reviewCount.toLocaleString('en-IN')} reviews`],
             ['7 days', 'To change your mind'],
-            ['1 year', 'Warranty on everything'],
+            ['Always', 'Care guidance included'],
           ].map(([value, label], i) => (
             <div key={label} className={`py-6 sm:py-7 px-4 text-center ${i % 2 ? 'border-l border-[#E3E8EF]' : ''} ${i === 2 ? 'lg:border-l' : ''} ${i > 1 ? 'border-t lg:border-t-0 border-[#E3E8EF]' : ''}`}>
-              <p className={`${T.display} text-[44px] sm:text-[60px] leading-none bg-gradient-to-b from-[var(--st-ink)] to-[#3A5A8F] bg-clip-text text-transparent`}>{value}</p>
+              <p className={`${T.display} text-[44px] sm:text-[60px] leading-none bg-gradient-to-b from-[var(--st-ink)] to-[var(--st-ink-3)] bg-clip-text text-transparent`}>{value}</p>
               <p className="mt-3 text-[12px] uppercase tracking-[0.16em] font-semibold text-[#6F7E92]">{label}</p>
             </div>
           ))}
@@ -483,7 +498,7 @@ export function HomePage() {
             {WHY_US.map(([icon, title, text], i) => (
               <Reveal key={title} from={i % 2 ? 'right' : 'left'} delay={i * 110} className="h-full">
                 <div className="group h-full p-7 rounded-[26px] bg-white border border-[#E3E8EF] hover:border-[var(--st-accent)]/30 hover:-translate-y-1 hover:shadow-[0_30px_60px_-40px_rgba(14,26,43,0.5)] transition-all duration-500">
-                  <span className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-ink)] text-white flex items-center justify-center shadow-[0_12px_24px_-10px_rgba(47,107,255,0.7)] group-hover:scale-110 transition-transform duration-500"><Icon name={icon} size={21} /></span>
+                  <span className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-ink)] text-white flex items-center justify-center shadow-[0_12px_24px_-10px_color-mix(in_srgb,var(--st-accent)_70%,transparent)] group-hover:scale-110 transition-transform duration-500"><Icon name={icon} size={21} /></span>
                   <h3 className="mt-6 text-[18px] font-bold tracking-[-0.02em]">{title}</h3>
                   <p className="mt-2 text-[14.5px] leading-relaxed text-[#5B6B80]">{text}</p>
                 </div>
@@ -543,7 +558,7 @@ export function HomePage() {
         {/* Product videos (Admin → Videos) */}
         {videos.length > 0 && (
           <section className="pt-12 sm:pt-16">
-            <VideoShelf videos={videos.slice(0, 6)} heading={<Reveal><SectionHeading eyebrow="Watch before you buy" title={<>See it <em>in action</em></>} text="Unboxings, sound tests and close-ups of the pieces we stock." /></Reveal>} />
+            <VideoShelf videos={videos.slice(0, 6)} heading={<Reveal><SectionHeading eyebrow="Watch before you buy" title={<>See it <em>in action</em></>} text="Styling ideas, close-up details and care tips for the pieces we love." /></Reveal>} />
           </section>
         )}
 
@@ -556,8 +571,8 @@ export function HomePage() {
                   <Photo src={category!.image} alt="" width={1100} className="absolute inset-0 h-full w-full object-cover saturate-[0.9] transition-transform duration-[1600ms] ease-out group-hover:scale-[1.05]" />
                   <span className="absolute inset-0 bg-gradient-to-t from-[var(--st-deep)]/95 via-[var(--st-deep)]/20 to-transparent" />
                   <span className="absolute left-8 right-8 bottom-9 sm:left-12 sm:bottom-12">
-                    <span className="block text-[12px] uppercase tracking-[0.18em] font-bold text-[var(--st-accent-light)] mb-4">{i === 0 ? 'Capture' : 'Play'}</span>
-                    <span className={`block ${T.display} text-[38px] sm:text-[52px] leading-[1] max-w-md`}>{i === 0 ? <>See the world <em>differently.</em></> : <>Your next favourite <em>game night.</em></>}</span>
+                    <span className="block text-[12px] uppercase tracking-[0.18em] font-bold text-[var(--st-accent-light)] mb-4">{i === 0 ? 'The details' : 'The occasion'}</span>
+                    <span className={`block ${T.display} text-[38px] sm:text-[52px] leading-[1] max-w-md`}>{i === 0 ? <>A little more <em>meaningful.</em></> : <>Made for your <em>moments.</em></>}</span>
                     <span className="mt-8 inline-flex"><TextLink light>Explore {category!.name}</TextLink></span>
                   </span>
                 </a>
@@ -579,9 +594,9 @@ export function HomePage() {
             <span aria-hidden="true" className="hidden lg:block absolute top-[44px] left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-[var(--st-accent-2)]/60 to-transparent" />
             {STEPS_HOW.map(([icon, title, text], i) => (
               <Reveal key={title} from="up" delay={i * 130} className="relative text-center px-4">
-                <span className="relative mx-auto w-[88px] h-[88px] rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-md shadow-[0_20px_40px_-20px_rgba(47,107,255,0.6)] flex items-center justify-center text-[var(--st-accent-light)]">
+                <span className="relative mx-auto w-[88px] h-[88px] rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-md shadow-[0_20px_40px_-20px_color-mix(in_srgb,var(--st-accent)_60%,transparent)] flex items-center justify-center text-[var(--st-accent-light)]">
                   <Icon name={icon} size={28} stroke={1.6} />
-                  <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-[var(--st-accent)] text-white text-[12px] font-extrabold flex items-center justify-center shadow-[0_6px_16px_-4px_rgba(47,107,255,0.9)]">{i + 1}</span>
+                  <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-[var(--st-accent)] text-white text-[12px] font-extrabold flex items-center justify-center shadow-[0_6px_16px_-4px_color-mix(in_srgb,var(--st-accent)_90%,transparent)]">{i + 1}</span>
                 </span>
                 <h3 className="mt-5 text-[18px] font-bold tracking-[-0.02em] text-white">{title}</h3>
                 <p className="mt-2 text-[14.5px] leading-relaxed text-white/65 max-w-[250px] mx-auto">{text}</p>
@@ -1067,8 +1082,8 @@ export function ProductPage({ product }: { product: Product }) {
             {accordion('Delivery & returns', (
               <div className="space-y-3 text-[14.5px] leading-relaxed text-[#3A4A5F]">
                 <p className="flex gap-3"><Icon name="truck" size={18} stroke={1.3} /> {product.price >= FREE_DELIVERY_FROM ? 'Complimentary delivery' : `Complimentary delivery on orders over ${inr(FREE_DELIVERY_FROM)}`}, in 3–5 working days.</p>
-                <p className="flex gap-3"><Icon name="refresh" size={18} stroke={1.3} /> Return unused items in their original box within 7 days.</p>
-                <p className="flex gap-3"><Icon name="shield" size={18} stroke={1.3} /> One-year warranty against manufacturing defects.</p>
+                <p className="flex gap-3"><Icon name="refresh" size={18} stroke={1.3} /> Return unused jewellery in its original packaging within 7 days.</p>
+                <p className="flex gap-3"><Icon name="shield" size={18} stroke={1.3} /> Care guidance to help keep your jewellery looking its best.</p>
               </div>
             ))}
           </div>
@@ -1175,7 +1190,7 @@ function WishlistCard({ product, colorHex }: { product: Product; colorHex: Recor
           <button
             onClick={() => moveToBag(product, choice.size, choice.color)}
             disabled={!inStock}
-            className="w-full h-11 rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[13.5px] font-bold shadow-[0_12px_28px_-14px_rgba(47,107,255,0.8)] hover:brightness-110 transition disabled:from-[#CFD8E3] disabled:to-[#CFD8E3] disabled:shadow-none disabled:text-[#5B6B80] flex items-center justify-center gap-2"
+            className="w-full h-11 rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[13.5px] font-bold shadow-[0_12px_28px_-14px_color-mix(in_srgb,var(--st-accent)_80%,transparent)] hover:brightness-110 transition disabled:from-[#CFD8E3] disabled:to-[#CFD8E3] disabled:shadow-none disabled:text-[#5B6B80] flex items-center justify-center gap-2"
           >
             <Icon name="bag" size={16} /> {soldOut ? 'Sold out' : inStock ? 'Move to bag' : 'Not in stock in this option'}
           </button>

@@ -1,13 +1,16 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, type CSSProperties } from 'react';
 import {
-  useStore, themeSettingsStore, allThemes, BUILT_IN_THEMES, THEME_COLOR_KEYS, THEME_LAYOUTS, type StoreTheme, type ThemeColors, type ThemeLayout,
+  useStore, themeSettingsStore, allThemes, BUILT_IN_THEMES, THEME_COLOR_KEYS, THEME_LAYOUTS, themeVars, type StoreTheme, type ThemeColors, type ThemeLayout,
 } from './demo-data';
+import { HomePage } from './store/catalog-pages';
+import { ThemedHomePage } from './store/theme-homes';
+import { LAYOUT_STYLES, STORE_CSS, layoutVars } from './store/store-kit';
 
 const MAX_THEME_FILE = 1024 * 1024;
 
-// What each design changes, shown on its card. Screenshots live in public/theme-previews.
+// What each design changes, shown on its card.
 const LAYOUT_INFO: Record<ThemeLayout, { label: string; features: string[] }> = {
   signature: { label: 'Signature', features: ['Glass header over a photo hero', 'Bento category tiles', 'Rounded product cards'] },
   marketplace: { label: 'Marketplace', features: ['Search-first header with category bar', 'Category sidebar and slider', 'Flash deal and dense 5-column grids'] },
@@ -15,7 +18,7 @@ const LAYOUT_INFO: Record<ThemeLayout, { label: string; features: string[] }> = 
   boutique: { label: 'Boutique', features: ['Centred serif wordmark', 'Editorial hero and lookbook rows', 'Frameless cards, sharp edges'] },
   volt: { label: 'Volt', features: ['Giant uppercase type', 'Outlined blocks with offset shadows', 'Stickers and a scrolling ticker'] },
   aster: { label: 'Aster', features: ['Quiet split hero', 'Numbered category index', 'Airy 3-column grid and spec sheet'] },
-  atelier: { label: 'Atelier', features: ['Slim glass bar and a giant product stage', 'Two-up showcase tiles and a “latest” shelf', 'Dark spotlight with big spec numbers'] },
+  atelier: { label: 'Atelier', features: ['Midnight night-boutique bands with champagne gold', 'Art-deco fans, sunburst rays and diamond lattice', 'Arched lookbook rows and gold-cornered jewel cards'] },
   aurora: { label: 'Aurora', features: ['Floating pill navbar over a glowing hero', 'Bento grid with a live deal countdown', 'Glass cards and a moving category ribbon'] },
 };
 const HEX = /^#[0-9A-Fa-f]{6}$/;
@@ -81,16 +84,24 @@ function downloadSample() {
   URL.revokeObjectURL(url);
 }
 
-/** A screenshot of the design's home page in a browser frame, like a theme marketplace listing. */
-function ThemeShot({ layout, name }: { layout: ThemeLayout; name: string }) {
+/** Shows the existing live home component at preview scale so the card always matches the theme. */
+function ThemeShot({ theme }: { theme: StoreTheme }) {
+  const layoutStyle = LAYOUT_STYLES[theme.layout];
   return (
     <div className="rounded-xl overflow-hidden border border-[#E3E8EF] bg-white shadow-sm">
       <div aria-hidden="true" className="h-6 px-3 flex items-center gap-1.5 bg-[#F3F6FA] border-b border-[#E3E8EF]">
         <span className="w-2 h-2 rounded-full bg-[#FF5F57]" /><span className="w-2 h-2 rounded-full bg-[#FEBC2E]" /><span className="w-2 h-2 rounded-full bg-[#28C840]" />
         <span className="ml-3 h-3 flex-1 max-w-[180px] rounded-full bg-white" />
       </div>
-      <div className="aspect-[16/11] overflow-hidden bg-[#F3F6FA]">
-        <img src={`/theme-previews/${layout}.jpg`} alt={`${name} home page`} loading="lazy" className="w-full h-full object-cover object-top transition-transform duration-[2500ms] ease-in-out group-hover:object-bottom" />
+      <div
+        className="store-root aspect-[16/11] overflow-hidden relative bg-[var(--st-page)] text-[var(--st-ink)] antialiased"
+        data-layout={theme.layout}
+        data-shape={layoutStyle.shape}
+        style={{ ...themeVars(theme.colors), ...layoutVars(layoutStyle), fontFamily: 'var(--st-font-body), sans-serif' } as CSSProperties}
+      >
+        <div className="absolute left-0 top-0 origin-top-left overflow-hidden pointer-events-none" style={{ width: 1200, height: 820, transform: 'scale(.36)' }}>
+          {theme.layout === 'signature' ? <HomePage /> : <ThemedHomePage layout={theme.layout} />}
+        </div>
       </div>
     </div>
   );
@@ -151,6 +162,8 @@ export function ThemeSetup({ notify }: { notify: (message: string) => void }) {
 
   return (
     <div className="space-y-6">
+      {/* The store's own styles, so each preview looks exactly like the live theme. */}
+      <style>{STORE_CSS}</style>
       {/* Upload Theme */}
       <section className="bg-white border border-[#E3E8EF] rounded-[24px] shadow-sm p-5 sm:p-8">
         <h2 className="text-xl font-bold tracking-tight text-[#0E1A2B]">Upload Theme</h2>
@@ -249,7 +262,7 @@ export function ThemeSetup({ notify }: { notify: (message: string) => void }) {
                     </div>
                   </div>
                   <div className="px-5 pb-5 pt-4 bg-[#F6F8FB] border-t border-[#EDF1F6]">
-                    <ThemeShot layout={theme.layout} name={theme.name} />
+                    <ThemeShot theme={theme} />
                     <ul className="mt-4 space-y-1.5">
                       {LAYOUT_INFO[theme.layout].features.map((feature) => (
                         <li key={feature} className="flex items-center gap-2 text-[12.5px] font-semibold text-[#3A4A5F]">

@@ -47,7 +47,7 @@ interface PosTransaction {
 }
 
 // POS bills are saved in the browser like the rest of the demo data, so they survive a refresh.
-const posHistoryStore = createStore<PosTransaction[]>('demo.admin.posHistory', [
+const posHistoryStore = createStore<PosTransaction[]>('demo.admin.posHistory.v4', [
   {
     id: 'tx-1',
     receiptNo: 'REC-2026-8091',
@@ -55,11 +55,11 @@ const posHistoryStore = createStore<PosTransaction[]>('demo.admin.posHistory', [
     cashier: 'John Cashier (Reg #01)',
     customer: 'Siddharth Rao',
     itemsCount: 2,
-    total: 22498,
+    total: 36998,
     paymentMethod: 'UPI',
     items: [
-      { productId: 'wireless-nc-headphones-pro', name: 'Wireless Noise-Cancelling Headphones Pro', qty: 1, price: 14999 },
-      { productId: 'ergonomic-mechanical-keyboard', name: 'Ergonomic Mechanical Keyboard RGB', qty: 1, price: 7499 },
+      { productId: 'wireless-nc-headphones-pro', name: 'Mehr Pearl Strand Necklace', qty: 1, price: 24999 },
+      { productId: 'ergonomic-mechanical-keyboard-rgb', name: 'Gulab Pink Stone Ring', qty: 1, price: 11999 },
     ],
   },
   {
@@ -69,10 +69,10 @@ const posHistoryStore = createStore<PosTransaction[]>('demo.admin.posHistory', [
     cashier: 'Sarah Jenkins (Reg #02)',
     customer: 'Walk-in Customer',
     itemsCount: 1,
-    total: 21999,
+    total: 9499,
     paymentMethod: 'Card',
     items: [
-      { productId: 'ultra-slim-smartwatch-7', name: 'Ultra Slim Smartwatch Series 7', qty: 1, price: 21999 },
+      { productId: 'ultra-slim-smartwatch-7', name: 'Nila Sapphire Drop Earrings', qty: 1, price: 9499 },
     ],
   },
   {
@@ -82,10 +82,10 @@ const posHistoryStore = createStore<PosTransaction[]>('demo.admin.posHistory', [
     cashier: 'John Cashier (Reg #01)',
     customer: 'Rahul Nair',
     itemsCount: 1,
-    total: 4999,
+    total: 4799,
     paymentMethod: 'Cash',
     items: [
-      { productId: 'minimalist-leather-backpack', name: 'Minimalist Matte Leather Backpack', qty: 1, price: 4999 },
+      { productId: 'retro-compact-camera', name: 'Anika Floral Bracelet', qty: 1, price: 4799 },
     ],
   },
 ], Array.isArray);
@@ -181,7 +181,7 @@ const TAB_TITLES: Record<AdminTab, string> = {
   settings: 'Admin Security',
 };
 
-const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=400';
+const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=400';
 
 /** The Live / Hidden switch for a product's visibility on the website. */
 function LiveToggle({ live, name, onToggle }: { live: boolean; name: string; onToggle: () => void }) {
@@ -327,8 +327,8 @@ export default function EcommerceAdminPanel() {
   const [newProdDescription, setNewProdDescription] = useState('');
   const [newProdSku, setNewProdSku] = useState('');
   const [newProdBarcode, setNewProdBarcode] = useState('');
-  const [newProdCategory, setNewProdCategory] = useState('Audio');
-  const [newProdSubCategory, setNewProdSubCategory] = useState('Headphones');
+  const [newProdCategory, setNewProdCategory] = useState('Necklaces');
+  const [newProdSubCategory, setNewProdSubCategory] = useState('Chains & Pendants');
   const [newProdSubSubCategory, setNewProdSubSubCategory] = useState('');
   const [newProdPrice, setNewProdPrice] = useState('');
   const [newProdMrp, setNewProdMrp] = useState('');
@@ -353,13 +353,13 @@ export default function EcommerceAdminPanel() {
   const subCategories = useStore(subCategoriesStore);
   const setSubCategories = subCategoriesStore.set;
   const [newSubCatName, setNewSubCatName] = useState('');
-  const [newSubCatParent, setNewSubCatParent] = useState('Audio');
+  const [newSubCatParent, setNewSubCatParent] = useState('Necklaces');
 
   const subSubCategories = useStore(subSubCategoriesStore);
   const setSubSubCategories = subSubCategoriesStore.set;
   const [newSubSubCatName, setNewSubSubCatName] = useState('');
-  const [newSubSubCatSubParent, setNewSubSubCatSubParent] = useState('Headphones');
-  const [newSubSubCatParent, setNewSubSubCatParent] = useState('Audio');
+  const [newSubSubCatSubParent, setNewSubSubCatSubParent] = useState('Chains & Pendants');
+  const [newSubSubCatParent, setNewSubSubCatParent] = useState('Necklaces');
 
   // Coupons State
   const coupons = useStore(couponsStore);
@@ -461,7 +461,7 @@ export default function EcommerceAdminPanel() {
   const [isUploadVideoModalOpen, setIsUploadVideoModalOpen] = useState(false);
   const [playingVideo, setPlayingVideo] = useState<EcommerceVideo | null>(null);
   const [newVidTitle, setNewVidTitle] = useState('');
-  const [newVidProduct, setNewVidProduct] = useState('Wireless Noise-Cancelling Headphones Pro');
+  const [newVidProduct, setNewVidProduct] = useState('Heritage Gold Necklace');
   const [newVidDuration, setNewVidDuration] = useState('01:30');
   const [newVidThumbnail, setNewVidThumbnail] = useState('');
   const [newVidVideoUrl, setNewVidVideoUrl] = useState('');
@@ -1065,7 +1065,7 @@ export default function EcommerceAdminPanel() {
           description: '',
           sku: parts[1]?.trim() || `BULK-${idx + 100}`,
           barcode: `890${Math.floor(1000000000 + Math.random() * 9000000000)}`,
-          category: parts[2]?.trim() || categories[0]?.name || 'Audio',
+          category: parts[2]?.trim() || categories[0]?.name || 'Necklaces',
           subCategory: 'General',
           price: parseFloat(parts[3]?.trim()) || 999,
           stock,
@@ -1979,7 +1979,7 @@ export default function EcommerceAdminPanel() {
                       <h2 className={`${K.serif} text-xl text-[#0E1A2B]`}>Product details</h2>
                       <div>
                         <label htmlFor="prod-name" className={K.label}>Name</label>
-                        <input id="prod-name" type="text" required value={newProdName} onChange={(e) => setNewProdName(e.target.value)} placeholder="e.g. Wireless Noise-Cancelling Headphones" className={K.input} />
+                        <input id="prod-name" type="text" required value={newProdName} onChange={(e) => setNewProdName(e.target.value)} placeholder="e.g. Heritage Gold Necklace" className={K.input} />
                       </div>
                       <div>
                         <label htmlFor="prod-desc" className={K.label}>Description</label>
@@ -2629,7 +2629,7 @@ export default function EcommerceAdminPanel() {
                 <div className="space-y-3">
                   <input
                     type="text"
-                    placeholder="Tag name (e.g. Gaming)"
+                    placeholder="Tag name (e.g. Handcrafted)"
                     value={newTagName}
                     onChange={(e) => setNewTagName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSaveTag()}
@@ -2852,7 +2852,7 @@ export default function EcommerceAdminPanel() {
               <div className="bg-white border border-[#E3E8EF] rounded-[36px] p-8 shadow-sm max-w-4xl">
                 <h3 className="text-xl font-bold tracking-tight text-[#0E1A2B] mb-2">Create Sub Sub Category (Level 3)</h3>
                 <p className="text-[13px] text-[#6F7E92] font-semibold mb-6">
-                  Niche classification (e.g. Electronics → Audio & Sound → Over-Ear Headphones).
+                  Niche classification (e.g. Jewellery → Necklaces → Temple & Heritage).
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -3196,7 +3196,7 @@ export default function EcommerceAdminPanel() {
                 )}
 
                 <div className="bg-white border border-[#E3E8EF] rounded-[24px] shadow-sm overflow-hidden">
-                  {/* Phones, tablets and small laptops: one card per order */}
+                  {/* Compact screens: one card per order */}
                   <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3 p-3">
                     {visibleOrders.length === 0 && <p className="md:col-span-2 p-6 text-center text-[13px] font-semibold text-[#6F7E92]">No orders match your filters.</p>}
                     {visibleOrders.map((ord) => (
@@ -4397,7 +4397,7 @@ export default function EcommerceAdminPanel() {
               rows={6}
               value={multiProductInput}
               onChange={(e) => setMultiProductInput(e.target.value)}
-              placeholder={`Example:\nWireless Mouse Pro, WMS-01, Computing, 1999, 40\nSmart Fitness Band, FTB-99, Wearables, 2499, 20\nUSB-C Fast Charger 65W, CHG-65, Electronics, 1499, 100`}
+              placeholder={`Example:\nPearl Drop Earrings, MIR-ER-02, Earrings, 7499, 20\nSolitaire Ring, AUR-RG-03, Rings, 15999, 12\nHeritage Necklace, AAR-NK-01, Necklaces, 28999, 10`}
               className="w-full p-5 bg-[#F3F6FA] border border-[#E3E8EF] rounded-[24px] font-mono text-[13px] text-[#0E1A2B] focus:outline-none focus:bg-white focus:border-[#2F6BFF] resize-none"
             ></textarea>
 
@@ -4513,7 +4513,7 @@ export default function EcommerceAdminPanel() {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Diwali Sale — 30% off on audio"
+                  placeholder="e.g. Festive Jewellery — 20% off on selected pieces"
                   value={newCouponDescription}
                   onChange={(e) => setNewCouponDescription(e.target.value)}
                   className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B]"
@@ -5050,7 +5050,7 @@ export default function EcommerceAdminPanel() {
                   ) : (
                     <div className="pt-6 border-t border-[#E3E8EF] grid grid-cols-2 gap-6 text-[11px] text-[#5B6B80] leading-relaxed">
                       <div>
-                        <p className="font-extrabold uppercase tracking-wider text-[#0E1A2B] mb-1">Returns & Warranty</p>
+                        <p className="font-extrabold uppercase tracking-wider text-[#0E1A2B] mb-1">Jewellery Care & Returns</p>
                         <p>{storeInfo.returnPolicy}</p>
                       </div>
                       <div className="text-right">
@@ -5431,7 +5431,7 @@ export default function EcommerceAdminPanel() {
                 <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Subtitle</label>
                 <input
                   type="text"
-                  placeholder="e.g. Noise-cancelling headphones — now ₹14,999"
+                  placeholder="e.g. Hand-finished necklace — now ₹14,999"
                   value={bannerDraft.subtitle}
                   onChange={(e) => setBannerDraft({ ...bannerDraft, subtitle: e.target.value })}
                   className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-full text-[13px] font-semibold text-[#0E1A2B]"
@@ -5589,7 +5589,7 @@ export default function EcommerceAdminPanel() {
                 <label className="block text-[11px] font-extrabold uppercase text-[#6F7E92] mb-1 pl-2">Caption</label>
                 <textarea
                   rows={3}
-                  placeholder="e.g. Desk setup goals ⌨️ #MechanicalKeyboard"
+                  placeholder="e.g. Heirloom details for today ✨ #DemoJewellery"
                   value={newIgCaption}
                   onChange={(e) => setNewIgCaption(e.target.value)}
                   className="w-full px-5 py-3 bg-[#F3F6FA] border border-[#E3E8EF] rounded-[20px] text-[13px] font-semibold text-[#0E1A2B] resize-none"

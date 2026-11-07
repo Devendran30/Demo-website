@@ -437,7 +437,7 @@ export function CheckoutPage() {
             {/* Live location */}
             <div className={`mb-6 rounded-[22px] border overflow-hidden transition-colors ${located.status === 'found' ? 'border-[#B7E3CF]' : located.status === 'error' ? 'border-[#F3C4C4]' : 'border-[var(--st-accent-line)]'}`}>
               <div className={`flex flex-wrap items-center gap-4 p-4 sm:p-5 ${located.status === 'found' ? 'bg-[#F0FAF5]' : located.status === 'error' ? 'bg-[#FFF6F6]' : 'bg-gradient-to-r from-[var(--st-accent-soft)] to-[var(--st-accent-soft)]'}`}>
-                <span className={`relative w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center text-white ${located.status === 'found' ? 'bg-[#0F8A5F]' : located.status === 'error' ? 'bg-[#D23B3B]' : 'bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-accent-dark)] shadow-[0_10px_24px_-10px_rgba(47,107,255,0.8)]'}`}>
+                <span className={`relative w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center text-white ${located.status === 'found' ? 'bg-[#0F8A5F]' : located.status === 'error' ? 'bg-[#D23B3B]' : 'bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-accent-dark)] shadow-[0_10px_24px_-10px_color-mix(in_srgb,var(--st-accent)_80%,transparent)]'}`}>
                   {located.status === 'locating' && <span className="absolute inset-0 rounded-2xl bg-[var(--st-accent)] animate-ping opacity-40" />}
                   <Icon name={located.status === 'found' ? 'check' : 'pin'} size={22} stroke={1.9} />
                 </span>
@@ -453,7 +453,7 @@ export function CheckoutPage() {
                   </p>
                 </div>
                 <button type="button" onClick={useMyLocation} disabled={located.status === 'locating'}
-                  className={`h-11 px-5 rounded-full text-[13.5px] font-bold flex items-center gap-2 transition-all disabled:opacity-60 ${located.status === 'idle' ? 'bg-[var(--st-accent)] text-white hover:bg-[var(--st-accent-dark)] shadow-[0_10px_24px_-12px_rgba(47,107,255,0.9)]' : 'bg-white border border-[#CFD8E3] text-[var(--st-ink)] hover:border-[var(--st-ink)]'}`}>
+                  className={`h-11 px-5 rounded-full text-[13.5px] font-bold flex items-center gap-2 transition-all disabled:opacity-60 ${located.status === 'idle' ? 'bg-[var(--st-accent)] text-white hover:bg-[var(--st-accent-dark)] shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--st-accent)_90%,transparent)]' : 'bg-white border border-[#CFD8E3] text-[var(--st-ink)] hover:border-[var(--st-ink)]'}`}>
                   {located.status === 'locating' ? <span className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" /> : <Icon name="pin" size={16} />}
                   {located.status === 'idle' ? 'Detect location' : located.status === 'locating' ? 'Locating' : 'Detect again'}
                 </button>
@@ -524,7 +524,7 @@ export function CheckoutPage() {
             <div className="pt-6"><TotalsList totals={totals} promo={promo} /></div>
             {totals.discount > 0 && <p className="mt-4 px-3.5 py-2.5 rounded-[14px] bg-[#E3F4EC] text-[13px] font-semibold text-[#0F8A5F]">You’re saving {inr(totals.discount)} on this order 🎉</p>}
             {placeError && <p role="alert" className="mt-5 p-3.5 rounded-[14px] bg-[#FDECEC] text-[#D23B3B] text-[13px]">{placeError}</p>}
-            <button type="submit" disabled={placing || paying} className="mt-6 w-full h-14 rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[15.5px] font-extrabold shadow-[0_14px_34px_-12px_rgba(47,107,255,0.65)] hover:brightness-110 transition disabled:opacity-70 flex items-center justify-center gap-2">
+            <button type="submit" disabled={placing || paying} className="mt-6 w-full h-14 rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[15.5px] font-extrabold shadow-[0_14px_34px_-12px_color-mix(in_srgb,var(--st-accent)_65%,transparent)] hover:brightness-110 transition disabled:opacity-70 flex items-center justify-center gap-2">
               {placing ? <><span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" /> Placing your order…</> : <><Icon name="lock" size={16} /> {payLabel}</>}
             </button>
           </div>
@@ -623,7 +623,7 @@ export function OrderPage({ order }: { order: Order }) {
               return (
                 <li key={step.status} className="relative text-center" aria-current={index === reached ? 'step' : undefined}>
                   {index > 0 && <span className={`absolute top-[19px] sm:top-[21px] right-1/2 w-full h-[3px] rounded-full ${done ? 'bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)]' : 'bg-[#E3E8EF]'}`} />}
-                  <span className={`relative z-10 mx-auto w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition-all ${done ? 'bg-[var(--st-accent)] text-white shadow-[0_10px_24px_-10px_rgba(47,107,255,0.9)]' : 'bg-[#F1F4F9] text-[#A9B4C2]'} ${index === reached ? 'ring-[6px] ring-[var(--st-accent)]/15' : ''}`}>
+                  <span className={`relative z-10 mx-auto w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition-all ${done ? 'bg-[var(--st-accent)] text-white shadow-[0_10px_24px_-10px_color-mix(in_srgb,var(--st-accent)_90%,transparent)]' : 'bg-[#F1F4F9] text-[#A9B4C2]'} ${index === reached ? 'ring-[6px] ring-[var(--st-accent)]/15' : ''}`}>
                     <Icon name={step.icon} size={19} stroke={1.9} />
                   </span>
                   <span className={`block mt-3 px-1 text-[10.5px] sm:text-[13px] font-bold leading-tight ${done ? 'text-[var(--st-ink)]' : 'text-[#A9B4C2]'}`}>{step.label}</span>
@@ -728,7 +728,7 @@ export function OrdersPage() {
           const reached = STEPS.findIndex((s) => s.status === order.orderStatus);
           return (
             <li key={order.id}>
-              <a href={`#/order/${order.id}`} className="group block bg-white border border-[#E3E8EF] rounded-[24px] p-5 sm:p-6 hover:border-[var(--st-accent)]/50 hover:shadow-[0_24px_50px_-30px_rgba(47,107,255,0.45)] transition-all">
+              <a href={`#/order/${order.id}`} className="group block bg-white border border-[#E3E8EF] rounded-[24px] p-5 sm:p-6 hover:border-[var(--st-accent)]/50 hover:shadow-[0_24px_50px_-30px_color-mix(in_srgb,var(--st-accent)_45%,transparent)] transition-all">
                 <div className="flex flex-wrap items-center gap-5">
                   <div className="flex -space-x-4">
                     {order.items.slice(0, 3).map((item, i) => <Photo key={i} src={item.image} alt="" width={140} className="w-14 aspect-[4/5] rounded-[14px] object-cover border-2 border-white bg-[#EDF1F6]" />)}
@@ -760,16 +760,16 @@ export function OrdersPage() {
 // =============================================================================
 
 const TIMELINE = [
-  ['2019', 'A weekend pop-up', 'Two friends, one table in Indiranagar and twelve gadgets they genuinely loved. It sold out by Sunday.'],
+  ['2019', 'A weekend pop-up', 'Two friends, one table in Indiranagar and a small collection of jewellery they genuinely loved. It sold out by Sunday.'],
   ['2021', 'The online store', 'We moved online with a promise: a small range, honest prices and real people answering every message.'],
   ['2023', 'Our Bengaluru studio', 'A testing lab, a showroom and a warehouse under one roof — and dispatch within 48 hours.'],
   ['2026', 'Members & beyond', 'Live order tracking, a members programme and delivery to every PIN code in India.'],
 ];
 
 const PROCESS = [
-  ['search', 'Research', 'We read the reviews, the teardown reports and the fine print before a sample is ever ordered.'],
-  ['flask', '30-day test', 'Our team uses each product every day for a month — at work, on trips and at home.'],
-  ['wrench', 'Built to last', 'We check repairability, battery health and how long the maker supports updates.'],
+  ['search', 'Thoughtful sourcing', 'We look closely at materials, finishing and the hands behind every piece.'],
+  ['spark', 'Wear tested', 'We check each piece for comfort, finish and the little details that matter.'],
+  ['heart', 'Made to treasure', 'We choose enduring designs and share simple care guidance for every piece.'],
   ['tag', 'Fair price', 'Only then do we negotiate a price we’d be happy to pay ourselves, GST included.'],
 ];
 
@@ -785,8 +785,8 @@ export function AboutPage() {
   const { products, categories } = useCatalog();
   const reviews = products.reduce((sum, p) => sum + p.reviews, 0);
   const avg = products.length ? products.reduce((sum, p) => sum + p.rating, 0) / products.length : 0;
-  const hero = categories.find((c) => c.name === 'Computing')?.image ?? categories[0]?.image ?? '';
-  const second = categories.find((c) => c.name === 'Audio')?.image ?? hero;
+  const hero = categories.find((c) => c.name === 'Rings')?.image ?? categories[0]?.image ?? '';
+  const second = categories.find((c) => c.name === 'Necklaces')?.image ?? hero;
 
   return (
     <div className={T.shell}>
@@ -795,8 +795,8 @@ export function AboutPage() {
         <Reveal from="left">
           <p className={`${T.eyebrow} mb-4`}>About {storeInfo.name}</p>
           <h1 className={`${T.display} text-[46px] sm:text-[72px] leading-[0.98]`}>Fewer things. <em>Better ones.</em></h1>
-          <p className="mt-6 text-[17px] leading-[1.75] text-[#3A4A5F] max-w-xl">A good gadget should disappear into your day. It should work the first time, last for years and never need an explanation. That is the only kind we want to sell.</p>
-          <p className="mt-4 text-[17px] leading-[1.75] text-[#3A4A5F] max-w-xl">So we keep our range small, test everything ourselves, price it plainly and stand behind every product we ship.</p>
+          <p className="mt-6 text-[17px] leading-[1.75] text-[#3A4A5F] max-w-xl">The right piece feels like it has always belonged to you. We look for thoughtful design, comfortable wear and details you will love for years.</p>
+          <p className="mt-4 text-[17px] leading-[1.75] text-[#3A4A5F] max-w-xl">We keep our collection considered, share clear details and stand behind every piece we send.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button href="#/shop" variant="accent">Explore the collection <Icon name="arrow" size={16} /></Button>
             <Button href="#/contact" variant="outline">Talk to us</Button>
@@ -820,12 +820,12 @@ export function AboutPage() {
       <Reveal from="up" className="mt-16 sm:mt-20 grid grid-cols-2 lg:grid-cols-4 rounded-[28px] bg-white border border-[#E3E8EF] overflow-hidden">
         {[
           ['2019', 'Founded in Bengaluru'],
-          [String(products.length), 'Products, each one tested'],
+          [String(products.length), 'Pieces, chosen with care'],
           ['48 hrs', 'Average dispatch time'],
           ['19,000+', 'PIN codes we deliver to'],
         ].map(([value, label], i) => (
           <div key={label} className={`p-7 sm:p-8 ${i % 2 ? 'border-l border-[#E3E8EF]' : ''} ${i === 2 ? 'lg:border-l' : ''} ${i > 1 ? 'border-t lg:border-t-0 border-[#E3E8EF]' : ''}`}>
-            <p className={`${T.display} text-[36px] sm:text-[48px] leading-none bg-gradient-to-b from-[var(--st-ink)] to-[#3A5A8F] bg-clip-text text-transparent`}>{value}</p>
+            <p className={`${T.display} text-[36px] sm:text-[48px] leading-none bg-gradient-to-b from-[var(--st-ink)] to-[var(--st-ink-3)] bg-clip-text text-transparent`}>{value}</p>
             <p className="mt-2.5 text-[13.5px] font-semibold text-[#6F7E92]">{label}</p>
           </div>
         ))}
@@ -839,7 +839,7 @@ export function AboutPage() {
           <ol className="space-y-6 md:space-y-2">
             {TIMELINE.map(([year, title, text], i) => (
               <li key={year} className={`relative md:grid md:grid-cols-2 md:gap-16 ${i % 2 ? '' : ''}`}>
-                <span aria-hidden="true" className="absolute left-[12px] md:left-1/2 md:-translate-x-1/2 top-7 w-[15px] h-[15px] rounded-full bg-[var(--st-accent)] ring-4 ring-[var(--st-page)] shadow-[0_0_0_6px_rgba(47,107,255,0.15)]" />
+                <span aria-hidden="true" className="absolute left-[12px] md:left-1/2 md:-translate-x-1/2 top-7 w-[15px] h-[15px] rounded-full bg-[var(--st-accent)] ring-4 ring-[var(--st-page)] shadow-[0_0_0_6px_color-mix(in_srgb,var(--st-accent)_15%,transparent)]" />
                 <Reveal from={i % 2 ? 'right' : 'left'} delay={80} className={`pl-12 md:pl-0 ${i % 2 ? 'md:col-start-2' : 'md:text-right'}`}>
                   <div className={`inline-block p-6 sm:p-7 rounded-[24px] bg-white border border-[#E3E8EF] shadow-[0_30px_60px_-50px_rgba(14,26,43,0.6)] max-w-md ${i % 2 ? '' : 'md:ml-auto'} text-left`}>
                     <p className="text-[13px] font-extrabold text-[var(--st-accent)]">{year}</p>
@@ -865,7 +865,7 @@ export function AboutPage() {
             <Reveal key={title} from="up" delay={i * 120} className="h-full">
               <div className="h-full p-6 rounded-[24px] bg-white/[0.06] border border-white/10 backdrop-blur-md hover:bg-white/[0.1] transition-colors">
                 <div className="flex items-center justify-between">
-                  <span className="w-11 h-11 rounded-[14px] bg-[var(--st-accent)] flex items-center justify-center shadow-[0_10px_24px_-8px_rgba(47,107,255,0.8)]"><Icon name={icon} size={20} /></span>
+                  <span className="w-11 h-11 rounded-[14px] bg-[var(--st-accent)] flex items-center justify-center shadow-[0_10px_24px_-8px_color-mix(in_srgb,var(--st-accent)_80%,transparent)]"><Icon name={icon} size={20} /></span>
                   <span className="text-[32px] font-extrabold text-white/10 leading-none">0{i + 1}</span>
                 </div>
                 <h3 className="mt-6 text-[18px] font-bold tracking-[-0.02em]">{title}</h3>
@@ -881,7 +881,7 @@ export function AboutPage() {
         {[
           ['spark', 'Chosen, not stacked', 'Every product earns its place. If we would not use it ourselves, it does not go on the shelf.'],
           ['tag', 'Plain pricing', 'One price, taxes included, with the saving shown clearly. No surprises at checkout.'],
-          ['leaf', 'Kinder packaging', 'Plastic-free boxes, recycled paper fill — and we take your old gadgets back for recycling.'],
+          ['leaf', 'Kinder packaging', 'Protective, gift-ready packaging with less plastic and thoughtful paper details.'],
         ].map(([icon, title, text], i) => (
           <Reveal key={title} from={i === 0 ? 'left' : i === 2 ? 'right' : 'up'} delay={i * 100} className="h-full">
             <div className="h-full p-7 sm:p-8 rounded-[26px] bg-white border border-[#E3E8EF]">
@@ -936,12 +936,12 @@ const faqs = (storeInfo: StoreDetails): [string, string][] => [
   ['How do I use a promo code?', 'Enter it in your bag before checkout, or tap Apply on one of the available offers. Each code has a minimum order value and dates, and your bag tells you if a code cannot be used.'],
 ];
 
-const TOPICS = ['An order', 'Product advice', 'Returns & warranty', 'Partnerships', 'Something else'];
+const TOPICS = ['An order', 'Product advice', 'Care & returns', 'Partnerships', 'Something else'];
 
 const locations = (storeInfo: StoreDetails) => [
   ['Bengaluru Studio', 'Flagship · showroom & testing lab', storeInfo.address, 'Mon–Sat · 10am–8pm'],
   ['Mumbai Pickup Point', 'Collect orders & quick returns', 'Shop 4, Linking Road, Bandra West, Mumbai 400050', 'Mon–Sat · 11am–7pm'],
-  ['Chennai Service Centre', 'Repairs & warranty claims', '18, Cathedral Road, Gopalapuram, Chennai 600086', 'Tue–Sun · 10am–6pm'],
+  ['Jewellery care desk', 'Jewellery care guidance', '18, Cathedral Road, Gopalapuram, Chennai 600086', 'Tue–Sun · 10am–6pm'],
 ];
 
 export function ContactPage() {
@@ -964,7 +964,7 @@ export function ContactPage() {
     ['chat', 'WhatsApp', 'Chat with an expert', 'Usually replies in minutes', `https://wa.me/${digits}`],
     ['pin', 'Visit the studio', 'Indiranagar, Bengaluru', 'Mon–Sat, 10am–8pm', '#contact-locations'],
   ];
-  const contactHeroImage = categories.find((category) => category.name === 'Computing' && category.image)?.image
+  const contactHeroImage = categories.find((category) => category.name === 'Earrings' && category.image)?.image
     ?? categories.find((category) => category.image)?.image
     ?? products.find((product) => product.isFeatured)?.image
     ?? products[0]?.image;
@@ -983,7 +983,7 @@ export function ContactPage() {
               rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
               className="group h-full flex flex-col p-6 rounded-[26px] bg-white border border-[#E3E8EF] hover:border-[var(--st-accent)]/30 hover:-translate-y-1 hover:shadow-[0_30px_60px_-40px_rgba(14,26,43,0.5)] transition-all duration-500"
             >
-              <span className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-ink)] text-white flex items-center justify-center shadow-[0_12px_24px_-10px_rgba(47,107,255,0.7)]"><Icon name={icon} size={20} /></span>
+              <span className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-ink)] text-white flex items-center justify-center shadow-[0_12px_24px_-10px_color-mix(in_srgb,var(--st-accent)_70%,transparent)]"><Icon name={icon} size={20} /></span>
               <p className="mt-5 text-[13px] font-bold text-[#6F7E92]">{title}</p>
               <p className="mt-1 text-[16.5px] font-bold tracking-[-0.02em] break-words">{value}</p>
               <p className="mt-auto pt-4 text-[13px] text-[#8A97A8] flex items-center justify-between">{note}<span className="text-[var(--st-accent)] transition-transform group-hover:translate-x-1"><Icon name="arrow" size={16} /></span></p>
@@ -1111,7 +1111,7 @@ export function ContactPage() {
         <Reveal from="left" className="lg:sticky lg:top-28">
           <p className={`${T.eyebrow} mb-4`}>FAQs</p>
           <h2 className={`${T.display} text-[38px] sm:text-[52px] leading-[1.02]`}>Questions, <em>answered</em></h2>
-          <p className="mt-4 text-[16px] leading-relaxed text-[#5B6B80]">Delivery, returns, warranty and payment — the answers most people need. Still curious? Send us a message above.</p>
+          <p className="mt-4 text-[16px] leading-relaxed text-[#5B6B80]">Delivery, returns, jewellery care and payment — the answers most people need. Still curious? Send us a message above.</p>
           <div className="mt-7 p-5 rounded-[22px] bg-white border border-[#E3E8EF] flex items-center gap-4">
             <span className="w-12 h-12 shrink-0 rounded-full bg-[#E3F4EC] text-[#0F8A5F] flex items-center justify-center"><Icon name="chat" size={20} /></span>
             <div>
