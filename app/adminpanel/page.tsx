@@ -12,15 +12,17 @@ import { ImageListField } from './image-list-field';
 import { ShiprocketDialog } from './shiprocket-dialog';
 import { VideoPlayerModal } from './video-player';
 import { RazorpaySettings } from './payment-settings';
+import { ThemeSetup } from './theme-setup';
+import { StoreDetailsSettings } from './store-details-settings';
 import { K, KaavuDetails, KaavuImageUploader, KaavuInventoryRow, KaavuStockFields } from './kaavu-ui';
 // Products, orders, coupons, banners and the rest are shared with the storefront and saved in the browser.
 import {
   useStore, createStore, productsStore, categoriesStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, colorOptionsStore,
   tagOptionsStore, couponsStore, ordersStore, customersStore, bannersStore, instagramStore, adminAccountStore, videosStore,
   buildVariantStock, variantSizes, variantColors, stockStatus, couponState, restockOrder, resetDemoData, fakePaymentId, uid,
-  localDate, sellInStore, returnToStock, STANDARD, ORDER_STATUSES, STORE_INFO, DEMO_VIDEO_URL,
+  localDate, sellInStore, returnToStock, STANDARD, ORDER_STATUSES, DEMO_VIDEO_URL,
   type VariantStock, type Product, type SizeOption, type ColorOption, type TagOption, type Coupon, type Order, type OrderStatus,
-  type HeroBanner, type CategoryItem, type EcommerceVideo, type StockLine,
+  type HeroBanner, type CategoryItem, type EcommerceVideo, type StockLine, useStoreDetails,
 } from './demo-data';
 
 interface PosCartItem {
@@ -92,7 +94,7 @@ const posHistoryStore = createStore<PosTransaction[]>('demo.admin.posHistory', [
 type AdminTab =
   | 'dashboard' | 'add-product' | 'product-list' | 'inventory' | 'attributes'
   | 'category' | 'sub-category' | 'sub-sub-category' | 'coupons' | 'orders' | 'customers'
-  | 'pos-terminal' | 'pos-history' | 'banners' | 'instagram' | 'videos' | 'reports' | 'settings';
+  | 'pos-terminal' | 'pos-history' | 'banners' | 'instagram' | 'videos' | 'themes' | 'store-details' | 'reports' | 'settings';
 
 type DemoSubAdmin = { id: string; name: string; email: string; password: string; permissions: AdminTab[] };
 // Staff logins and product videos are saved in the browser like the rest of the demo data (same keys as before).
@@ -116,8 +118,45 @@ const SUBADMIN_MODULES: { id: AdminTab; label: string; group: string }[] = [
   { id: 'banners', label: 'Hero banners', group: 'Storefront' },
   { id: 'instagram', label: 'Instagram feed', group: 'Storefront' },
   { id: 'videos', label: 'Videos', group: 'Storefront' },
+  { id: 'themes', label: 'Theme setup', group: 'Storefront' },
+  { id: 'store-details', label: 'Logo, contact & footer', group: 'Storefront' },
 ];
 const SUBADMIN_GROUPS = [...new Set(SUBADMIN_MODULES.map((module) => module.group))];
+
+type OrderDateFilter = 'all' | 'today' | 'yesterday' | '7d' | '30d' | 'month' | 'last-month' | 'custom';
+const ORDER_DATE_FILTERS: { id: OrderDateFilter; label: string }[] = [
+  { id: 'all', label: 'All dates' },
+  { id: 'today', label: 'Today' },
+  { id: 'yesterday', label: 'Yesterday' },
+  { id: '7d', label: 'Last 7 days' },
+  { id: '30d', label: 'Last 30 days' },
+  { id: 'month', label: 'This month' },
+  { id: 'last-month', label: 'Last month' },
+  { id: 'custom', label: 'Custom range' },
+];
+
+/** First and last day (YYYY-MM-DD, inclusive) for an order date filter, or null for all dates. */
+function orderDateRange(filter: OrderDateFilter, from: string, to: string): [string, string] | null {
+  const daysAgo = (n: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() - n);
+    return localDate(d);
+  };
+  const today = localDate();
+  switch (filter) {
+    case 'today': return [today, today];
+    case 'yesterday': return [daysAgo(1), daysAgo(1)];
+    case '7d': return [daysAgo(6), today];
+    case '30d': return [daysAgo(29), today];
+    case 'month': return [`${today.slice(0, 7)}-01`, today];
+    case 'last-month': {
+      const now = new Date();
+      return [localDate(new Date(now.getFullYear(), now.getMonth() - 1, 1)), localDate(new Date(now.getFullYear(), now.getMonth(), 0))];
+    }
+    case 'custom': return from || to ? [from || '0000-01-01', to || '9999-12-31'] : null;
+    default: return null;
+  }
+}
 
 const TAB_TITLES: Record<AdminTab, string> = {
   dashboard: 'Commerce Overview',
@@ -136,11 +175,33 @@ const TAB_TITLES: Record<AdminTab, string> = {
   banners: 'Hero Banners',
   instagram: 'Instagram Feed',
   videos: 'Videos',
+  themes: 'Theme Setup',
+  'store-details': 'Store Details',
   reports: 'Reports & Analytics',
   settings: 'Admin Security',
 };
 
 const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=400';
+
+/** The Live / Hidden switch for a product's visibility on the website. */
+function LiveToggle({ live, name, onToggle }: { live: boolean; name: string; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={live}
+      aria-label={`Show ${name} on the website`}
+      title={live ? 'Live on the website. Click to hide.' : 'Hidden from the website. Click to make it live.'}
+      onClick={onToggle}
+      className="inline-flex items-center gap-2.5"
+    >
+      <span className={`relative w-11 h-6 rounded-full transition-colors ${live ? 'bg-emerald-500' : 'bg-[#CFD8E3]'}`}>
+        <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${live ? 'translate-x-5' : ''}`} />
+      </span>
+      <span className={`text-[12.5px] font-bold w-12 text-left ${live ? 'text-emerald-700' : 'text-[#6F7E92]'}`}>{live ? 'Live' : 'Hidden'}</span>
+    </button>
+  );
+}
 
 function PanelIcon({ name, size = 18 }: { name: 'money' | 'box' | 'tag' | 'warning' | 'folder' | 'image' | 'instagram' | 'palette' | 'file' | 'monitor' | 'plus' | 'ticket' | 'camera' | 'eye' | 'eye-off' | 'lock' | 'truck' | 'receipt' | 'bag' | 'mobile' | 'video' | 'views' | 'barcode'; size?: number }) {
   const paths: Record<string, React.ReactNode> = {
@@ -185,6 +246,7 @@ const renameKey = <T,>(record: Record<string, T>, from: string, to: string) =>
   Object.fromEntries(Object.entries(record).map(([key, value]) => [key === from ? to : key, value]));
 
 export default function EcommerceAdminPanel() {
+  const storeInfo = useStoreDetails();
   const router = useRouter();
 
   // Auth State
@@ -328,6 +390,10 @@ export default function EcommerceAdminPanel() {
   const [paymentCheckMessage, setPaymentCheckMessage] = useState('');
   const [orderSearch, setOrderSearch] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState<'All' | OrderStatus>('All');
+  const [orderDateFilter, setOrderDateFilter] = useState<OrderDateFilter>('all');
+  const [orderDateFrom, setOrderDateFrom] = useState('');
+  const [orderDateTo, setOrderDateTo] = useState('');
+  const [productVisibilityFilter, setProductVisibilityFilter] = useState<'All' | 'Live' | 'Hidden'>('All');
 
   // Customers State
   const customers = useStore(customersStore);
@@ -510,6 +576,7 @@ export default function EcommerceAdminPanel() {
       isFeatured: newProdIsFeatured,
       rating: existing?.rating ?? 5.0,
       reviews: existing?.reviews ?? 0,
+      isLive: existing?.isLive ?? true,
       highlights: newProdHighlights.split('\n').map((h) => h.trim()).filter(Boolean),
       // One "Label: Value" per line; a line without a colon is ignored.
       specs: newProdSpecs
@@ -945,6 +1012,7 @@ export default function EcommerceAdminPanel() {
   const visibleProducts = products.filter(
     (p) =>
       (productCategoryFilter === 'All' || p.category === productCategoryFilter) &&
+      (productVisibilityFilter === 'All' || (productVisibilityFilter === 'Live') === (p.isLive !== false)) &&
       [p.name, p.sku, p.category, p.subCategory].some((v) => v.toLowerCase().includes(productSearch.trim().toLowerCase()))
   );
 
@@ -954,11 +1022,19 @@ export default function EcommerceAdminPanel() {
     return prod?.colorImages[color]?.[0] ?? prod?.image ?? DEFAULT_PRODUCT_IMAGE;
   };
 
+  const dateRange = orderDateRange(orderDateFilter, orderDateFrom, orderDateTo);
   const visibleOrders = orders.filter(
     (o) =>
       (orderStatusFilter === 'All' || o.orderStatus === orderStatusFilter) &&
+      (!dateRange || (o.date >= dateRange[0] && o.date <= dateRange[1])) &&
       [o.orderNumber, o.customerName, o.email, o.phone].some((v) => v.toLowerCase().includes(orderSearch.trim().toLowerCase()))
   );
+
+  const toggleProductLive = (prod: Product) => {
+    const live = prod.isLive === false;
+    setProducts(products.map((p) => (p.id === prod.id ? { ...p, isLive: live } : p)));
+    notify(live ? `${prod.name} is live on the store` : `${prod.name} is hidden from the store`);
+  };
 
   const handleDeleteProduct = (id: string) => {
     if (confirm('Are you sure you want to delete this product?')) {
@@ -1529,6 +1605,36 @@ export default function EcommerceAdminPanel() {
               {activeTab === 'videos' && <span className="text-white/80 text-lg leading-none">•</span>}
             </button>}
 
+            {/* Theme Setup */}
+            {canSeeAdminTab('themes') && <button
+              onClick={() => { setActiveTab('themes'); setIsMobileSidebarOpen(false); }}
+              className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'themes'
+                ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-lg shadow-[#2F6BFF]/30'
+                : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.5 3.3A2 2 0 0 1 12 22z" /><circle cx="7.5" cy="10.5" r="1" /><circle cx="12" cy="7.5" r="1" /><circle cx="16.5" cy="10.5" r="1" /></svg></span>
+                <span>Theme Setup</span>
+              </div>
+              {activeTab === 'themes' && <span className="text-white/80 text-lg leading-none">•</span>}
+            </button>}
+
+            {/* Store Details */}
+            {canSeeAdminTab('store-details') && <button
+              onClick={() => { setActiveTab('store-details'); setIsMobileSidebarOpen(false); }}
+              className={`w-full text-left px-5 py-3 rounded-full transition-all flex justify-between items-center ${activeTab === 'store-details'
+                ? 'bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white font-bold shadow-lg shadow-[#2F6BFF]/30'
+                : 'text-[#A9B4C2] font-semibold hover:bg-white/[0.06] hover:text-white'
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="w-5 h-5 flex items-center justify-center opacity-70"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l1-5h16l1 5" /><path d="M4 9v11h16V9" /><path d="M9 20v-6h6v6" /></svg></span>
+                <span>Store Details</span>
+              </div>
+              {activeTab === 'store-details' && <span className="text-white/80 text-lg leading-none">•</span>}
+            </button>}
+
             {/* Reports */}
             {canSeeAdminTab('reports') && <button
               onClick={() => { setActiveTab('reports'); setIsMobileSidebarOpen(false); }}
@@ -2084,6 +2190,16 @@ export default function EcommerceAdminPanel() {
                     <option key={c.id} value={c.name}>{c.name} ({products.filter((p) => p.category === c.name).length})</option>
                   ))}
                 </select>
+                <select
+                  value={productVisibilityFilter}
+                  onChange={(e) => setProductVisibilityFilter(e.target.value as 'All' | 'Live' | 'Hidden')}
+                  aria-label="Filter by visibility"
+                  className="px-6 py-3.5 bg-white border border-[#E3E8EF] rounded-full text-[14px] text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF] transition-all font-bold cursor-pointer shadow-sm"
+                >
+                  <option value="All">Live &amp; hidden</option>
+                  <option value="Live">Live only ({products.filter((p) => p.isLive !== false).length})</option>
+                  <option value="Hidden">Hidden only ({products.filter((p) => p.isLive === false).length})</option>
+                </select>
               </div>
 
               {/* Product cards on phones (the table below is for tablets and desktops) */}
@@ -2115,6 +2231,10 @@ export default function EcommerceAdminPanel() {
                         <button onClick={() => openStockEditor(prod)} className="px-3 py-1.5 rounded-full bg-[#EEF3FC] text-[#1F55E0] text-[12px] font-bold whitespace-nowrap">{prod.stock} units</button>
                         <span className={`px-3 py-1.5 rounded-full text-[11.5px] font-bold whitespace-nowrap ${prod.status === 'In Stock' ? 'bg-gradient-to-r from-[#DCE7FF] to-[#EAF1FF] text-[#1F55E0]' : prod.status === 'Low Stock' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-700'}`}>{prod.status}</span>
                       </div>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl bg-[#F3F6FA] px-3.5 py-2.5">
+                      <span className="text-[12.5px] font-bold text-[#5B6B80]">Show on website</span>
+                      <LiveToggle live={prod.isLive !== false} name={prod.name} onToggle={() => toggleProductLive(prod)} />
                     </div>
                     <div className="mt-3.5 pt-3.5 border-t border-[#E3E8EF] grid grid-cols-[1fr_1fr_auto] gap-2">
                       <button onClick={() => { setActiveBarcodeProduct(prod); setBarcodeLabelCount(1); setIsPrintBarcodeModalOpen(true); }} className="h-10 rounded-full border border-[#DCE5F2] text-[#0E1A2B] font-bold text-[13px] inline-flex items-center justify-center gap-2"><PanelIcon name="barcode" size={15} /> Barcode</button>
@@ -2204,20 +2324,12 @@ export default function EcommerceAdminPanel() {
                           {/* Stock (by size) */}
                           <td className="py-3.5 px-4 whitespace-nowrap">
                             <button onClick={() => openStockEditor(prod)} title="Edit stock by size and color" className="px-3 py-2 rounded-full bg-[#EEF3FC] text-[#1F55E0] text-[13px] font-bold hover:bg-[#E3ECFB] whitespace-nowrap">{prod.stock} units</button>
+                            <span className={`block mt-1.5 pl-1 text-[11.5px] font-bold ${prod.status === 'In Stock' ? 'text-[#1F55E0]' : prod.status === 'Low Stock' ? 'text-amber-700' : 'text-red-600'}`}>{prod.status}</span>
                           </td>
 
-                          {/* Status */}
+                          {/* Visibility on the website */}
                           <td className="py-3.5 px-4 whitespace-nowrap">
-                            <span
-                              className={`inline-block px-3.5 py-2 rounded-full text-[12px] font-bold whitespace-nowrap ${prod.status === 'In Stock'
-                                ? 'bg-gradient-to-r from-[#DCE7FF] to-[#EAF1FF] text-[#1F55E0]'
-                                : prod.status === 'Low Stock'
-                                  ? 'bg-amber-100 text-amber-800'
-                                  : 'bg-red-100 text-red-700'
-                                }`}
-                            >
-                              {prod.status}
-                            </span>
+                            <LiveToggle live={prod.isLive !== false} name={prod.name} onToggle={() => toggleProductLive(prod)} />
                           </td>
 
                           {/* Actions: Scanner, Edit, Delete */}
@@ -3044,9 +3156,44 @@ export default function EcommerceAdminPanel() {
                       <option value="All">All Statuses ({orders.length})</option>
                       {ORDER_STATUSES.map((status) => <option key={status} value={status}>{status} ({countOf(status)})</option>)}
                     </select>
+                    <select
+                      value={orderDateFilter}
+                      onChange={(e) => setOrderDateFilter(e.target.value as OrderDateFilter)}
+                      aria-label="Filter by order date"
+                      className={`px-5 py-3 border rounded-full text-[13px] font-extrabold uppercase tracking-wider focus:outline-none focus:border-[#2F6BFF] cursor-pointer ${orderDateFilter === 'all' ? 'bg-[#F3F6FA] border-[#E3E8EF] text-[#0E1A2B]' : 'bg-[#EAF1FF] border-[#2F6BFF] text-[#1F55E0]'}`}
+                    >
+                      {ORDER_DATE_FILTERS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+                    </select>
                   </div>
                   <p className="text-[13px] font-bold text-[#6F7E92] whitespace-nowrap">Showing {visibleOrders.length} of {orders.length} orders</p>
                 </div>
+
+                {/* Date filter: a custom range, and what the chosen period covers */}
+                {orderDateFilter !== 'all' && (
+                  <div className="-mt-3 bg-[#F5F8FF] border border-[#DCE7FF] rounded-[20px] px-4 py-3 flex flex-col md:flex-row md:items-center gap-3">
+                    {orderDateFilter === 'custom' ? (
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <label className="flex items-center gap-2 text-[12.5px] font-bold text-[#5B6B80]">
+                          From
+                          <input type="date" value={orderDateFrom} max={orderDateTo || undefined} onChange={(e) => setOrderDateFrom(e.target.value)} className="px-3 py-2 bg-white border border-[#E3E8EF] rounded-xl text-[13px] font-semibold text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF]" />
+                        </label>
+                        <label className="flex items-center gap-2 text-[12.5px] font-bold text-[#5B6B80]">
+                          To
+                          <input type="date" value={orderDateTo} min={orderDateFrom || undefined} onChange={(e) => setOrderDateTo(e.target.value)} className="px-3 py-2 bg-white border border-[#E3E8EF] rounded-xl text-[13px] font-semibold text-[#0E1A2B] focus:outline-none focus:border-[#2F6BFF]" />
+                        </label>
+                      </div>
+                    ) : (
+                      <p className="text-[13px] font-semibold text-[#3A4A5F]">
+                        {ORDER_DATE_FILTERS.find((option) => option.id === orderDateFilter)?.label}:{' '}
+                        <span className="font-bold text-[#0E1A2B]">{dateRange && (dateRange[0] === dateRange[1] ? new Date(`${dateRange[0]}T00:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : `${new Date(`${dateRange[0]}T00:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} – ${new Date(`${dateRange[1]}T00:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`)}</span>
+                      </p>
+                    )}
+                    <p className="md:ml-auto text-[13px] font-semibold text-[#3A4A5F]">
+                      <span className="font-bold text-[#0E1A2B]">{visibleOrders.length}</span> {visibleOrders.length === 1 ? 'order' : 'orders'} · <span className="font-bold text-[#2F6BFF]">₹{revenue(visibleOrders).toLocaleString('en-IN')}</span> sales
+                    </p>
+                    <button type="button" onClick={() => { setOrderDateFilter('all'); setOrderDateFrom(''); setOrderDateTo(''); }} className="self-start md:self-auto px-4 py-2 rounded-full bg-white border border-[#DCE7FF] text-[#1F55E0] text-[12.5px] font-bold hover:bg-[#EAF1FF]">Clear date</button>
+                  </div>
+                )}
 
                 <div className="bg-white border border-[#E3E8EF] rounded-[24px] shadow-sm overflow-hidden">
                   {/* Phones, tablets and small laptops: one card per order */}
@@ -3952,6 +4099,9 @@ export default function EcommerceAdminPanel() {
             </div>
           )}
 
+          {activeTab === 'themes' && <ThemeSetup notify={notify} />}
+          {activeTab === 'store-details' && <StoreDetailsSettings notify={notify} />}
+
           {/* ========================================================================= */}
           {/* 15. ADMIN SECURITY TAB */}
           {/* ========================================================================= */}
@@ -4801,9 +4951,8 @@ export default function EcommerceAdminPanel() {
                       <p className="text-[#5B6B80]">{inv.date}</p>
                     </div>
                     <div className="text-right">
-                      <h2 className={`${compact ? 'text-[13px]' : 'text-[19px]'} font-black`}>{STORE_INFO.name}</h2>
-                      {!compact && <p className="text-[#5B6B80] max-w-[240px] ml-auto leading-snug mt-1">{STORE_INFO.address}</p>}
-                      <p className="text-[#5B6B80] mt-0.5">GSTIN {STORE_INFO.gstin}</p>
+                      <h2 className={`${compact ? 'text-[13px]' : 'text-[19px]'} font-black`}>{storeInfo.name}</h2>
+                      {!compact && <p className="text-[#5B6B80] max-w-[240px] ml-auto leading-snug mt-1">{storeInfo.address}</p>}
                     </div>
                   </div>
 
@@ -4896,19 +5045,19 @@ export default function EcommerceAdminPanel() {
                   {/* Footer */}
                   {compact ? (
                     <p className="text-center text-[10px] text-[#5B6B80] border-t border-dashed border-[#A9B4C2] pt-2">
-                      From: {STORE_INFO.name}, {STORE_INFO.address} • {STORE_INFO.phone}
+                      From: {storeInfo.name}, {storeInfo.address} • {storeInfo.phone}
                     </p>
                   ) : (
                     <div className="pt-6 border-t border-[#E3E8EF] grid grid-cols-2 gap-6 text-[11px] text-[#5B6B80] leading-relaxed">
                       <div>
                         <p className="font-extrabold uppercase tracking-wider text-[#0E1A2B] mb-1">Returns & Warranty</p>
-                        <p>{STORE_INFO.returnPolicy}</p>
+                        <p>{storeInfo.returnPolicy}</p>
                       </div>
                       <div className="text-right">
                         <p className="font-extrabold uppercase tracking-wider text-[#0E1A2B] mb-1">Questions?</p>
-                        <p>{STORE_INFO.email}</p>
-                        <p>{STORE_INFO.phone}</p>
-                        <p className="mt-3 font-bold text-[#0E1A2B]">For {STORE_INFO.name}</p>
+                        <p>{storeInfo.email}</p>
+                        <p>{storeInfo.phone}</p>
+                        <p className="mt-3 font-bold text-[#0E1A2B]">For {storeInfo.name}</p>
                         <p>Computer-generated invoice — no signature required.</p>
                       </div>
                     </div>
@@ -5736,7 +5885,7 @@ export default function EcommerceAdminPanel() {
         const prod = activeBarcodeProduct;
         const { w, h } = barcodeLabelDims;
         const labelData: LabelData = {
-          store: STORE_INFO.name,
+          store: storeInfo.name,
           name: prod.name,
           code: prod.sku,
           left: prod.sizes[0] && prod.sizes[0] !== STANDARD ? `SIZE: ${prod.sizes[0]}` : `SKU: ${prod.sku}`,

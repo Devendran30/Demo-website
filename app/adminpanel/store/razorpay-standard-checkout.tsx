@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { themeSettingsStore, activeTheme } from '../demo-data';
 import type { PaymentGateway, PaymentReceipt } from '../demo-data';
 import { Icon, inr } from './store-kit';
 
@@ -58,7 +59,7 @@ export function RazorpayCheckout({ amount, gateway, prefill, onSuccess, onDismis
           key: order.keyId, amount: order.amount, currency: order.currency,
           name: gateway.merchantName || 'Store', description: 'Store checkout', order_id: order.orderId,
           prefill: { name: prefill.name, email: prefill.email, contact: prefill.phone },
-          theme: { color: '#2F6BFF' },
+          theme: { color: activeTheme(themeSettingsStore.get()).colors.accent },
           modal: { ondismiss: () => onDismiss('Payment window closed. Your order has not been placed.') },
           handler: async (response) => {
             setBusy(true);
@@ -89,14 +90,14 @@ export function RazorpayCheckout({ amount, gateway, prefill, onSuccess, onDismis
   }, [amount, attempt, gateway.merchantName, onDismiss, onSuccess, prefill]);
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#0B1524]/70 backdrop-blur-sm p-5" role="dialog" aria-modal="true" aria-label="Razorpay secure payment">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[var(--st-deep)]/70 backdrop-blur-sm p-5" role="dialog" aria-modal="true" aria-label="Razorpay secure payment">
       <div className="w-full max-w-md rounded-[24px] bg-white p-7 shadow-2xl text-center">
-        <span className="mx-auto w-14 h-14 rounded-2xl bg-[#EAF1FF] text-[#2F6BFF] flex items-center justify-center"><Icon name="lock" size={24} /></span>
-        <h2 className="mt-4 text-xl font-extrabold text-[#0E1A2B]">Secure Razorpay checkout</h2>
+        <span className="mx-auto w-14 h-14 rounded-2xl bg-[var(--st-accent-soft)] text-[var(--st-accent)] flex items-center justify-center"><Icon name="lock" size={24} /></span>
+        <h2 className="mt-4 text-xl font-extrabold text-[var(--st-ink)]">Secure Razorpay checkout</h2>
         <p className="mt-2 text-sm text-[#6F7E92]">{busy ? 'Connecting securely and preparing your order…' : error || 'Continue in the secure Razorpay window.'}</p>
-        <p className="mt-4 text-lg font-bold text-[#0E1A2B]">{inr(amount)}</p>
-        {error && <button type="button" onClick={() => { setError(''); setAttempt((n) => n + 1); }} className="mt-5 w-full h-11 rounded-full bg-[#2F6BFF] text-white font-bold">Try again</button>}
-        {busy && <span className="mx-auto mt-5 block w-6 h-6 rounded-full border-2 border-[#2F6BFF] border-t-transparent animate-spin" />}
+        <p className="mt-4 text-lg font-bold text-[var(--st-ink)]">{inr(amount)}</p>
+        {error && <button type="button" onClick={() => { setError(''); setAttempt((n) => n + 1); }} className="mt-5 w-full h-11 rounded-full bg-[var(--st-accent)] text-white font-bold">Try again</button>}
+        {busy && <span className="mx-auto mt-5 block w-6 h-6 rounded-full border-2 border-[var(--st-accent)] border-t-transparent animate-spin" />}
         {error && <button type="button" onClick={() => onDismiss(error)} className="mt-3 text-sm font-semibold text-[#6F7E92]">Close</button>}
       </div>
     </div>

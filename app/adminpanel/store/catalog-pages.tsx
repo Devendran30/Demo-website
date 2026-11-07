@@ -7,11 +7,11 @@ import {
   bannersStore, instagramStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, videosStore, recordVideoView,
   stockForVariant, productPhotos, percentOff, photoUrl, sizeTotal, colorTotal, variantSizes, variantColors,
   FREE_DELIVERY_FROM,
-  type Product, type HeroBanner, type EcommerceVideo,
+  type Product, type HeroBanner, type EcommerceVideo, useStoreDetails,
 } from '../demo-data';
 import {
   T, Icon, Photo, Stars, Button, TextLink, SectionHeading, PageTitle, Price, ProductCard, ProductGrid, EmptyState, QtyStepper, Reveal,
-  useStore, useCatalog, wishlistStore, bagStore, addToBag, toggleWishlist, firstAvailable, navigate, shopHref, inr, STANDARD, STORE_INFO,
+  useStore, useCatalog, wishlistStore, bagStore, addToBag, toggleWishlist, firstAvailable, navigate, shopHref, inr, STANDARD,
 } from './store-kit';
 
 // =============================================================================
@@ -59,7 +59,7 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
       aria-label="Featured collections"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="on-dark relative -mt-[72px] lg:-mt-[84px] overflow-hidden bg-[#0B1524] text-white min-h-[min(100svh,760px)] sm:min-h-[min(100svh,820px)] lg:min-h-[min(100svh,880px)] flex"
+      className="on-dark relative -mt-[72px] lg:-mt-[84px] overflow-hidden bg-[var(--st-deep)] text-white min-h-[min(100svh,760px)] sm:min-h-[min(100svh,820px)] lg:min-h-[min(100svh,880px)] flex"
     >
       {/* Background photos, edge to edge */}
       <div aria-hidden="true" className="absolute inset-0">
@@ -77,17 +77,17 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
       </div>
 
       {/* Washes so the words always read: from the bottom on phones, from the left on wider screens */}
-      <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#0B1524] from-15% via-[#0B1524]/55 via-50% to-[#0B1524]/0 sm:hidden" />
-      <span aria-hidden="true" className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#0B1524]/95 via-[#0B1524]/65 to-[#0B1524]/5" />
-      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0B1524]/70 to-transparent" />
-      <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-32 hidden sm:block bg-gradient-to-t from-[#0B1524]/70 to-transparent" />
-      <span aria-hidden="true" className="pointer-events-none absolute -top-40 -left-32 w-[640px] h-[640px] rounded-full bg-[#2F6BFF]/20 blur-[140px] drift" />
+      <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[var(--st-deep)] from-15% via-[var(--st-deep)]/55 via-50% to-[var(--st-deep)]/0 sm:hidden" />
+      <span aria-hidden="true" className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[var(--st-deep)]/95 via-[var(--st-deep)]/65 to-[var(--st-deep)]/5" />
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[var(--st-deep)]/70 to-transparent" />
+      <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-32 hidden sm:block bg-gradient-to-t from-[var(--st-deep)]/70 to-transparent" />
+      <span aria-hidden="true" className="pointer-events-none absolute -top-40 -left-32 w-[640px] h-[640px] rounded-full bg-[var(--st-accent)]/20 blur-[140px] drift" />
 
       <div className={`${T.shell} relative w-full flex items-end sm:items-center pt-[120px] lg:pt-[140px] pb-10 sm:pb-16 lg:pb-20`}>
         {/* Words */}
         <div key={slide.id} className="relative z-10 max-w-[640px]">
           <p className="hero-left inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[12.5px] font-semibold" style={{ animationDelay: '0ms' }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#5A8BFF] shadow-[0_0_12px_#5A8BFF]" /> New season · {pad(current + 1)} of {pad(slides.length)}
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--st-accent-2)] shadow-[0_0_12px_var(--st-accent-2)]" /> New season · {pad(current + 1)} of {pad(slides.length)}
           </p>
           <h1 className={`hero-left mt-5 sm:mt-6 ${T.display} text-[40px] sm:text-[64px] xl:text-[80px] leading-[1.02] [text-shadow:0_4px_30px_rgba(0,0,0,0.35)]`} style={{ animationDelay: '90ms', color: slide.textColor }}>
             {slide.title}
@@ -101,7 +101,7 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2.5">
                 {products.slice(0, 4).map((p) => (
-                  <Photo key={p.id} src={p.image} alt="" width={80} className="w-9 h-9 rounded-full object-cover ring-2 ring-[#0B1524]" />
+                  <Photo key={p.id} src={p.image} alt="" width={80} className="w-9 h-9 rounded-full object-cover ring-2 ring-[var(--st-deep)]" />
                 ))}
               </div>
               <div className="leading-tight">
@@ -120,14 +120,14 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
                 {slides.map((s, i) => (
                   <button key={s.id} role="tab" aria-selected={i === current} aria-label={`Show slide ${i + 1}: ${s.title}`} onClick={() => setIndex(i)} className="py-3">
                     <span className={`block h-[3px] rounded-full overflow-hidden transition-all duration-500 ${i === current ? 'w-14 bg-white/25' : 'w-6 bg-white/25 hover:bg-white/45'}`}>
-                      {i === current && <span key={`${index}-${paused}`} className={`block h-full bg-gradient-to-r from-[#5A8BFF] to-white ${paused ? 'w-full' : 'progress-7'}`} />}
+                      {i === current && <span key={`${index}-${paused}`} className={`block h-full bg-gradient-to-r from-[var(--st-accent-2)] to-white ${paused ? 'w-full' : 'progress-7'}`} />}
                     </span>
                   </button>
                 ))}
               </div>
               <div className="flex gap-2">
-                <button onClick={() => go(-1)} aria-label="Previous slide" className="w-10 h-10 rounded-full border border-white/25 bg-white/5 backdrop-blur-md hover:bg-white hover:text-[#0E1A2B] flex items-center justify-center transition-colors"><Icon name="back" size={16} /></button>
-                <button onClick={() => go(1)} aria-label="Next slide" className="w-10 h-10 rounded-full border border-white/25 bg-white/5 backdrop-blur-md hover:bg-white hover:text-[#0E1A2B] flex items-center justify-center transition-colors"><Icon name="arrow" size={16} /></button>
+                <button onClick={() => go(-1)} aria-label="Previous slide" className="w-10 h-10 rounded-full border border-white/25 bg-white/5 backdrop-blur-md hover:bg-white hover:text-[var(--st-ink)] flex items-center justify-center transition-colors"><Icon name="back" size={16} /></button>
+                <button onClick={() => go(1)} aria-label="Next slide" className="w-10 h-10 rounded-full border border-white/25 bg-white/5 backdrop-blur-md hover:bg-white hover:text-[var(--st-ink)] flex items-center justify-center transition-colors"><Icon name="arrow" size={16} /></button>
               </div>
             </div>
           )}
@@ -143,7 +143,7 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
           >
             <Photo src={pick.image} alt="" width={160} className="w-16 h-16 rounded-[16px] object-cover" />
             <span className="min-w-0">
-              <span className="block text-[11px] uppercase tracking-[0.14em] font-bold text-[#8FB0FF]">Featured</span>
+              <span className="block text-[11px] uppercase tracking-[0.14em] font-bold text-[var(--st-accent-light)]">Featured</span>
               <span className="block text-[14px] font-bold truncate max-w-[190px]">{pick.name}</span>
               <span className="flex items-center gap-2 text-[13px] text-white/75">
                 {inr(pick.price)}
@@ -152,8 +152,8 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
             </span>
           </a>
         )}
-        <div className="hero-pop hidden lg:flex absolute top-[124px] right-6 xl:right-10 items-center gap-3 px-4 py-3 rounded-[18px] bg-white text-[#0E1A2B] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)]" style={{ animationDelay: '700ms' }}>
-          <span className="w-9 h-9 rounded-full bg-[#2F6BFF]/10 text-[#2F6BFF] flex items-center justify-center"><Icon name="shield" size={18} /></span>
+        <div className="hero-pop hidden lg:flex absolute top-[124px] right-6 xl:right-10 items-center gap-3 px-4 py-3 rounded-[18px] bg-white text-[var(--st-ink)] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)]" style={{ animationDelay: '700ms' }}>
+          <span className="w-9 h-9 rounded-full bg-[var(--st-accent)]/10 text-[var(--st-accent)] flex items-center justify-center"><Icon name="shield" size={18} /></span>
           <span className="leading-tight">
             <span className="block text-[13px] font-extrabold">1-year warranty</span>
             <span className="block text-[11.5px] text-[#6F7E92]">on every product</span>
@@ -164,10 +164,10 @@ function Hero({ slides }: { slides: HeroSlide[] }) {
   );
 }
 
-const bannerSlides = (banners: HeroBanner[]): HeroSlide[] =>
+export const bannerSlides = (banners: HeroBanner[]): HeroSlide[] =>
   banners.map((b) => ({ id: b.id, title: b.title, subtitle: b.subtitle, image: b.imageUrl, mobileImage: b.mobileImageUrl, ctaText: b.ctaText, ctaLink: b.ctaLink, textColor: b.textColor }));
 
-const fallbackSlides = (product?: Product): HeroSlide[] =>
+export const fallbackSlides = (product?: Product): HeroSlide[] =>
   product ? [{ id: 'static', title: 'Fewer things. Better ones.', subtitle: 'Considered electronics, chosen for how well they work and how long they last.', image: product.image, mobileImage: '', ctaText: 'Shop the collection', ctaLink: '#/shop', textColor: '#ffffff' }] : [];
 
 const PERKS = [
@@ -185,8 +185,8 @@ function PerksTicker() {
   const run = (hidden: boolean) => (
     <div aria-hidden={hidden} className="flex shrink-0 items-center">
       {PERKS.map(([icon, text]) => (
-        <span key={text} className="flex items-center gap-3 px-8 whitespace-nowrap text-[14px] font-semibold text-[#0E1A2B]">
-          <span className="w-8 h-8 rounded-full bg-[#2F6BFF]/10 text-[#2F6BFF] flex items-center justify-center"><Icon name={icon} size={16} /></span>
+        <span key={text} className="flex items-center gap-3 px-8 whitespace-nowrap text-[14px] font-semibold text-[var(--st-ink)]">
+          <span className="w-8 h-8 rounded-full bg-[var(--st-accent)]/10 text-[var(--st-accent)] flex items-center justify-center"><Icon name={icon} size={16} /></span>
           {text}
         </span>
       ))}
@@ -203,7 +203,7 @@ function PerksTicker() {
 }
 
 /** Time left until midnight, ticking every second once the page is in the browser. */
-function useMidnightCountdown() {
+export function useMidnightCountdown() {
   const [left, setLeft] = useState<number | null>(null);
   useEffect(() => {
     const tick = () => {
@@ -242,7 +242,7 @@ function DealOfTheDay({ product }: { product: Product }) {
             <p className="text-[13px] font-bold text-[#3A4A5F] mb-3">Offer ends in</p>
             <div className="flex gap-3" aria-live="off">
               {['Hours', 'Mins', 'Secs'].map((label, i) => (
-                <div key={label} className="w-[78px] py-3 rounded-[16px] bg-[#0E1A2B] text-white text-center">
+                <div key={label} className="w-[78px] py-3 rounded-[16px] bg-[var(--st-ink)] text-white text-center">
                   <p className="text-[26px] font-extrabold tabular-nums tracking-[-0.02em] leading-none">{parts[i]}</p>
                   <p className="mt-1.5 text-[11px] font-semibold text-white/55">{label}</p>
                 </div>
@@ -251,7 +251,7 @@ function DealOfTheDay({ product }: { product: Product }) {
           </div>
           <div className="mt-7">
             <div className="flex justify-between text-[13px] font-semibold mb-2"><span className="text-[#D23B3B]">{claimed}% claimed</span><span className="text-[#6F7E92]">Hurry, limited stock</span></div>
-            <div className="h-2 rounded-full bg-[#EDF1F6] overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-[#2F6BFF] to-[#D23B3B]" style={{ width: `${claimed}%` }} /></div>
+            <div className="h-2 rounded-full bg-[#EDF1F6] overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[#D23B3B]" style={{ width: `${claimed}%` }} /></div>
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button href={`#/product/${product.id}`} variant="accent">Grab the deal <Icon name="arrow" size={16} /></Button>
@@ -277,7 +277,7 @@ const STEPS_HOW = [
   ['heart', 'Enjoy for years', 'A one-year warranty and 7-day returns, with help whenever you need it.'],
 ];
 
-function Carousel({ products, colorHex, categoryOf }: { products: Product[] } & Pick<ReturnType<typeof useCatalog>, 'colorHex' | 'categoryOf'>) {
+export function Carousel({ products, colorHex, categoryOf }: { products: Product[] } & Pick<ReturnType<typeof useCatalog>, 'colorHex' | 'categoryOf'>) {
   const track = useRef<HTMLDivElement>(null);
   const scroll = (dir: number) => track.current?.scrollBy({ left: dir * track.current.clientWidth * 0.8, behavior: 'smooth' });
   return (
@@ -290,8 +290,8 @@ function Carousel({ products, colorHex, categoryOf }: { products: Product[] } & 
         ))}
       </div>
       <div className="hidden sm:flex justify-end gap-2 mt-5">
-        <button onClick={() => scroll(-1)} aria-label="Scroll back" className="w-12 h-12 rounded-full bg-white border border-[#E3E8EF] hover:bg-[#0E1A2B] hover:text-white hover:border-[#0E1A2B] flex items-center justify-center transition-colors"><Icon name="back" size={17} /></button>
-        <button onClick={() => scroll(1)} aria-label="Scroll forward" className="w-12 h-12 rounded-full bg-white border border-[#E3E8EF] hover:bg-[#0E1A2B] hover:text-white hover:border-[#0E1A2B] flex items-center justify-center transition-colors"><Icon name="arrow" size={17} /></button>
+        <button onClick={() => scroll(-1)} aria-label="Scroll back" className="w-12 h-12 rounded-full bg-white border border-[#E3E8EF] hover:bg-[var(--st-ink)] hover:text-white hover:border-[var(--st-ink)] flex items-center justify-center transition-colors"><Icon name="back" size={17} /></button>
+        <button onClick={() => scroll(1)} aria-label="Scroll forward" className="w-12 h-12 rounded-full bg-white border border-[#E3E8EF] hover:bg-[var(--st-ink)] hover:text-white hover:border-[var(--st-ink)] flex items-center justify-center transition-colors"><Icon name="arrow" size={17} /></button>
       </div>
     </div>
   );
@@ -322,12 +322,12 @@ function VideoShelf({ videos, heading }: { videos: EcommerceVideo[]; heading: Re
                     recordVideoView(video.id);
                   }}
                   aria-label={`Play video: ${video.title}`}
-                  className="relative block w-full aspect-video bg-[#0B1524] overflow-hidden"
+                  className="relative block w-full aspect-video bg-[var(--st-deep)] overflow-hidden"
                 >
                   <Photo src={video.thumbnail || product?.image || ''} alt="" width={800} className="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-[1.06]" />
-                  <span className="absolute inset-0 bg-gradient-to-t from-[#0B1524]/70 via-transparent to-transparent" />
+                  <span className="absolute inset-0 bg-gradient-to-t from-[var(--st-deep)]/70 via-transparent to-transparent" />
                   <span className="absolute inset-0 flex items-center justify-center">
-                    <span className="w-16 h-16 rounded-full bg-white/90 backdrop-blur-md text-[#2F6BFF] flex items-center justify-center shadow-[0_16px_32px_-12px_rgba(0,0,0,0.6)] transition-transform duration-500 group-hover:scale-110">
+                    <span className="w-16 h-16 rounded-full bg-white/90 backdrop-blur-md text-[var(--st-accent)] flex items-center justify-center shadow-[0_16px_32px_-12px_rgba(0,0,0,0.6)] transition-transform duration-500 group-hover:scale-110">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="ml-1"><path d="M7 4.5v15l12.5-7.5L7 4.5Z" /></svg>
                     </span>
                   </span>
@@ -338,7 +338,7 @@ function VideoShelf({ videos, heading }: { videos: EcommerceVideo[]; heading: Re
                   <h3 className="mt-2 text-[17px] font-bold tracking-[-0.02em] leading-snug">{video.title}</h3>
                   <div className="mt-auto pt-4 flex items-center justify-between gap-3 text-[13px] text-[#6F7E92]">
                     <span className="inline-flex items-center gap-1.5"><Icon name="eye" size={15} />{video.views.toLocaleString('en-IN')} views</span>
-                    {product && <a href={`#/product/${product.id}`} className="font-semibold text-[#2F6BFF] hover:underline">Shop now →</a>}
+                    {product && <a href={`#/product/${product.id}`} className="font-semibold text-[var(--st-accent)] hover:underline">Shop now →</a>}
                   </div>
                 </div>
               </article>
@@ -351,7 +351,7 @@ function VideoShelf({ videos, heading }: { videos: EcommerceVideo[]; heading: Re
           {playingProduct ? (
             <>
               <span className="text-[14px] text-white/80">{playingProduct.name} · <strong className="text-white">{inr(playingProduct.price)}</strong></span>
-              <a href={`#/product/${playingProduct.id}`} onClick={() => setPlayingId(null)} className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-[#2F6BFF] hover:bg-[#2459DB] text-white text-[14px] font-semibold">Shop this product <Icon name="arrow" size={16} /></a>
+              <a href={`#/product/${playingProduct.id}`} onClick={() => setPlayingId(null)} className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-[var(--st-accent)] hover:bg-[#2459DB] text-white text-[14px] font-semibold">Shop this product <Icon name="arrow" size={16} /></a>
             </>
           ) : (
             <span className="text-[13px] text-white/60">{playing.views.toLocaleString('en-IN')} views</span>
@@ -372,13 +372,14 @@ function lastTileSpan(index: number, count: number) {
   return `${phone} ${desktop}`;
 }
 
-const REVIEWS = [
+export const REVIEWS = [
   { name: 'Aarav M.', city: 'Mumbai', productId: 'wireless-nc-headphones-pro', text: 'The noise cancelling is unreal, and the packaging felt like opening a gift. Worth every rupee.' },
   { name: 'Priya S.', city: 'Chennai', productId: 'ergonomic-mechanical-keyboard', text: 'Ordered the TKL at night and it was at my door in two days. Beautifully made — it feels like an heirloom.' },
   { name: 'Ananya R.', city: 'Kolkata', productId: 'ultra-slim-smartwatch-7', text: 'Finally a store that doesn’t drown you in choice. Everything here is simply good, and it shows.' },
 ];
 
 export function HomePage() {
+  const storeInfo = useStoreDetails();
   const { products, categories, colorHex, categoryOf, productById } = useCatalog();
   const banners = useStore(bannersStore).filter((b) => b.isActive && b.imageUrl);
   const posts = useStore(instagramStore);
@@ -410,9 +411,9 @@ export function HomePage() {
       {/* Statement */}
       <section className={`${T.shell} pt-12 sm:pt-16 pb-4`}>
         <Reveal from="scale" className="max-w-5xl mx-auto text-center">
-          <p className={`${T.eyebrow} mb-5`}>The {STORE_INFO.name} way</p>
-          <p className="text-[28px] sm:text-[46px] font-semibold leading-[1.18] tracking-[-0.035em] text-[#0E1A2B]">
-            We choose <em className="text-[#2F6BFF]">fewer pieces</em>, and choose them well — sound, screens and smart things made to be <em>used for years</em>, not replaced in months.
+          <p className={`${T.eyebrow} mb-5`}>The {storeInfo.name} way</p>
+          <p className="text-[28px] sm:text-[46px] font-semibold leading-[1.18] tracking-[-0.035em] text-[var(--st-ink)]">
+            We choose <em className="text-[var(--st-accent)]">fewer pieces</em>, and choose them well — sound, screens and smart things made to be <em>used for years</em>, not replaced in months.
           </p>
         </Reveal>
         <Reveal delay={150} className="mt-8 sm:mt-10 grid grid-cols-2 lg:grid-cols-4 border-y border-[#E3E8EF]">
@@ -423,7 +424,7 @@ export function HomePage() {
             ['1 year', 'Warranty on everything'],
           ].map(([value, label], i) => (
             <div key={label} className={`py-6 sm:py-7 px-4 text-center ${i % 2 ? 'border-l border-[#E3E8EF]' : ''} ${i === 2 ? 'lg:border-l' : ''} ${i > 1 ? 'border-t lg:border-t-0 border-[#E3E8EF]' : ''}`}>
-              <p className={`${T.display} text-[44px] sm:text-[60px] leading-none bg-gradient-to-b from-[#0E1A2B] to-[#3A5A8F] bg-clip-text text-transparent`}>{value}</p>
+              <p className={`${T.display} text-[44px] sm:text-[60px] leading-none bg-gradient-to-b from-[var(--st-ink)] to-[#3A5A8F] bg-clip-text text-transparent`}>{value}</p>
               <p className="mt-3 text-[12px] uppercase tracking-[0.16em] font-semibold text-[#6F7E92]">{label}</p>
             </div>
           ))}
@@ -438,9 +439,9 @@ export function HomePage() {
             {categories.map((category, index) => {
               const count = products.filter((p) => p.category === category.name).length;
               return (
-                <a key={category.id} href={shopHref({ cat: category.slug })} className={`on-dark group relative overflow-hidden rounded-[24px] bg-[#16263D] text-white ${index === 0 ? 'col-span-2 row-span-2' : ''} ${lastTileSpan(index, categories.length)}`}>
+                <a key={category.id} href={shopHref({ cat: category.slug })} className={`on-dark group relative overflow-hidden rounded-[24px] bg-[var(--st-ink-2)] text-white ${index === 0 ? 'col-span-2 row-span-2' : ''} ${lastTileSpan(index, categories.length)}`}>
                   <Photo src={category.image} alt="" width={index === 0 ? 1200 : 700} className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.07]" />
-                  <span className="absolute inset-0 bg-gradient-to-t from-[#0B1524]/90 via-[#0B1524]/15 to-transparent" />
+                  <span className="absolute inset-0 bg-gradient-to-t from-[var(--st-deep)]/90 via-[var(--st-deep)]/15 to-transparent" />
                   <span className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500"><Icon name="arrow" size={17} /></span>
                   <span className="absolute left-5 right-5 bottom-5 sm:left-7 sm:bottom-7">
                     <span className="inline-block px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-md text-[11px] font-bold mb-3">{count} {count === 1 ? 'product' : 'products'}</span>
@@ -462,7 +463,7 @@ export function HomePage() {
             </div>
             <div className="flex flex-wrap gap-2" role="tablist" aria-label="Collections">
               {(Object.keys(tabs) as (keyof typeof tabs)[]).map((key) => (
-                <button key={key} role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={`px-5 h-11 rounded-full text-[14px] font-semibold transition-all ${tab === key ? 'bg-[#0E1A2B] text-white shadow-[0_10px_24px_-12px_rgba(14,26,43,0.7)]' : 'bg-white border border-[#E3E8EF] text-[#5B6B80] hover:border-[#0E1A2B] hover:text-[#0E1A2B]'}`}>
+                <button key={key} role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={`px-5 h-11 rounded-full text-[14px] font-semibold transition-all ${tab === key ? 'bg-[var(--st-ink)] text-white shadow-[0_10px_24px_-12px_rgba(14,26,43,0.7)]' : 'bg-white border border-[#E3E8EF] text-[#5B6B80] hover:border-[var(--st-ink)] hover:text-[var(--st-ink)]'}`}>
                   {tabs[key].label}
                 </button>
               ))}
@@ -481,8 +482,8 @@ export function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {WHY_US.map(([icon, title, text], i) => (
               <Reveal key={title} from={i % 2 ? 'right' : 'left'} delay={i * 110} className="h-full">
-                <div className="group h-full p-7 rounded-[26px] bg-white border border-[#E3E8EF] hover:border-[#2F6BFF]/30 hover:-translate-y-1 hover:shadow-[0_30px_60px_-40px_rgba(14,26,43,0.5)] transition-all duration-500">
-                  <span className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-[#2F6BFF] to-[#0E1A2B] text-white flex items-center justify-center shadow-[0_12px_24px_-10px_rgba(47,107,255,0.7)] group-hover:scale-110 transition-transform duration-500"><Icon name={icon} size={21} /></span>
+                <div className="group h-full p-7 rounded-[26px] bg-white border border-[#E3E8EF] hover:border-[var(--st-accent)]/30 hover:-translate-y-1 hover:shadow-[0_30px_60px_-40px_rgba(14,26,43,0.5)] transition-all duration-500">
+                  <span className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-ink)] text-white flex items-center justify-center shadow-[0_12px_24px_-10px_rgba(47,107,255,0.7)] group-hover:scale-110 transition-transform duration-500"><Icon name={icon} size={21} /></span>
                   <h3 className="mt-6 text-[18px] font-bold tracking-[-0.02em]">{title}</h3>
                   <p className="mt-2 text-[14.5px] leading-relaxed text-[#5B6B80]">{text}</p>
                 </div>
@@ -494,22 +495,22 @@ export function HomePage() {
 
       {/* In focus */}
       {spotlight && (
-        <section className="on-dark relative mt-12 sm:mt-16 bg-[#0B1524] text-white overflow-hidden">
-          <span aria-hidden="true" className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] rounded-full bg-[#2F6BFF]/25 blur-[140px]" />
+        <section className="on-dark relative mt-12 sm:mt-16 bg-[var(--st-deep)] text-white overflow-hidden">
+          <span aria-hidden="true" className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] rounded-full bg-[var(--st-accent)]/25 blur-[140px]" />
           <div className={`${T.shell} relative py-12 sm:py-16`}>
             <Reveal className="text-center max-w-3xl mx-auto">
-              <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2F6BFF]/15 border border-[#2F6BFF]/30 text-[12.5px] font-bold text-[#8FB0FF] mb-7">In focus · {percentOff(spotlight)}% off this week</p>
+              <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--st-accent)]/15 border border-[var(--st-accent)]/30 text-[12.5px] font-bold text-[var(--st-accent-light)] mb-7">In focus · {percentOff(spotlight)}% off this week</p>
               <h2 className={`${T.display} text-[48px] sm:text-[84px] leading-[0.98]`}><em>{spotlight.name}</em></h2>
               <p className="mt-6 text-[17px] leading-relaxed text-[#9AA7B8] max-w-xl mx-auto">{spotlight.description}</p>
             </Reveal>
             <Reveal from="scale" delay={120} className="relative mt-8 max-w-4xl mx-auto">
-              <div className="relative aspect-[16/10] rounded-[32px] overflow-hidden bg-[#16263D] shadow-[0_60px_120px_-40px_rgba(0,0,0,0.8)]">
+              <div className="relative aspect-[16/10] rounded-[32px] overflow-hidden bg-[var(--st-ink-2)] shadow-[0_60px_120px_-40px_rgba(0,0,0,0.8)]">
                 <Photo src={productPhotos(spotlight)[0]} alt={spotlight.name} width={1600} className="absolute inset-0 h-full w-full object-cover" />
-                <span className="absolute inset-0 bg-gradient-to-t from-[#0B1524]/50 to-transparent" />
+                <span className="absolute inset-0 bg-gradient-to-t from-[var(--st-deep)]/50 to-transparent" />
               </div>
               {spotlight.specs.slice(0, 4).map(([label, value], i) => (
-                <span key={label} className={`hidden md:block absolute ${chipSpots[i]} px-5 py-3.5 rounded-[18px] bg-[#0B1524]/65 backdrop-blur-xl border border-white/15 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.7)] float`} style={{ animationDelay: `${i * 0.8}s` }}>
-                  <span className="block text-[10.5px] uppercase tracking-[0.16em] font-bold text-[#8FB0FF]">{label}</span>
+                <span key={label} className={`hidden md:block absolute ${chipSpots[i]} px-5 py-3.5 rounded-[18px] bg-[var(--st-deep)]/65 backdrop-blur-xl border border-white/15 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.7)] float`} style={{ animationDelay: `${i * 0.8}s` }}>
+                  <span className="block text-[10.5px] uppercase tracking-[0.16em] font-bold text-[var(--st-accent-light)]">{label}</span>
                   <span className="block text-[17px] font-bold tracking-[-0.02em] leading-tight mt-0.5">{value}</span>
                 </span>
               ))}
@@ -551,11 +552,11 @@ export function HomePage() {
           <section className="pt-12 sm:pt-16 grid md:grid-cols-2 gap-4">
             {editorial.map((category, i) => (
               <Reveal key={category!.id} from={i === 0 ? 'left' : 'right'} delay={i * 120}>
-                <a href={shopHref({ cat: category!.slug })} className="on-dark group relative block min-h-[480px] sm:min-h-[620px] overflow-hidden rounded-[28px] bg-[#16263D] text-white">
+                <a href={shopHref({ cat: category!.slug })} className="on-dark group relative block min-h-[480px] sm:min-h-[620px] overflow-hidden rounded-[28px] bg-[var(--st-ink-2)] text-white">
                   <Photo src={category!.image} alt="" width={1100} className="absolute inset-0 h-full w-full object-cover saturate-[0.9] transition-transform duration-[1600ms] ease-out group-hover:scale-[1.05]" />
-                  <span className="absolute inset-0 bg-gradient-to-t from-[#0B1524]/95 via-[#0B1524]/20 to-transparent" />
+                  <span className="absolute inset-0 bg-gradient-to-t from-[var(--st-deep)]/95 via-[var(--st-deep)]/20 to-transparent" />
                   <span className="absolute left-8 right-8 bottom-9 sm:left-12 sm:bottom-12">
-                    <span className="block text-[12px] uppercase tracking-[0.18em] font-bold text-[#8FB0FF] mb-4">{i === 0 ? 'Capture' : 'Play'}</span>
+                    <span className="block text-[12px] uppercase tracking-[0.18em] font-bold text-[var(--st-accent-light)] mb-4">{i === 0 ? 'Capture' : 'Play'}</span>
                     <span className={`block ${T.display} text-[38px] sm:text-[52px] leading-[1] max-w-md`}>{i === 0 ? <>See the world <em>differently.</em></> : <>Your next favourite <em>game night.</em></>}</span>
                     <span className="mt-8 inline-flex"><TextLink light>Explore {category!.name}</TextLink></span>
                   </span>
@@ -566,21 +567,21 @@ export function HomePage() {
         )}
 
         {/* How it works */}
-        <section className="mt-12 sm:mt-16 on-dark relative overflow-hidden rounded-[32px] bg-[#0B1524] text-white px-6 py-12 sm:px-12 sm:py-16">
+        <section className="mt-12 sm:mt-16 on-dark relative overflow-hidden rounded-[32px] bg-[var(--st-deep)] text-white px-6 py-12 sm:px-12 sm:py-16">
           {/* Same deep navy and blue glow as the footer */}
-          <span aria-hidden="true" className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[400px] rounded-full bg-[#2F6BFF]/25 blur-[120px]" />
+          <span aria-hidden="true" className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[400px] rounded-full bg-[var(--st-accent)]/25 blur-[120px]" />
           <span aria-hidden="true" className="pointer-events-none absolute -bottom-32 -right-24 w-[420px] h-[320px] rounded-full bg-[#9AA7B8]/10 blur-[100px]" />
           <Reveal className="relative text-center max-w-2xl mx-auto mb-10 sm:mb-12">
-            <p className="text-[12px] uppercase tracking-[0.2em] font-bold text-[#8FB0FF] mb-4">How it works</p>
+            <p className="text-[12px] uppercase tracking-[0.2em] font-bold text-[var(--st-accent-light)] mb-4">How it works</p>
             <h2 className={`${T.display} text-[38px] sm:text-[54px] leading-[1.02]`}>From click to <em>doorstep</em></h2>
           </Reveal>
           <div className="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-6">
-            <span aria-hidden="true" className="hidden lg:block absolute top-[44px] left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-[#5A8BFF]/60 to-transparent" />
+            <span aria-hidden="true" className="hidden lg:block absolute top-[44px] left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-[var(--st-accent-2)]/60 to-transparent" />
             {STEPS_HOW.map(([icon, title, text], i) => (
               <Reveal key={title} from="up" delay={i * 130} className="relative text-center px-4">
-                <span className="relative mx-auto w-[88px] h-[88px] rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-md shadow-[0_20px_40px_-20px_rgba(47,107,255,0.6)] flex items-center justify-center text-[#8FB0FF]">
+                <span className="relative mx-auto w-[88px] h-[88px] rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-md shadow-[0_20px_40px_-20px_rgba(47,107,255,0.6)] flex items-center justify-center text-[var(--st-accent-light)]">
                   <Icon name={icon} size={28} stroke={1.6} />
-                  <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-[#2F6BFF] text-white text-[12px] font-extrabold flex items-center justify-center shadow-[0_6px_16px_-4px_rgba(47,107,255,0.9)]">{i + 1}</span>
+                  <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-[var(--st-accent)] text-white text-[12px] font-extrabold flex items-center justify-center shadow-[0_6px_16px_-4px_rgba(47,107,255,0.9)]">{i + 1}</span>
                 </span>
                 <h3 className="mt-5 text-[18px] font-bold tracking-[-0.02em] text-white">{title}</h3>
                 <p className="mt-2 text-[14.5px] leading-relaxed text-white/65 max-w-[250px] mx-auto">{text}</p>
@@ -600,13 +601,13 @@ export function HomePage() {
                   <figure className="h-full flex flex-col justify-between p-6 sm:p-8 rounded-[28px] bg-white border border-[#E3E8EF] shadow-[0_30px_60px_-45px_rgba(14,26,43,0.45)] hover:-translate-y-1 transition-transform duration-500">
                     <div>
                       <p aria-label="5 out of 5 stars" className="text-[#F5B000] tracking-[0.2em] text-[15px]">★★★★★</p>
-                      <blockquote className="mt-6 text-[18px] sm:text-[20px] font-medium leading-[1.55] tracking-[-0.015em] text-[#0E1A2B]">“{review.text}”</blockquote>
+                      <blockquote className="mt-6 text-[18px] sm:text-[20px] font-medium leading-[1.55] tracking-[-0.015em] text-[var(--st-ink)]">“{review.text}”</blockquote>
                     </div>
                     <figcaption className="mt-6 pt-5 border-t border-[#E3E8EF] flex items-center gap-4">
                       {product && <Photo src={product.image} alt="" width={120} className="w-12 h-12 rounded-full object-cover" />}
                       <span>
                         <span className="block text-[14px]">{review.name} <span className="text-[#8A97A8]">· {review.city}</span></span>
-                        {product && <a href={`#/product/${product.id}`} className="block text-[12.5px] text-[#6F7E92] hover:text-[#2F6BFF]">Bought {product.name}</a>}
+                        {product && <a href={`#/product/${product.id}`} className="block text-[12.5px] text-[#6F7E92] hover:text-[var(--st-accent)]">Bought {product.name}</a>}
                       </span>
                     </figcaption>
                   </figure>
@@ -630,7 +631,7 @@ export function HomePage() {
               {posts.slice(0, 6).map((post, i) => (
                 <a key={post.id} href={post.postUrl} target="_blank" rel="noopener noreferrer" className={`group relative overflow-hidden rounded-[22px] bg-[#EDF1F6] ${i % 2 ? 'lg:translate-y-8' : ''} aspect-square`} aria-label={post.caption || 'Instagram post'}>
                   <Photo src={post.imageUrl} alt="" width={500} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.08]" />
-                  <span className="absolute inset-0 bg-[#0B1524]/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2 p-4 text-center text-white">
+                  <span className="absolute inset-0 bg-[var(--st-deep)]/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2 p-4 text-center text-white">
                     <Icon name="instagram" size={22} />
                     <span className="hidden sm:block text-[12px] leading-snug line-clamp-3">{post.caption}</span>
                   </span>
@@ -642,10 +643,10 @@ export function HomePage() {
 
         {/* Newsletter */}
         <Reveal className="mt-12 sm:mt-16">
-          <section className="on-dark relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0E1A2B] via-[#13284A] to-[#0B1524] text-white px-6 py-12 sm:py-14 text-center">
-            <span aria-hidden="true" className="pointer-events-none absolute -top-24 right-0 w-[520px] h-[420px] rounded-full bg-[#2F6BFF]/30 blur-[110px]" />
+          <section className="on-dark relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[var(--st-ink)] via-[var(--st-ink-2)] to-[var(--st-deep)] text-white px-6 py-12 sm:py-14 text-center">
+            <span aria-hidden="true" className="pointer-events-none absolute -top-24 right-0 w-[520px] h-[420px] rounded-full bg-[var(--st-accent)]/30 blur-[110px]" />
             <span aria-hidden="true" className="pointer-events-none absolute -bottom-32 left-0 w-[420px] h-[320px] rounded-full bg-[#9AA7B8]/20 blur-[100px]" />
-            <p className="relative text-[12px] uppercase tracking-[0.2em] font-bold text-[#8FB0FF] mb-6">The newsletter</p>
+            <p className="relative text-[12px] uppercase tracking-[0.2em] font-bold text-[var(--st-accent-light)] mb-6">The newsletter</p>
             <h2 className={`relative ${T.display} text-[38px] sm:text-[58px] leading-[1.02] max-w-3xl mx-auto`}>New arrivals and private offers, <em>once a week.</em></h2>
             {joined ? (
               <p role="status" className="relative mt-10 inline-flex items-center gap-2 text-[15px] font-semibold text-[#7DE0B5]"><Icon name="check" size={18} /> Thank you — you&apos;re on the list.</p>
@@ -738,8 +739,8 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
   const stylesHere = sub ? subSubCategories.filter((ssc) => ssc.status === 'Active' && ssc.parentSubCategory === sub && inCategory.some((p) => p.subCategory === sub && p.subSubCategory === ssc.name)) : [];
   const hasFilters = Boolean(category || sub || style || query || band || color || size || inStockOnly);
 
-  const filterHeading = 'text-[13px] font-bold text-[#0E1A2B] mb-4';
-  const option = (active: boolean) => `flex w-full items-center justify-between py-1.5 text-[14px] text-left transition-colors ${active ? 'text-[#0E1A2B] font-medium' : 'text-[#5B6B80] hover:text-[#0E1A2B]'}`;
+  const filterHeading = 'text-[13px] font-bold text-[var(--st-ink)] mb-4';
+  const option = (active: boolean) => `flex w-full items-center justify-between py-1.5 text-[14px] text-left transition-colors ${active ? 'text-[var(--st-ink)] font-medium' : 'text-[#5B6B80] hover:text-[var(--st-ink)]'}`;
 
   const filters = (
     <div className="space-y-10">
@@ -750,7 +751,7 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
         </button>
         {categories.map((c) => (
           <button key={c.id} onClick={() => update({ cat: c.slug, sub: '', style: '', color: '', size: '' })} aria-pressed={category?.id === c.id} className={option(category?.id === c.id)}>
-            <span className="flex items-center gap-2">{category?.id === c.id && <span className="w-1 h-1 rounded-full bg-[#2F6BFF]" />}{c.name}</span>
+            <span className="flex items-center gap-2">{category?.id === c.id && <span className="w-1 h-1 rounded-full bg-[var(--st-accent)]" />}{c.name}</span>
             <span className="text-[12px] text-[#8A97A8]">{products.filter((p) => p.category === c.name).length}</span>
           </button>
         ))}
@@ -760,7 +761,7 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
           <p className={filterHeading}>Type</p>
           <div className="flex flex-wrap gap-2">
             {subsHere.map((sc) => (
-              <button key={sc.id} onClick={() => update({ sub: sub === sc.name ? '' : sc.name, style: '' })} aria-pressed={sub === sc.name} className={`px-4 h-9 rounded-full border text-[12.5px] transition-colors ${sub === sc.name ? 'border-[#0E1A2B] bg-[#0E1A2B] text-[#F6F8FB]' : 'border-[#CFD8E3] hover:border-[#0E1A2B]'}`}>
+              <button key={sc.id} onClick={() => update({ sub: sub === sc.name ? '' : sc.name, style: '' })} aria-pressed={sub === sc.name} className={`px-4 h-9 rounded-full border text-[12.5px] transition-colors ${sub === sc.name ? 'border-[var(--st-ink)] bg-[var(--st-ink)] text-[var(--st-page)]' : 'border-[#CFD8E3] hover:border-[var(--st-ink)]'}`}>
                 {sc.name}
               </button>
             ))}
@@ -772,7 +773,7 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
           <p className={filterHeading}>Style</p>
           <div className="flex flex-wrap gap-2">
             {stylesHere.map((ssc) => (
-              <button key={ssc.id} onClick={() => update({ style: style === ssc.name ? '' : ssc.name })} aria-pressed={style === ssc.name} className={`px-4 h-9 rounded-full border text-[12.5px] transition-colors ${style === ssc.name ? 'border-[#0E1A2B] bg-[#0E1A2B] text-[#F6F8FB]' : 'border-[#CFD8E3] hover:border-[#0E1A2B]'}`}>
+              <button key={ssc.id} onClick={() => update({ style: style === ssc.name ? '' : ssc.name })} aria-pressed={style === ssc.name} className={`px-4 h-9 rounded-full border text-[12.5px] transition-colors ${style === ssc.name ? 'border-[var(--st-ink)] bg-[var(--st-ink)] text-[var(--st-page)]' : 'border-[#CFD8E3] hover:border-[var(--st-ink)]'}`}>
                 {ssc.name}
               </button>
             ))}
@@ -793,7 +794,7 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
           <p className={filterHeading}>Colour</p>
           <div className="flex flex-wrap gap-3">
             {colorsHere.map((c) => (
-              <button key={c} onClick={() => update({ color: color === c ? '' : c })} aria-pressed={color === c} title={c} aria-label={c} className={`w-8 h-8 rounded-full ring-1 ring-offset-[3px] ring-offset-[#F6F8FB] transition-all ${color === c ? 'ring-[#0E1A2B] ring-2' : 'ring-black/15 hover:ring-[#0E1A2B]'}`} style={{ backgroundColor: colorHex[c] ?? '#C9D2DD' }} />
+              <button key={c} onClick={() => update({ color: color === c ? '' : c })} aria-pressed={color === c} title={c} aria-label={c} className={`w-8 h-8 rounded-full ring-1 ring-offset-[3px] ring-offset-[var(--st-page)] transition-all ${color === c ? 'ring-[var(--st-ink)] ring-2' : 'ring-black/15 hover:ring-[var(--st-ink)]'}`} style={{ backgroundColor: colorHex[c] ?? '#C9D2DD' }} />
             ))}
           </div>
         </div>
@@ -803,7 +804,7 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
           <p className={filterHeading}>Size</p>
           <div className="flex flex-wrap gap-2">
             {sizesHere.map((s) => (
-              <button key={s} onClick={() => update({ size: size === s ? '' : s })} aria-pressed={size === s} className={`px-4 h-9 rounded-full border text-[12.5px] transition-colors ${size === s ? 'border-[#0E1A2B] bg-[#0E1A2B] text-[#F6F8FB]' : 'border-[#CFD8E3] hover:border-[#0E1A2B]'}`}>
+              <button key={s} onClick={() => update({ size: size === s ? '' : s })} aria-pressed={size === s} className={`px-4 h-9 rounded-full border text-[12.5px] transition-colors ${size === s ? 'border-[var(--st-ink)] bg-[var(--st-ink)] text-[var(--st-page)]' : 'border-[#CFD8E3] hover:border-[var(--st-ink)]'}`}>
                 {s}
               </button>
             ))}
@@ -812,10 +813,10 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
       )}
       <label className="flex items-center justify-between gap-3 cursor-pointer text-[14px]">
         <span>In stock only</span>
-        <input type="checkbox" checked={inStockOnly} onChange={(e) => update({ stock: e.target.checked ? '1' : '' })} className="accent-[#0E1A2B] w-4 h-4" />
+        <input type="checkbox" checked={inStockOnly} onChange={(e) => update({ stock: e.target.checked ? '1' : '' })} className="accent-[var(--st-ink)] w-4 h-4" />
       </label>
       {hasFilters && (
-        <button onClick={() => navigate(shopHref(), { replace: true })} className="text-[14px] font-semibold text-[#2F6BFF] hover:underline">
+        <button onClick={() => navigate(shopHref(), { replace: true })} className="text-[14px] font-semibold text-[var(--st-accent)] hover:underline">
           Clear all
         </button>
       )}
@@ -842,7 +843,7 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
             <p aria-live="polite" className="hidden lg:block text-[13px] text-[#6F7E92] tabular-nums">{results.length} {results.length === 1 ? 'piece' : 'pieces'}</p>
             <label className="flex items-center gap-3 text-[13px] text-[#6F7E92]">
               <span className="hidden sm:inline">Sort by</span>
-              <select aria-label="Sort by" value={sortKey} onChange={(e) => update({ sort: e.target.value === 'featured' ? '' : e.target.value })} className="bg-transparent text-[#0E1A2B] text-[13.5px] outline-none cursor-pointer border-b border-[#CFD8E3] py-1 pr-1">
+              <select aria-label="Sort by" value={sortKey} onChange={(e) => update({ sort: e.target.value === 'featured' ? '' : e.target.value })} className="bg-transparent text-[var(--st-ink)] text-[13.5px] outline-none cursor-pointer border-b border-[#CFD8E3] py-1 pr-1">
                 {Object.entries(SORTS).map(([key, value]) => <option key={key} value={key}>{value.label}</option>)}
               </select>
             </label>
@@ -864,7 +865,7 @@ export function ShopPage({ params }: { params: URLSearchParams }) {
       {filtersOpen && (
         <div className="lg:hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Filters">
           <button className="absolute inset-0 bg-black/40" aria-label="Close filters" onClick={() => setFiltersOpen(false)} />
-          <div className="drawer absolute left-0 top-0 bottom-0 w-[86%] max-w-sm bg-[#F6F8FB] p-7 overflow-y-auto">
+          <div className="drawer absolute left-0 top-0 bottom-0 w-[86%] max-w-sm bg-[var(--st-page)] p-7 overflow-y-auto">
             <div className="flex items-center justify-between mb-10">
               <p className={`${T.display} text-[26px]`}>Filters</p>
               <button onClick={() => setFiltersOpen(false)} aria-label="Close filters" className="w-10 h-10 flex items-center justify-center"><Icon name="close" /></button>
@@ -927,10 +928,10 @@ export function ProductPage({ product }: { product: Product }) {
   return (
     <div className={T.shell}>
       <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-[11.5px] uppercase tracking-[0.18em] text-[#6F7E92] pt-4 pb-5">
-        <a href="#/shop" className="hover:text-[#0E1A2B]">Shop</a>
+        <a href="#/shop" className="hover:text-[var(--st-ink)]">Shop</a>
         <span aria-hidden="true">/</span>
-        {category && <><a href={shopHref({ cat: category.slug })} className="hover:text-[#0E1A2B]">{category.name}</a><span aria-hidden="true">/</span></>}
-        <span className="text-[#0E1A2B] normal-case tracking-normal text-[13px]">{product.name}</span>
+        {category && <><a href={shopHref({ cat: category.slug })} className="hover:text-[var(--st-ink)]">{category.name}</a><span aria-hidden="true">/</span></>}
+        <span className="text-[var(--st-ink)] normal-case tracking-normal text-[13px]">{product.name}</span>
       </nav>
 
       <div className="grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-12 items-start">
@@ -939,7 +940,7 @@ export function ProductPage({ product }: { product: Product }) {
           {photos.length > 1 && (
             <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible">
               {photos.map((src, i) => (
-                <button key={`${src}-${i}`} onClick={() => setPhotoIndex(i)} aria-label={`Show photo ${i + 1}`} aria-pressed={i === photoIndex} className={`shrink-0 w-16 sm:w-20 aspect-[4/5] rounded-[14px] overflow-hidden bg-[#EDF1F6] transition-opacity ${i === photoIndex ? 'ring-1 ring-[#0E1A2B] ring-offset-2 ring-offset-[#F6F8FB]' : 'opacity-60 hover:opacity-100'}`}>
+                <button key={`${src}-${i}`} onClick={() => setPhotoIndex(i)} aria-label={`Show photo ${i + 1}`} aria-pressed={i === photoIndex} className={`shrink-0 w-16 sm:w-20 aspect-[4/5] rounded-[14px] overflow-hidden bg-[#EDF1F6] transition-opacity ${i === photoIndex ? 'ring-1 ring-[var(--st-ink)] ring-offset-2 ring-offset-[var(--st-page)]' : 'opacity-60 hover:opacity-100'}`}>
                   <Photo src={src} alt="" width={200} className="h-full w-full object-cover" />
                 </button>
               ))}
@@ -977,10 +978,10 @@ export function ProductPage({ product }: { product: Product }) {
                       aria-pressed={color === c}
                       aria-label={`${c}${soldOut ? ', sold out' : ''}`}
                       title={`${c}${soldOut ? ' — sold out' : ''}`}
-                      className={`relative w-10 h-10 rounded-full ring-offset-[3px] ring-offset-[#F6F8FB] transition-all ${color === c ? 'ring-2 ring-[#0E1A2B]' : 'ring-1 ring-black/15 hover:ring-[#0E1A2B]'}`}
+                      className={`relative w-10 h-10 rounded-full ring-offset-[3px] ring-offset-[var(--st-page)] transition-all ${color === c ? 'ring-2 ring-[var(--st-ink)]' : 'ring-1 ring-black/15 hover:ring-[var(--st-ink)]'}`}
                       style={{ backgroundColor: colorHex[c] ?? '#C9D2DD' }}
                     >
-                      {soldOut && <span className="absolute inset-0 flex items-center justify-center"><span className="block w-[130%] h-px bg-[#0E1A2B]/70 rotate-45" /></span>}
+                      {soldOut && <span className="absolute inset-0 flex items-center justify-center"><span className="block w-[130%] h-px bg-[var(--st-ink)]/70 rotate-45" /></span>}
                     </button>
                   );
                 })}
@@ -1001,7 +1002,7 @@ export function ProductPage({ product }: { product: Product }) {
                       onClick={() => { setSize(s); setQty(1); }}
                       aria-pressed={size === s}
                       title={sizeName(s)}
-                      className={`min-w-[68px] h-11 px-5 rounded-full border text-[14px] font-semibold transition-colors ${size === s ? 'border-[#0E1A2B] bg-[#0E1A2B] text-white' : left > 0 ? 'border-[#CFD8E3] hover:border-[#0E1A2B]' : 'border-[#E3E8EF] text-[#A9B4C2] line-through'}`}
+                      className={`min-w-[68px] h-11 px-5 rounded-full border text-[14px] font-semibold transition-colors ${size === s ? 'border-[var(--st-ink)] bg-[var(--st-ink)] text-white' : left > 0 ? 'border-[#CFD8E3] hover:border-[var(--st-ink)]' : 'border-[#E3E8EF] text-[#A9B4C2] line-through'}`}
                     >
                       {s}
                     </button>
@@ -1011,7 +1012,7 @@ export function ProductPage({ product }: { product: Product }) {
             </fieldset>
           )}
 
-          <p className={`mt-7 inline-flex items-center gap-2.5 text-[13.5px] ${variantStock <= 0 ? 'text-[#D23B3B]' : variantStock <= 5 ? 'text-[#2F6BFF]' : 'text-[#0F8A5F]'}`}>
+          <p className={`mt-7 inline-flex items-center gap-2.5 text-[13.5px] ${variantStock <= 0 ? 'text-[#D23B3B]' : variantStock <= 5 ? 'text-[var(--st-accent)]' : 'text-[#0F8A5F]'}`}>
             <span className="w-1.5 h-1.5 rounded-full bg-current" />
             {variantStock <= 0 ? 'This option is sold out — try another colour or size' : variantStock <= 5 ? `Only ${variantStock} left in this option` : 'In stock, ready to dispatch'}
           </p>
@@ -1033,13 +1034,13 @@ export function ProductPage({ product }: { product: Product }) {
               onClick={() => toggleWishlist(product)}
               aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'}
               aria-pressed={saved}
-              className={`w-[52px] h-[52px] shrink-0 rounded-full border flex items-center justify-center transition-colors ${saved ? 'border-[#2F6BFF] text-[#2F6BFF]' : 'border-[#CFD8E3] hover:border-[#0E1A2B]'}`}
+              className={`w-[52px] h-[52px] shrink-0 rounded-full border flex items-center justify-center transition-colors ${saved ? 'border-[var(--st-accent)] text-[var(--st-accent)]' : 'border-[#CFD8E3] hover:border-[var(--st-ink)]'}`}
             >
               <Icon name="heart" filled={saved} />
             </button>
           </div>
           {inBag > 0 && (
-            <p className="mt-4 text-[13.5px] text-[#5B6B80]">{inBag} in your bag. <a href="#/bag" className="text-[#0E1A2B] border-b border-[#0E1A2B]/40">View bag</a></p>
+            <p className="mt-4 text-[13.5px] text-[#5B6B80]">{inBag} in your bag. <a href="#/bag" className="text-[var(--st-ink)] border-b border-[var(--st-ink)]/40">View bag</a></p>
           )}
 
           <div className="mt-7 border-t border-[#E3E8EF]">
@@ -1047,7 +1048,7 @@ export function ProductPage({ product }: { product: Product }) {
               <ul className="space-y-3">
                 {product.highlights.map((highlight) => (
                   <li key={highlight} className="flex gap-3 text-[15px] leading-snug text-[#3A4A5F]">
-                    <span className="text-[#2F6BFF] mt-0.5"><Icon name="check" size={16} /></span>
+                    <span className="text-[var(--st-accent)] mt-0.5"><Icon name="check" size={16} /></span>
                     {highlight}
                   </li>
                 ))}
@@ -1130,7 +1131,7 @@ function WishlistCard({ product, colorHex }: { product: Product; colorHex: Recor
   const colors = variantColors(product.colors);
   const inStock = stockForVariant(product, choice.size, choice.color) > 0;
   const soldOut = product.stock <= 0;
-  const select = 'w-full h-10 pl-3 pr-8 rounded-full border border-[#CFD8E3] bg-white text-[13px] font-semibold text-[#0E1A2B] outline-none focus:border-[#2F6BFF] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:12px] bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%235B6B80%27 stroke-width=%272.5%27%3E%3Cpath d=%27M6 9l6 6 6-6%27/%3E%3C/svg%3E")]';
+  const select = 'w-full h-10 pl-3 pr-8 rounded-full border border-[#CFD8E3] bg-white text-[13px] font-semibold text-[var(--st-ink)] outline-none focus:border-[var(--st-accent)] appearance-none bg-no-repeat bg-[right_12px_center] bg-[length:12px] bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%235B6B80%27 stroke-width=%272.5%27%3E%3Cpath d=%27M6 9l6 6 6-6%27/%3E%3C/svg%3E")]';
 
   return (
     <li className="group flex flex-col bg-white border border-[#E3E8EF] rounded-[24px] overflow-hidden hover:shadow-[0_24px_50px_-30px_rgba(14,26,43,0.35)] transition-shadow">
@@ -1141,11 +1142,11 @@ function WishlistCard({ product, colorHex }: { product: Product; colorHex: Recor
         <button onClick={() => toggleWishlist(product)} aria-label={`Remove ${product.name} from wishlist`} className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/90 backdrop-blur text-[#5B6B80] hover:text-[#D23B3B] flex items-center justify-center shadow-sm">
           <Icon name="close" size={16} />
         </button>
-        {soldOut && <span className="absolute left-3 top-3 px-3 py-1 rounded-full bg-[#0E1A2B] text-white text-[11px] font-bold uppercase tracking-wider">Sold out</span>}
+        {soldOut && <span className="absolute left-3 top-3 px-3 py-1 rounded-full bg-[var(--st-ink)] text-white text-[11px] font-bold uppercase tracking-wider">Sold out</span>}
       </div>
       <div className="flex-1 flex flex-col p-5">
         <p className="text-[10.5px] uppercase tracking-[0.2em] text-[#8A97A8]">{product.category}</p>
-        <a href={`#/product/${product.id}`} className="mt-1 text-[15.5px] font-bold leading-snug text-[#0E1A2B] hover:text-[#2F6BFF] line-clamp-2">{product.name}</a>
+        <a href={`#/product/${product.id}`} className="mt-1 text-[15.5px] font-bold leading-snug text-[var(--st-ink)] hover:text-[var(--st-accent)] line-clamp-2">{product.name}</a>
         <div className="mt-2"><Price product={product} /></div>
         {!soldOut && (sizes.length > 1 || colors.length > 1) && (
           <div className="mt-4 grid grid-cols-2 gap-2">
@@ -1174,7 +1175,7 @@ function WishlistCard({ product, colorHex }: { product: Product; colorHex: Recor
           <button
             onClick={() => moveToBag(product, choice.size, choice.color)}
             disabled={!inStock}
-            className="w-full h-11 rounded-full bg-gradient-to-r from-[#2F6BFF] to-[#5A8BFF] text-white text-[13.5px] font-bold shadow-[0_12px_28px_-14px_rgba(47,107,255,0.8)] hover:brightness-110 transition disabled:from-[#CFD8E3] disabled:to-[#CFD8E3] disabled:shadow-none disabled:text-[#5B6B80] flex items-center justify-center gap-2"
+            className="w-full h-11 rounded-full bg-gradient-to-r from-[var(--st-accent)] to-[var(--st-accent-2)] text-white text-[13.5px] font-bold shadow-[0_12px_28px_-14px_rgba(47,107,255,0.8)] hover:brightness-110 transition disabled:from-[#CFD8E3] disabled:to-[#CFD8E3] disabled:shadow-none disabled:text-[#5B6B80] flex items-center justify-center gap-2"
           >
             <Icon name="bag" size={16} /> {soldOut ? 'Sold out' : inStock ? 'Move to bag' : 'Not in stock in this option'}
           </button>
@@ -1204,9 +1205,9 @@ export function WishlistPage() {
     <div className={T.shell}>
       <PageTitle eyebrow="Saved for later" title={<>Your <em>wishlist</em></>} text={`${saved.length} ${saved.length === 1 ? 'piece' : 'pieces'} you have your eye on.`} />
       {movable.length > 1 && (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5 rounded-[20px] bg-[#EAF1FF] border border-[#DCE7FF]">
-          <p className="text-[14px] text-[#3A4A5F]"><span className="font-bold text-[#0E1A2B]">Ready to buy?</span> Move everything that’s in stock to your bag in one go.</p>
-          <button onClick={moveAll} className="h-11 px-5 rounded-full bg-[#0E1A2B] text-white text-[13.5px] font-bold hover:bg-[#22344F] flex items-center gap-2"><Icon name="bag" size={16} /> Move all to bag ({movable.length})</button>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5 rounded-[20px] bg-[var(--st-accent-soft)] border border-[var(--st-accent-line)]">
+          <p className="text-[14px] text-[#3A4A5F]"><span className="font-bold text-[var(--st-ink)]">Ready to buy?</span> Move everything that’s in stock to your bag in one go.</p>
+          <button onClick={moveAll} className="h-11 px-5 rounded-full bg-[var(--st-ink)] text-white text-[13.5px] font-bold hover:bg-[var(--st-ink-3)] flex items-center gap-2"><Icon name="bag" size={16} /> Move all to bag ({movable.length})</button>
         </div>
       )}
       <ul className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">

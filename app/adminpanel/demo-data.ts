@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import type { CSSProperties } from 'react';
 import { PHOTOS, SEED_PRODUCTS } from './catalog-seed';
 
 // Everything the admin panel and the storefront share. Each list is saved in the browser, so an
@@ -81,6 +82,8 @@ export interface Product {
   reviews: number;
   highlights: string[];
   specs: [string, string][];
+  /** Shown on the website. Off hides the product from the store; it stays in the admin and POS. Missing means live. */
+  isLive?: boolean;
 }
 
 export interface CategoryItem {
@@ -367,6 +370,35 @@ export const STORE_INFO = {
   address: '3rd Floor, 100 Feet Road, Indiranagar, Bengaluru, Karnataka 560038',
   gstin: '29ABCDE1234F1Z5',
   returnPolicy: 'Unused items in their original box can be returned within 7 days of delivery. Every gadget carries a one-year warranty against manufacturing defects.',
+};
+
+// The store's name, logo, contact details and footer text, edited in Admin → Store Details.
+// STORE_INFO above is the default; components read the live copy with useStoreDetails().
+export interface StoreDetails {
+  name: string;
+  tagline: string;
+  footerAbout: string;
+  footerNote: string;
+  logoUrl: string;
+  showNameWithLogo: boolean;
+  email: string;
+  phone: string;
+  whatsapp: string;
+  address: string;
+  hours: string;
+  gstin: string;
+  returnPolicy: string;
+  social: { instagram: string; facebook: string; youtube: string; x: string };
+}
+export const DEFAULT_STORE_DETAILS: StoreDetails = {
+  ...STORE_INFO,
+  footerAbout: 'Headphones, smartwatches, cameras, gaming and smart home gadgets, tested by our team before they reach you.',
+  footerNote: 'A demo store: products and prices are samples, and no real payments are processed.',
+  logoUrl: '',
+  showNameWithLogo: true,
+  whatsapp: STORE_INFO.phone,
+  hours: 'Mon–Sun, 9am–9pm',
+  social: { instagram: 'https://instagram.com/demowebsite', facebook: '', youtube: '', x: '' },
 };
 
 export const FREE_DELIVERY_FROM = 4999;
@@ -1037,9 +1069,117 @@ export const paymentGatewayStore = createStore<PaymentGateway>(
   (v) => typeof v === 'object' && v !== null && typeof (v as PaymentGateway).keyId === 'string' && typeof (v as PaymentGateway).methods === 'object'
 );
 
+// Storefront themes: the admin's Theme Setup picks one. A theme is a whole design (header, home page,
+// product cards, type and shapes, see store/store-kit.tsx) plus the colours it is painted in.
+export type ThemeLayout = 'signature' | 'marketplace' | 'lifestyle' | 'boutique' | 'volt' | 'aster' | 'atelier' | 'aurora';
+export const THEME_LAYOUTS: ThemeLayout[] = ['signature', 'marketplace', 'lifestyle', 'boutique', 'volt', 'aster', 'atelier', 'aurora'];
+export interface ThemeColors {
+  accent: string; // buttons, links, prices
+  accent2: string; // the lighter end of gradients
+  accentDark: string; // hover states
+  accentLight: string; // highlights on dark sections
+  accentSoft: string; // tinted backgrounds
+  accentLine: string; // tinted borders
+  ink: string; // text and dark sections
+  ink2: string; // dark section layers
+  ink3: string; // dark section borders
+  deep: string; // announcement bar, footer, overlays
+  page: string; // page background
+}
+export interface StoreTheme {
+  id: string;
+  name: string;
+  version: string;
+  tagline: string;
+  layout: ThemeLayout;
+  colors: ThemeColors;
+  custom?: boolean;
+}
+export const THEME_COLOR_KEYS: (keyof ThemeColors)[] = ['accent', 'accent2', 'accentDark', 'accentLight', 'accentSoft', 'accentLine', 'ink', 'ink2', 'ink3', 'deep', 'page'];
+
+export const BUILT_IN_THEMES: StoreTheme[] = [
+  {
+    id: 'default', name: 'Default Theme', version: '2.4', layout: 'signature',
+    tagline: 'Full-bleed photo hero, glass header and bold sans type',
+    colors: { accent: '#2F6BFF', accent2: '#5A8BFF', accentDark: '#1F55E0', accentLight: '#8FB0FF', accentSoft: '#EAF1FF', accentLine: '#C9D9FF', ink: '#0E1A2B', ink2: '#16263D', ink3: '#22344F', deep: '#0B1524', page: '#F6F8FB' },
+  },
+  {
+    id: 'marketplace', name: 'Theme Marketplace', version: '3.1', layout: 'marketplace',
+    tagline: 'Big search bar, category sidebar, flash deals and dense grids',
+    colors: { accent: '#F2611D', accent2: '#FF8A3D', accentDark: '#D44E0E', accentLight: '#FFC29B', accentSoft: '#FFF1E8', accentLine: '#FFD8C2', ink: '#1B2230', ink2: '#252E3F', ink3: '#364257', deep: '#131925', page: '#F2F4F7' },
+  },
+  {
+    id: 'lifestyle', name: 'Lifestyle Theme', version: '1.8', layout: 'lifestyle',
+    tagline: 'Colourful collage hero, rounded tiles and playful cards',
+    colors: { accent: '#7B5CFA', accent2: '#FF6FB5', accentDark: '#6243E0', accentLight: '#CDBEFF', accentSoft: '#F2EEFF', accentLine: '#DCD2FF', ink: '#221A3D', ink2: '#2E2450', ink3: '#41366A', deep: '#170F2E', page: '#FAF8FF' },
+  },
+  {
+    id: 'boutique', name: 'Boutique Theme', version: '1.5', layout: 'boutique',
+    tagline: 'Centred logo, serif headlines, sharp edges and a lookbook',
+    colors: { accent: '#8C6A43', accent2: '#B8956A', accentDark: '#6F5233', accentLight: '#E2C9A6', accentSoft: '#F3ECE2', accentLine: '#E4D6C3', ink: '#1C1A17', ink2: '#272420', ink3: '#3A352F', deep: '#12110F', page: '#F8F5F0' },
+  },
+  {
+    id: 'volt', name: 'Volt Theme', version: '1.2', layout: 'volt',
+    tagline: 'Loud type, thick outlines, offset shadows and stickers',
+    colors: { accent: '#FF4D00', accent2: '#FF7A2E', accentDark: '#D93F00', accentLight: '#D4FF3A', accentSoft: '#FFE9DC', accentLine: '#FFC9AD', ink: '#111111', ink2: '#1C1C1C', ink3: '#2E2E2E', deep: '#0A0A0A', page: '#F2EFE6' },
+  },
+  {
+    id: 'aster', name: 'Aster Theme', version: '1.0', layout: 'aster',
+    tagline: 'Quiet Nordic minimal: thin lines, light type, lots of air',
+    colors: { accent: '#3F6B5A', accent2: '#6F9C89', accentDark: '#2F5446', accentLight: '#B5D3C6', accentSoft: '#EDF3F0', accentLine: '#D3E2DB', ink: '#1F2421', ink2: '#2A302C', ink3: '#3B433E', deep: '#151917', page: '#FAFAF8' },
+  },
+  {
+    id: 'atelier', name: 'Atelier Theme', version: '1.1', layout: 'atelier',
+    tagline: 'Emerald and antique gold: serif headlines, gilded buttons, a regal spotlight',
+    colors: { accent: '#A47A22', accent2: '#D9B865', accentDark: '#86631A', accentLight: '#E9D29A', accentSoft: '#F3EBDA', accentLine: '#E2D3B0', ink: '#0F2A24', ink2: '#16372F', ink3: '#24493F', deep: '#081A15', page: '#F6F2EA' },
+  },
+  {
+    id: 'aurora', name: 'Aurora Theme', version: '1.0', layout: 'aurora',
+    tagline: 'Aurora-glow hero, floating navbar, bento grid and glass cards',
+    colors: { accent: '#0EA5A4', accent2: '#6366F1', accentDark: '#0B8584', accentLight: '#7DE3E1', accentSoft: '#E6F8F8', accentLine: '#BDEDEC', ink: '#0B1220', ink2: '#141C30', ink3: '#232C45', deep: '#070B16', page: '#F6F8FC' },
+  },
+];
+
+export const isThemeColors = (value: unknown): value is ThemeColors =>
+  typeof value === 'object' && value !== null && THEME_COLOR_KEYS.every((key) => /^#[0-9A-Fa-f]{6}$/.test(String((value as Record<string, unknown>)[key])));
+
+export const themeSettingsStore = createStore<{ activeId: string; custom: StoreTheme[] }>(
+  KEY('themes'),
+  { activeId: 'default', custom: [] },
+  (v) => typeof v === 'object' && v !== null && typeof (v as { activeId: unknown }).activeId === 'string' && Array.isArray((v as { custom: unknown }).custom)
+);
+
+export const allThemes = (settings: { custom: StoreTheme[] }) => [
+  ...BUILT_IN_THEMES,
+  // Themes uploaded before layouts existed use the default design.
+  ...settings.custom.filter((theme) => isThemeColors(theme.colors)).map((theme) => ({ ...theme, layout: THEME_LAYOUTS.includes(theme.layout) ? theme.layout : 'signature' as ThemeLayout })),
+];
+export const activeTheme = (settings: { activeId: string; custom: StoreTheme[] }) =>
+  allThemes(settings).find((theme) => theme.id === settings.activeId) ?? BUILT_IN_THEMES[0];
+
+/** The CSS variables the storefront's classes read (bg-[var(--st-accent)] and friends). */
+export const themeVars = (colors: ThemeColors) => ({
+  '--st-accent': colors.accent, '--st-accent-2': colors.accent2, '--st-accent-dark': colors.accentDark,
+  '--st-accent-light': colors.accentLight, '--st-accent-soft': colors.accentSoft, '--st-accent-line': colors.accentLine,
+  '--st-ink': colors.ink, '--st-ink-2': colors.ink2, '--st-ink-3': colors.ink3, '--st-deep': colors.deep, '--st-page': colors.page,
+}) as CSSProperties;
+
+export const storeDetailsStore = createStore<StoreDetails>(
+  KEY('storeDetails'),
+  DEFAULT_STORE_DETAILS,
+  (v) => typeof v === 'object' && v !== null && typeof (v as StoreDetails).name === 'string'
+);
+
+/** The live store details, with defaults for anything saved before a field existed. */
+export function useStoreDetails(): StoreDetails {
+  const saved = useStore(storeDetailsStore);
+  return { ...DEFAULT_STORE_DETAILS, ...saved, social: { ...DEFAULT_STORE_DETAILS.social, ...saved.social } };
+}
+
 const SHARED_STORES = [
   productsStore, categoriesStore, subCategoriesStore, subSubCategoriesStore, sizeOptionsStore, colorOptionsStore,
   tagOptionsStore, couponsStore, ordersStore, customersStore, bannersStore, instagramStore, adminAccountStore, shopperAccountsStore, videosStore, paymentGatewayStore,
+  themeSettingsStore, storeDetailsStore,
 ];
 
 /** Puts every shared list back to the sample data, for both the admin and the website. */

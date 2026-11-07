@@ -43,7 +43,7 @@ export function Field({
   return (
     <div>
       <label htmlFor={id} className="block text-[13px] font-semibold text-[#3A4A5F] mb-2">{label}</label>
-      <div className={`flex items-center gap-3 h-[52px] px-4 rounded-[14px] border bg-[#F6F8FB] transition-all focus-within:bg-white focus-within:ring-4 ${error ? 'border-[#D23B3B] focus-within:ring-[#D23B3B]/10' : 'border-[#E3E8EF] focus-within:border-[#2F6BFF] focus-within:ring-[#2F6BFF]/10'}`}>
+      <div className={`flex items-center gap-3 h-[52px] px-4 rounded-[14px] border bg-[var(--st-page)] transition-all focus-within:bg-white focus-within:ring-4 ${error ? 'border-[#D23B3B] focus-within:ring-[#D23B3B]/10' : 'border-[#E3E8EF] focus-within:border-[var(--st-accent)] focus-within:ring-[var(--st-accent)]/10'}`}>
         <span className="text-[#8A97A8]"><Icon name={icon} size={18} /></span>
         <input
           id={id}
@@ -57,7 +57,7 @@ export function Field({
           autoFocus={autoFocus}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="flex-1 min-w-0 bg-transparent outline-none text-[15.5px] text-[#0E1A2B] placeholder:text-[#A9B4C2]"
+          className="flex-1 min-w-0 bg-transparent outline-none text-[15.5px] text-[var(--st-ink)] placeholder:text-[#A9B4C2]"
         />
         {trailing}
       </div>
@@ -80,7 +80,7 @@ function PasswordField({ id, label, value, onChange, error, autoComplete }: { id
       autoComplete={autoComplete}
       placeholder="••••••••"
       trailing={
-        <button type="button" onClick={() => setShown(!shown)} aria-label={shown ? 'Hide password' : 'Show password'} className="text-[#8A97A8] hover:text-[#0E1A2B] transition-colors">
+        <button type="button" onClick={() => setShown(!shown)} aria-label={shown ? 'Hide password' : 'Show password'} className="text-[#8A97A8] hover:text-[var(--st-ink)] transition-colors">
           <Icon name={shown ? 'eyeOff' : 'eye'} size={18} />
         </button>
       }
@@ -121,7 +121,7 @@ function SignInForm({ idPrefix, next, onSwitch }: { idPrefix: string; next: stri
       <Field id={`${idPrefix}-email`} label="Email address" icon="mail" type="email" inputMode="email" autoComplete="email" placeholder="demo.you@example.com" value={email} onChange={(v) => { setEmail(v); setError(''); }} autoFocus />
       <PasswordField id={`${idPrefix}-password`} label="Password" autoComplete="current-password" value={password} onChange={(v) => { setPassword(v); setError(''); }} />
       <div className="flex justify-end -mt-2">
-        <button type="button" onClick={() => showToast('A reset link would be emailed to you — this is a demo', null)} className="text-[13.5px] font-semibold text-[#2F6BFF] hover:underline">
+        <button type="button" onClick={() => showToast('A reset link would be emailed to you — this is a demo', null)} className="text-[13.5px] font-semibold text-[var(--st-accent)] hover:underline">
           Forgot password?
         </button>
       </div>
@@ -130,13 +130,13 @@ function SignInForm({ idPrefix, next, onSwitch }: { idPrefix: string; next: stri
       <button
         type="button"
         onClick={() => { setEmail('demo.shopper@example.com'); setPassword('demo1234'); setError(''); }}
-        className="w-full px-4 py-3 rounded-[14px] border border-dashed border-[#CFD8E3] bg-[#F6F8FB] hover:border-[#2F6BFF] text-left transition-colors group"
+        className="w-full px-4 py-3 rounded-[14px] border border-dashed border-[#CFD8E3] bg-[var(--st-page)] hover:border-[var(--st-accent)] text-left transition-colors group"
       >
-        <span className="block text-[11.5px] uppercase tracking-[0.14em] font-bold text-[#6F7E92] group-hover:text-[#2F6BFF]">Demo account — tap to fill</span>
+        <span className="block text-[11.5px] uppercase tracking-[0.14em] font-bold text-[#6F7E92] group-hover:text-[var(--st-accent)]">Demo account — tap to fill</span>
         <span className="block mt-0.5 text-[13.5px] text-[#3A4A5F]">demo.shopper@example.com · demo1234</span>
       </button>
       <p className="text-center text-[14px] text-[#5B6B80]">
-        New here? <button type="button" onClick={onSwitch} className="font-bold text-[#0E1A2B] hover:text-[#2F6BFF]">Create an account</button>
+        New here? <button type="button" onClick={onSwitch} className="font-bold text-[var(--st-ink)] hover:text-[var(--st-accent)]">Create an account</button>
       </p>
     </form>
   );
@@ -203,7 +203,7 @@ function SignUpForm({ idPrefix, next, onSwitch }: { idPrefix: string; next: stri
       </div>
       <div>
         <label className="flex items-start gap-3 cursor-pointer text-[13.5px] text-[#3A4A5F] leading-relaxed">
-          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 w-4 h-4 accent-[#2F6BFF]" />
+          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 w-4 h-4 accent-[var(--st-accent)]" />
           <span>I agree to the terms and privacy policy.</span>
         </label>
         {shown('agreed') && <p className="mt-1.5 text-[12.5px] font-medium text-[#D23B3B]">{problems.agreed}</p>}
@@ -211,7 +211,7 @@ function SignUpForm({ idPrefix, next, onSwitch }: { idPrefix: string; next: stri
       {error && <p role="alert" className="px-4 py-3 rounded-[12px] bg-[#FDECEC] text-[13.5px] font-medium text-[#D23B3B]">{error}</p>}
       <Button type="submit" variant="accent" disabled={busy} className="w-full">{busy ? 'Creating your account…' : <>Create account <Icon name="arrow" size={16} /></>}</Button>
       <p className="text-center text-[14px] text-[#5B6B80]">
-        Already a member? <button type="button" onClick={onSwitch} className="font-bold text-[#0E1A2B] hover:text-[#2F6BFF]">Sign in</button>
+        Already a member? <button type="button" onClick={onSwitch} className="font-bold text-[var(--st-ink)] hover:text-[var(--st-accent)]">Sign in</button>
       </p>
     </form>
   );
@@ -229,7 +229,7 @@ function AuthForms({ initialTab, next, idPrefix }: { initialTab: AuthTab; next: 
             role="tab"
             aria-selected={tab === key}
             onClick={() => setTab(key)}
-            className={`h-11 rounded-full text-[14.5px] font-bold transition-all duration-300 ${tab === key ? 'bg-white text-[#0E1A2B] shadow-[0_6px_16px_-8px_rgba(14,26,43,0.4)]' : 'text-[#6F7E92] hover:text-[#0E1A2B]'}`}
+            className={`h-11 rounded-full text-[14.5px] font-bold transition-all duration-300 ${tab === key ? 'bg-white text-[var(--st-ink)] shadow-[0_6px_16px_-8px_rgba(14,26,43,0.4)]' : 'text-[#6F7E92] hover:text-[var(--st-ink)]'}`}
           >
             {label}
           </button>
@@ -248,12 +248,12 @@ function AuthForms({ initialTab, next, idPrefix }: { initialTab: AuthTab; next: 
 
 function BrandPanel({ compact = false }: { compact?: boolean }) {
   return (
-    <aside className={`on-dark relative hidden lg:flex flex-col justify-between overflow-hidden bg-gradient-to-br from-[#0E1A2B] via-[#13284A] to-[#0B1524] text-white ${compact ? 'p-9' : 'p-10 rounded-[32px] min-h-[620px]'}`}>
-      <span aria-hidden="true" className="pointer-events-none absolute -top-24 -right-20 w-[420px] h-[420px] rounded-full bg-[#2F6BFF]/35 blur-[110px]" />
+    <aside className={`on-dark relative hidden lg:flex flex-col justify-between overflow-hidden bg-gradient-to-br from-[var(--st-ink)] via-[var(--st-ink-2)] to-[var(--st-deep)] text-white ${compact ? 'p-9' : 'p-10 rounded-[32px] min-h-[620px]'}`}>
+      <span aria-hidden="true" className="pointer-events-none absolute -top-24 -right-20 w-[420px] h-[420px] rounded-full bg-[var(--st-accent)]/35 blur-[110px]" />
       <span aria-hidden="true" className="pointer-events-none absolute -bottom-32 -left-24 w-[380px] h-[320px] rounded-full bg-[#9AA7B8]/20 blur-[100px]" />
       <div className="relative">
         <p className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-[12px] font-semibold">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#5A8BFF] shadow-[0_0_10px_#5A8BFF]" /> Members get more
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--st-accent-2)] shadow-[0_0_10px_var(--st-accent-2)]" /> Members get more
         </p>
         <h2 className={`${T.display} mt-6 ${compact ? 'text-[34px]' : 'text-[44px]'} leading-[1.04] max-w-sm`}>Your gadgets, <em>beautifully organised.</em></h2>
         <ul className="mt-7 space-y-3.5 max-w-sm">
@@ -264,7 +264,7 @@ function BrandPanel({ compact = false }: { compact?: boolean }) {
             ['tag', 'Members-only offers first'],
           ].map(([icon, text]) => (
             <li key={text} className="flex items-center gap-3.5 text-[14px] text-white/85">
-              <span className="w-9 h-9 shrink-0 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-[#8FB0FF]"><Icon name={icon} size={16} /></span>
+              <span className="w-9 h-9 shrink-0 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-[var(--st-accent-light)]"><Icon name={icon} size={16} /></span>
               {text}
             </li>
           ))}
@@ -306,11 +306,11 @@ export function AuthModal() {
   if (!ui || account) return null;
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-6" role="dialog" aria-modal="true" aria-label="Sign in or create an account">
-      <button aria-label="Close" onClick={closeAuth} className="absolute inset-0 bg-[#0B1524]/60 backdrop-blur-md fade" />
+      <button aria-label="Close" onClick={closeAuth} className="absolute inset-0 bg-[var(--st-deep)]/60 backdrop-blur-md fade" />
       <div ref={dialog} className="modal-in relative w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-[960px] overflow-hidden sm:rounded-[32px] bg-white shadow-[0_60px_120px_-30px_rgba(0,0,0,0.6)] grid lg:grid-cols-[0.92fr_1fr]">
         <BrandPanel compact />
         <div className="relative overflow-y-auto px-6 py-8 sm:px-11 sm:py-10">
-          <button onClick={closeAuth} aria-label="Close" className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#F6F8FB] hover:bg-[#EDF1F6] flex items-center justify-center"><Icon name="close" size={18} /></button>
+          <button onClick={closeAuth} aria-label="Close" className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[var(--st-page)] hover:bg-[#EDF1F6] flex items-center justify-center"><Icon name="close" size={18} /></button>
           <div className="mt-6 sm:mt-2">
             <AuthForms key={`${ui.tab}-${ui.next}`} initialTab={ui.tab} next={ui.next} idPrefix="modal" />
           </div>
@@ -373,13 +373,13 @@ export function AccountPage() {
   return (
     <div className={`${T.shell} pt-6 sm:pt-8`}>
       {/* Welcome banner */}
-      <section className="on-dark relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#0E1A2B] via-[#13284A] to-[#0B1524] text-white p-7 sm:p-10">
-        <span aria-hidden="true" className="pointer-events-none absolute -top-24 right-0 w-[460px] h-[360px] rounded-full bg-[#2F6BFF]/30 blur-[110px]" />
+      <section className="on-dark relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[var(--st-ink)] via-[var(--st-ink-2)] to-[var(--st-deep)] text-white p-7 sm:p-10">
+        <span aria-hidden="true" className="pointer-events-none absolute -top-24 right-0 w-[460px] h-[360px] rounded-full bg-[var(--st-accent)]/30 blur-[110px]" />
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div className="flex items-center gap-5">
-            <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-[22px] bg-gradient-to-br from-[#2F6BFF] to-[#5A8BFF] flex items-center justify-center text-[24px] sm:text-[28px] font-extrabold shadow-[0_14px_34px_-12px_rgba(47,107,255,0.8)]">{initials}</span>
+            <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-[22px] bg-gradient-to-br from-[var(--st-accent)] to-[var(--st-accent-2)] flex items-center justify-center text-[24px] sm:text-[28px] font-extrabold shadow-[0_14px_34px_-12px_rgba(47,107,255,0.8)]">{initials}</span>
             <div>
-              <p className="text-[13px] font-semibold text-[#8FB0FF]">Member since {formatDate(account.createdAt).split(', ').slice(1).join(', ')}</p>
+              <p className="text-[13px] font-semibold text-[var(--st-accent-light)]">Member since {formatDate(account.createdAt).split(', ').slice(1).join(', ')}</p>
               <h1 className={`${T.display} text-[32px] sm:text-[44px] leading-[1.05] mt-1`}>Hello, <em>{account.name.split(/\s+/)[0]}</em></h1>
             </div>
           </div>
@@ -403,7 +403,7 @@ export function AccountPage() {
         <section className={card}>
           <div className="flex items-center justify-between gap-4 mb-6">
             <h2 className={`${T.display} text-[26px]`}>Your orders</h2>
-            <a href="#/shop" className="text-[14px] font-semibold text-[#2F6BFF] hover:underline">Continue shopping</a>
+            <a href="#/shop" className="text-[14px] font-semibold text-[var(--st-accent)] hover:underline">Continue shopping</a>
           </div>
           {mine.length ? (
             <ul className="divide-y divide-[#E3E8EF]">
@@ -417,7 +417,7 @@ export function AccountPage() {
                       <p className="text-[14.5px] font-bold">{order.orderNumber}</p>
                       <p className="text-[13px] text-[#6F7E92]">{formatDate(order.placedAt)} · {order.itemsCount} {order.itemsCount === 1 ? 'item' : 'items'}</p>
                     </div>
-                    <span className={`text-[12px] font-bold px-3 py-1.5 rounded-full ${order.orderStatus === 'Cancelled' ? 'bg-[#FDECEC] text-[#D23B3B]' : order.orderStatus === 'Delivered' ? 'bg-[#E3F4EC] text-[#0F8A5F]' : 'bg-[#2F6BFF]/10 text-[#2F6BFF]'}`}>{order.orderStatus}</span>
+                    <span className={`text-[12px] font-bold px-3 py-1.5 rounded-full ${order.orderStatus === 'Cancelled' ? 'bg-[#FDECEC] text-[#D23B3B]' : order.orderStatus === 'Delivered' ? 'bg-[#E3F4EC] text-[#0F8A5F]' : 'bg-[var(--st-accent)]/10 text-[var(--st-accent)]'}`}>{order.orderStatus}</span>
                     <p className="text-[15px] font-bold tabular-nums">{inr(order.total)}</p>
                     <span className="text-[#8A97A8] transition-transform group-hover:translate-x-1"><Icon name="arrow" size={17} /></span>
                   </a>
@@ -438,7 +438,7 @@ export function AccountPage() {
             <div className="flex items-center justify-between gap-4 mb-5">
               <h2 className={`${T.display} text-[22px]`}>Profile</h2>
               {!editing && (
-                <button onClick={() => { setDraft({ name: account.name, phone: account.phone }); setEditing(true); }} className="text-[14px] font-semibold text-[#2F6BFF] hover:underline">Edit</button>
+                <button onClick={() => { setDraft({ name: account.name, phone: account.phone }); setEditing(true); }} className="text-[14px] font-semibold text-[var(--st-accent)] hover:underline">Edit</button>
               )}
             </div>
             {editing ? (
@@ -458,7 +458,7 @@ export function AccountPage() {
                   ['phone', 'Mobile', account.phone || 'Not added'],
                 ].map(([icon, label, value]) => (
                   <div key={label} className="flex items-center gap-3.5">
-                    <span className="w-10 h-10 shrink-0 rounded-full bg-[#EDF1F6] text-[#2F6BFF] flex items-center justify-center"><Icon name={icon} size={17} /></span>
+                    <span className="w-10 h-10 shrink-0 rounded-full bg-[#EDF1F6] text-[var(--st-accent)] flex items-center justify-center"><Icon name={icon} size={17} /></span>
                     <div className="min-w-0">
                       <dt className="text-[12px] font-semibold text-[#8A97A8]">{label}</dt>
                       <dd className="font-semibold truncate">{value}</dd>
@@ -476,8 +476,8 @@ export function AccountPage() {
               ['tag', 'Offers for you', 'Members-only savings', '#/deals'],
               ['chat', 'Contact us', 'We reply within a day', '#/contact'],
             ].map(([icon, title, sub, href]) => (
-              <a key={title} href={href} className="flex items-center gap-4 p-4 rounded-[20px] hover:bg-[#F6F8FB] transition-colors group">
-                <span className="w-11 h-11 shrink-0 rounded-[14px] bg-[#0E1A2B] text-white flex items-center justify-center"><Icon name={icon} size={18} /></span>
+              <a key={title} href={href} className="flex items-center gap-4 p-4 rounded-[20px] hover:bg-[var(--st-page)] transition-colors group">
+                <span className="w-11 h-11 shrink-0 rounded-[14px] bg-[var(--st-ink)] text-white flex items-center justify-center"><Icon name={icon} size={18} /></span>
                 <span className="flex-1">
                   <span className="block text-[15px] font-bold">{title}</span>
                   <span className="block text-[13px] text-[#6F7E92]">{sub}</span>
